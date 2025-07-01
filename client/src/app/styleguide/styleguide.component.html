@@ -1,0 +1,190 @@
+
+	<!-- Typography -->
+	<section class="space-y-6">
+		<!-- H1 -->
+		<div>
+			<h1 class="text-4xl font-semibold text-gray-900 tracking-tight">Heading 1 - Default</h1>
+			<h1 class="text-4xl font-normal text-gray-500 tracking-tight">Heading 1 - Muted</h1>
+		</div>
+
+		<!-- H2 -->
+		<div>
+			<h2 class="text-3xl font-semibold text-gray-900 tracking-tight mb-2">Heading 2 - Default</h2>
+			<h2 class="text-3xl font-normal text-gray-500 tracking-tight">Heading 2 - Muted</h2>
+		</div>
+
+		<!-- H3 -->
+		<div>
+			<h3 class="text-2xl font-medium text-gray-800 tracking-tight mb-2">Heading 3 - Default</h3>
+			<h3 class="text-2xl font-normal text-gray-500 tracking-tight">Heading 3 - Muted</h3>
+		</div>
+
+		<!-- H4 -->
+		<div>
+			<h4 class="text-xl font-medium text-gray-800 tracking-tight mb-2">Heading 4 - Default</h4>
+			<h4 class="text-xl font-normal text-gray-500 tracking-tight">Heading 4 - Muted</h4>
+		</div>
+
+		<!-- H5 -->
+		<div>
+			<h5 class="text-lg font-medium text-gray-700 tracking-tight mb-2">Heading 5 - Default</h5>
+			<h5 class="text-lg font-normal text-gray-500 tracking-tight">Heading 5 - Muted</h5>
+		</div>
+
+		<!-- H6 -->
+		<div>
+			<h6 class="text-base font-medium text-gray-600 tracking-tight uppercase mb-2">Heading 6 - Default</h6>
+			<h6 class="text-base font-normal text-gray-400 tracking-tight uppercase">Heading 6 - Muted</h6>
+		</div>
+	</section>
+
+	<!-- Card Preview Text -->
+	<section>
+		<h2 class="text-2xl font-medium text-gray-800 tracking-tight mb-2">Card Header</h2>
+		<p class="text-gray-600 text-sm mb-3">2 beds · 1 bath · Wi-Fi · Kitchen</p>
+		<p class="text-gray-900 font-medium">
+			$120
+			<span class="text-sm text-gray-500">/night</span>
+		</p>
+	</section>
+
+	<!-- Cards Grid -->
+	<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+		<!-- Card 1 -->
+		<div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+			<img
+				src="https://res.cloudinary.com/dlg9y5dfv/image/upload/v1745257549/munros/nhccivlmlky7yph8b8jf.jpg"
+				alt="Card image"
+				class="w-full h-48 object-cover" />
+			<div class="p-4">
+				<h2 class="text-2xl font-medium text-gray-800 tracking-tight mb-2">Card Header</h2>
+				<p class="text-gray-600 text-sm mb-3">2 beds · 1 bath · Wi-Fi · Kitchen</p>
+				<p class="text-gray-900 font-medium">
+					$120
+					<span class="text-sm text-gray-500">/night</span>
+				</p>
+			</div>
+		</div>
+
+		<!-- Card 2 -->
+		<div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+			<img
+				src="https://res.cloudinary.com/dlg9y5dfv/image/upload/v1745257549/munros/nhccivlmlky7yph8b8jf.jpg"
+				alt="Card image"
+				class="w-full h-48 object-cover" />
+			<div class="p-4">
+				<h2 class="text-2xl font-medium text-gray-800 tracking-tight mb-2">Beach House</h2>
+				<p class="text-gray-600 text-sm mb-3">3 beds · Ocean view · BBQ Grill</p>
+				<p class="text-gray-900 font-medium">
+					$200
+					<span class="text-sm text-gray-500">/night</span>
+				</p>
+			</div>
+		</div>
+
+		<!-- Card 3 -->
+		<div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+			<img
+				src="https://res.cloudinary.com/dlg9y5dfv/image/upload/v1745257549/munros/nhccivlmlky7yph8b8jf.jpg"
+				alt="Card image"
+				class="w-full h-48 object-cover" />
+			<div class="p-4">
+				<h2 class="text-2xl font-medium text-gray-800 tracking-tight mb-2">Modern Loft</h2>
+				<p class="text-gray-600 text-sm mb-3">Downtown · Fast Wi-Fi · Workspace</p>
+				<p class="text-gray-900 font-medium">
+					$150
+					<span class="text-sm text-gray-500">/night</span>
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- Form Inputs -->
+	<section class="space-y-6">
+		<!-- Text Inputs -->
+		<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+			<div>
+				<label class="block text-gray-600 text-sm mb-1">Name</label>
+				<input
+					type="text"
+					placeholder="Enter your name"
+					class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300" />
+			</div>
+
+			<div>
+				<label class="block text-gray-600 text-sm mb-1">Email</label>
+				<input
+					type="email"
+					placeholder="you@example.com"
+					class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300" />
+			</div>
+		</div>
+
+		<!-- Textarea -->
+		<div>
+			<label class="block text-gray-600 text-sm mb-1">Message</label>
+			<textarea
+				placeholder="Write your message..."
+				class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 h-28 resize-none focus:outline-none focus:ring-2 focus:ring-gray-300"></textarea>
+		</div>
+
+		<!-- Other Inputs -->
+		<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+			<div>
+				<label class="block text-gray-600 text-sm mb-1">Check-in Date</label>
+				<input
+					type="date"
+					class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300" />
+			</div>
+
+			<div>
+				<label class="block text-gray-600 text-sm mb-1">Guests</label>
+				<select
+					class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300">
+					<option>1 guest</option>
+					<option>2 guests</option>
+					<option>3 guests</option>
+					<option>4+ guests</option>
+				</select>
+			</div>
+		</div>
+
+		<!-- Amenities Checkboxes -->
+		<div>
+			<p class="text-gray-600 text-sm mb-1">Amenities</p>
+			<div class="flex flex-col space-y-2 text-sm text-gray-700">
+				<label class="inline-flex items-center space-x-2">
+					<input type="checkbox" class="form-checkbox h-4 w-4 text-gray-600 rounded border-gray-300" />
+					<span>Wi-Fi</span>
+				</label>
+				<label class="inline-flex items-center space-x-2">
+					<input type="checkbox" class="form-checkbox h-4 w-4 text-gray-600 rounded border-gray-300" />
+					<span>Kitchen</span>
+				</label>
+				<label class="inline-flex items-center space-x-2">
+					<input type="checkbox" class="form-checkbox h-4 w-4 text-gray-600 rounded border-gray-300" />
+					<span>Washer</span>
+				</label>
+			</div>
+		</div>
+
+		<!-- Room Type Radios -->
+		<div>
+			<p class="text-gray-600 text-sm mb-1">Room Type</p>
+			<div class="flex flex-col space-y-2 text-sm text-gray-700">
+				<label class="inline-flex items-center space-x-2">
+					<input type="radio" name="room" class="form-radio h-4 w-4 text-gray-600" />
+					<span>Entire place</span>
+				</label>
+				<label class="inline-flex items-center space-x-2">
+					<input type="radio" name="room" class="form-radio h-4 w-4 text-gray-600" />
+					<span>Private room</span>
+				</label>
+				<label class="inline-flex items-center space-x-2">
+					<input type="radio" name="room" class="form-radio h-4 w-4 text-gray-600" />
+					<span>Shared room</span>
+				</label>
+			</div>
+		</div>
+	</section>
+

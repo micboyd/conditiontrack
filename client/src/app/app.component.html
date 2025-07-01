@@ -1,86 +1,42 @@
-<app-container>
-	<!-- H1 Styles -->
-	<h1 class="text-4xl font-semibold text-gray-900 tracking-tight">Heading 1 - Default</h1>
-	<h1 class="text-4xl font-normal text-gray-500 tracking-tight">Heading 1 - Muted</h1>
-
-	<!-- H2 Styles -->
-	<h2 class="text-3xl font-semibold text-gray-900 tracking-tight mb-2">Heading 2 - Default</h2>
-	<h2 class="text-3xl font-normal text-gray-500 tracking-tight">Heading 2 - Muted</h2>
-
-	<!-- H3 Styles -->
-	<h3 class="text-2xl font-medium text-gray-800 tracking-tight mb-2">Heading 3 - Default</h3>
-	<h3 class="text-2xl font-normal text-gray-500 tracking-tight">Heading 3 - Muted</h3>
-
-	<!-- H4 Styles -->
-	<h4 class="text-xl font-medium text-gray-800 tracking-tight mb-2">Heading 4 - Default</h4>
-	<h4 class="text-xl font-normal text-gray-500 tracking-tight">Heading 4 - Muted</h4>
-
-	<!-- H5 Styles -->
-	<h5 class="text-lg font-medium text-gray-700 tracking-tight mb-2">Heading 5 - Default</h5>
-	<h5 class="text-lg font-normal text-gray-500 tracking-tight">Heading 5 - Muted</h5>
-
-	<!-- H6 Styles -->
-	<h6 class="text-base font-medium text-gray-600 tracking-tight uppercase mb-2">Heading 6 - Default</h6>
-	<h6 class="text-base font-normal text-gray-400 tracking-tight uppercase">Heading 6 - Muted</h6>
-
-	<h2 class="text-2xl font-medium text-gray-800 tracking-tight mb-2">Card Header</h2>
-	<p class="text-gray-600 text-sm mb-3">2 beds · 1 bath · Wi-Fi · Kitchen</p>
-	<p class="text-gray-900 font-medium">
-		$120
-		<span class="text-sm text-gray-500">/night</span>
-	</p>
-
-	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-		<!-- Card Start -->
-		<div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-			<img
-				src="https://res.cloudinary.com/dlg9y5dfv/image/upload/v1745257549/munros/nhccivlmlky7yph8b8jf.jpg"
-				alt="Card image"
-				class="w-full h-48 object-cover" />
-			<div class="p-4">
-				<h2 class="text-2xl font-medium text-gray-800 tracking-tight mb-2">Card Header</h2>
-				<p class="text-gray-600 text-sm mb-3">2 beds · 1 bath · Wi-Fi · Kitchen</p>
-				<p class="text-gray-900 font-medium">
-					$120
-					<span class="text-sm text-gray-500">/night</span>
-				</p>
+<div class="h-screen flex flex-col md:flex-row">
+	<!-- Sidebar (Left side on md+ screens) -->
+	<aside class="w-full md:w-64 bg-white text-gray-800 p-6 flex flex-col h-screen">
+		<!-- Profile Section as Link -->
+		<a href="#" class="mb-8 flex items-center gap-4 p-2 rounded-lg hover:bg-gray-100 transition-colors">
+			<img src="https://i.pravatar.cc/40" alt="User Avatar" class="w-10 h-10 rounded-full object-cover" />
+			<div>
+				<p class="text-base font-semibold">Michael Boyd</p>
+				<p class="text-sm text-gray-500">View Profile</p>
 			</div>
+		</a>
+
+		<!-- Navigation -->
+		<nav class="space-y-2 flex-1">
+			<a href="#" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 transition-colors">
+				<i class="fa-solid fa-plate-utensils text-blue-500"></i>
+				<span class="font-medium">Nutrition</span>
+			</a>
+			<a href="#" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 transition-colors">
+				<i class="fa-solid fa-dumbbell text-green-500"></i>
+				<span class="font-medium">Strength</span>
+			</a>
+			<a href="#" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 transition-colors">
+				<i class="fa-solid fa-person-running-fast text-orange-500"></i>
+				<span class="font-medium">Conditioning</span>
+			</a>
+		</nav>
+
+		<!-- Logout Button -->
+		<div class="pt-6 border-t mt-6">
+			<a href="#" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 transition-colors text-red-500">
+				<i class="fa-solid fa-right-from-bracket"></i>
+				<span class="font-medium">Logout</span>
+			</a>
 		</div>
-		<!-- Card End -->
+	</aside>
 
-		<!-- Card -->
-		<div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-			<img
-				src="https://res.cloudinary.com/dlg9y5dfv/image/upload/v1745257549/munros/nhccivlmlky7yph8b8jf.jpg"
-				alt="Card image"
-				class="w-full h-48 object-cover" />
-			<div class="p-4">
-				<h2 class="text-2xl font-medium text-gray-800 tracking-tight mb-2">Beach House</h2>
-				<p class="text-gray-600 text-sm mb-3">3 beds · Ocean view · BBQ Grill</p>
-				<p class="text-gray-900 font-medium">
-					$200
-					<span class="text-sm text-gray-500">/night</span>
-				</p>
-			</div>
-		</div>
-
-		<!-- Card -->
-		<div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-			<img
-				src="https://res.cloudinary.com/dlg9y5dfv/image/upload/v1745257549/munros/nhccivlmlky7yph8b8jf.jpg"
-				alt="Card image"
-				class="w-full h-48 object-cover" />
-			<div class="p-4">
-				<h2 class="text-2xl font-medium text-gray-800 tracking-tight mb-2">Modern Loft</h2>
-				<p class="text-gray-600 text-sm mb-3">Downtown · Fast Wi-Fi · Workspace</p>
-				<p class="text-gray-900 font-medium">
-					$150
-					<span class="text-sm text-gray-500">/night</span>
-				</p>
-			</div>
-		</div>
-
-		<!-- Add more cards as needed... -->
-	</div>
-</app-container>
-
+	<!-- Main Content (Right side and scrollable) -->
+	<main class="flex-1 overflow-y-auto bg-gray-100 p-6">
+		<router-outlet></router-outlet>
+	</main>
+</div>
