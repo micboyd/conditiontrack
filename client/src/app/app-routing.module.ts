@@ -2,6 +2,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { NgModule } from '@angular/core';
+import { StrengthComponent } from './strength/strength.component';
 import { StyleguideComponent } from './styleguide/styleguide.component';
 
 const routes: Routes = [
@@ -12,6 +13,10 @@ const routes: Routes = [
 	{
 		path: 'styleguide',
 		component: StyleguideComponent,
+	},
+    	{
+		path: 'strength',
+		component: StrengthComponent,
 	},
 	{ path: '**', redirectTo: 'dashboard' },
 ];

@@ -1,13 +1,13 @@
 import { AppRoutingModule } from '../app-routing.module';
 import { CommonModule } from '@angular/common';
-import { MenuComponent } from './components/menu.component';
 import { NgModule } from '@angular/core';
+import { StrengthComponent } from './strength.component';
 
 @NgModule({
-	declarations: [MenuComponent],
+	declarations: [StrengthComponent],
 	imports: [CommonModule, AppRoutingModule],
-	exports: [MenuComponent],
+	exports: [StrengthComponent],
 })
-export class SharedModule {
+export class StrengthModule {
 }
 
