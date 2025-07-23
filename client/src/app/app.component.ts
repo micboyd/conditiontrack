@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 
 @Component({
 	selector: 'app-root',
@@ -7,5 +7,13 @@ import { Component } from '@angular/core';
 	styleUrl: './app.component.css',
 })
 export class AppComponent {
-	title = 'client';
+	isMenuOpen = false;
+
+	toggleMenu() {
+		this.isMenuOpen = !this.isMenuOpen;
+	}
+
+	closeMenu() {
+		this.isMenuOpen = false;
+	}
 }

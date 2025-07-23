@@ -5,15 +5,15 @@ import { NgModule } from '@angular/core';
 import { StyleguideComponent } from './styleguide/styleguide.component';
 
 const routes: Routes = [
-    { path: '**', redirectTo: 'dashboard' },
 	{
 		path: 'dashboard',
 		component: DashboardComponent,
 	},
-    	{
+	{
 		path: 'styleguide',
 		component: StyleguideComponent,
 	},
+	{ path: '**', redirectTo: 'dashboard' },
 ];
 
 @NgModule({
