@@ -1,9 +1,24 @@
-<div class="flex justify-end items-center p-4 border-b-1 border-gray-300">
-	<button (click)="toggleMenu()" class="flex items-center cursor-pointer">
-		<span class="pr-2">Menu</span>
-		<i class="fa-sharp fa-solid fa-bars text-2xl"></i>
-	</button>
-</div>
+<header class="p-4 border-b-1 border-gray-300">
+	<app-container [noPadding]="true">
+		<div class="flex justify-between items-center">
+			<!-- Block / Season Indicator + User Info -->
+			<div class="flex flex-col items-center space-y-1">
+				<span class="text-xs text-gray-500">
+					Logged in as
+					<strong class="text-gray-700">Michael Boyd</strong>
+				</span>
+
+				<span class="bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full">Pre-Season</span>
+			</div>
+
+			<!-- Menu Button -->
+			<button (click)="toggleMenu()" class="flex items-center cursor-pointer">
+				<span class="pr-2">Menu</span>
+				<i class="fa-sharp fa-solid fa-bars text-2xl"></i>
+			</button>
+		</div>
+	</app-container>
+</header>
 
 <div>
 	<div (click)="closeMenu()" *ngIf="isMenuOpen" class="fixed inset-0 bg-black/40 z-10"></div>
@@ -31,7 +46,7 @@
 			<ul class="flex flex-col w-full cursor-pointer">
 				<li class="w-full p-4 border-b-1 border-gray-300">
 					<a
-                        routerLink="/dashboard"
+						routerLink="/dashboard"
 						(click)="closeMenu()"
 						class="flex justify-between items-center w-full text-lg hover:text-gray-500">
 						<span>Dashboard</span>
@@ -40,8 +55,8 @@
 				</li>
 				<li class="w-full p-4 border-b-1 border-gray-300">
 					<a
-                        routerLink="/strength"
-                        (click)="closeMenu()"
+						routerLink="/strength"
+						(click)="closeMenu()"
 						class="flex justify-between items-center w-full text-lg hover:text-gray-500">
 						<span>Strength</span>
 						<i class="fa-sharp fa-thin fa-arrow-right"></i>
@@ -49,7 +64,7 @@
 				</li>
 				<li class="w-full p-4 border-b-1 border-gray-300">
 					<a
-                        routerLink="/conditioning"
+						routerLink="/conditioning"
 						(click)="closeMenu()"
 						class="flex justify-between items-center w-full text-lg hover:text-gray-500">
 						<span>Conditioning</span>
@@ -58,10 +73,19 @@
 				</li>
 				<li class="w-full p-4 border-b-1 border-gray-300">
 					<a
-                        routerLink="/nutrition"
+						routerLink="/nutrition"
 						(click)="closeMenu()"
 						class="flex justify-between items-center w-full text-lg hover:text-gray-500">
 						<span>Nutrition</span>
+						<i class="fa-sharp fa-thin fa-arrow-right"></i>
+					</a>
+				</li>
+				<li class="w-full p-4 border-b-1 border-gray-300">
+					<a
+						routerLink="/nutrition"
+						(click)="closeMenu()"
+						class="flex justify-between items-center w-full text-lg hover:text-gray-500">
+						<span>Global Settings</span>
 						<i class="fa-sharp fa-thin fa-arrow-right"></i>
 					</a>
 				</li>
