@@ -1,4 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+
+import { Exercise } from './models/Exercise';
+import { ExerciseSet } from './models/ExerciseSet';
+import { Workout } from './models/Workout';
+import { WorkoutService } from './workout.service';
 
 @Component({
 	selector: 'app-strength',
@@ -6,5 +12,40 @@ import { Component } from '@angular/core';
 	standalone: false,
 })
 export class StrengthComponent {
-	constructor() {}
+	workoutForm!: FormGroup;
+
+	constructor(private fb: FormBuilder, private workoutService: WorkoutService) {}
+
+	ngOnInit() {
+		this.workoutService.getWorkoutById('123').subscribe(response => {
+			const workout = new Workout(
+				response.id,
+				response.name,
+				response.description,
+				response.exercises.map(
+					(ex: any) =>
+						new Exercise(
+							ex.id,
+							ex.name,
+							ex.description,
+							ex.sets.map((set: any) => new ExerciseSet(set.id, set.exerciseId, set.reps, set.weight)),
+						),
+				),
+			);
+
+			this.workoutForm = Workout.toFormGroup(workout, this.fb);
+		});
+	}
+
+	get exercises(): FormArray {
+		return this.workoutForm.get('exercises') as FormArray;
+	}
+
+	getSets(i: number): FormArray {
+		return this.exercises.at(i).get('sets') as FormArray;
+	}
+
+	onSubmit() {
+		console.log(this.workoutForm.value);
+	}
 }
