@@ -17,8 +17,8 @@ export class StrengthComponent {
 
     meunItems: MenuItem[] = [
         { route: '/strength/workout-records', label: 'Workout Records' },
-        { route: '/strength/workout-library', label: 'Workout Library' },
-        { route: '/strength/exercise-library', label: 'Exercise Library' }
+        { route: '/strength/workout-library', label: 'Workouts' },
+        { route: '/strength/exercise-library', label: 'Exercises' }
     ]
 
 	constructor(private fb: FormBuilder, private workoutService: WorkoutService) {}
