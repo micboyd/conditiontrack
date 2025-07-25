@@ -4,11 +4,12 @@ import { ContainerComponent } from './components/container/container.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { MenuComponent } from './components/menu/menu.component';
 import { NgModule } from '@angular/core';
+import { SubMenuComponent } from './components/sub-menu/sub-menu.component';
 
 @NgModule({
-	declarations: [MenuComponent, ContainerComponent, FooterComponent],
+	declarations: [MenuComponent, ContainerComponent, FooterComponent, SubMenuComponent],
 	imports: [CommonModule, AppRoutingModule],
-	exports: [MenuComponent, ContainerComponent, FooterComponent],
+	exports: [MenuComponent, ContainerComponent, FooterComponent, SubMenuComponent],
 })
 export class SharedModule {
 }

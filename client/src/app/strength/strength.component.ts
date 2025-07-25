@@ -3,6 +3,7 @@ import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 
 import { Exercise } from './models/Exercise';
 import { ExerciseSet } from './models/ExerciseSet';
+import { MenuItem } from '../shared/models/MenuItem';
 import { Workout } from './models/Workout';
 import { WorkoutService } from './workout.service';
 
@@ -13,6 +14,12 @@ import { WorkoutService } from './workout.service';
 })
 export class StrengthComponent {
 	workoutForm!: FormGroup;
+
+    meunItems: MenuItem[] = [
+        { route: '/strength/workout-records', label: 'Workout Records' },
+        { route: '/strength/workout-library', label: 'Workout Library' },
+        { route: '/strength/exercise-library', label: 'Exercise Library' }
+    ]
 
 	constructor(private fb: FormBuilder, private workoutService: WorkoutService) {}
 
