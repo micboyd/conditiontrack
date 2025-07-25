@@ -31,7 +31,7 @@
 					class="w-12 h-12 rounded-full object-cover shadow-sm" />
 				<div class="flex flex-col p-2">
 					<p class="text-sm font-medium text-gray-900">Michael Boyd</p>
-					<a href="#" class="text-xs text-blue-600">View profile</a>
+					<a routerLink="/profile" (click)="closeMenu()" class="text-xs text-blue-600">View profile</a>
 				</div>
 			</div>
 
@@ -72,9 +72,36 @@
 						<i class="fa-sharp fa-thin fa-arrow-right"></i>
 					</a>
 				</li>
+                <li class="w-full p-4 border-b-1 border-gray-300">
+					<a
+						routerLink="/goals"
+						(click)="closeMenu()"
+						class="flex justify-between items-center w-full text-lg hover:text-gray-500">
+						<span>Goals</span>
+						<i class="fa-sharp fa-thin fa-arrow-right"></i>
+					</a>
+				</li>
+                <li class="w-full p-4 border-b-1 border-gray-300">
+					<a
+						routerLink="/notes"
+						(click)="closeMenu()"
+						class="flex justify-between items-center w-full text-lg hover:text-gray-500">
+						<span>Notes</span>
+						<i class="fa-sharp fa-thin fa-arrow-right"></i>
+					</a>
+				</li>
+                <li class="w-full p-4 border-b-1 border-gray-300">
+					<a
+						routerLink="/body-composition"
+						(click)="closeMenu()"
+						class="flex justify-between items-center w-full text-lg hover:text-gray-500">
+						<span>Body Composition</span>
+						<i class="fa-sharp fa-thin fa-arrow-right"></i>
+					</a>
+				</li>
 				<li class="w-full p-4 border-b-1 border-gray-300">
 					<a
-						routerLink="/nutrition"
+						routerLink="/global-settings"
 						(click)="closeMenu()"
 						class="flex justify-between items-center w-full text-lg hover:text-gray-500">
 						<span>Global Settings</span>
