@@ -16,6 +16,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from './shared/shared.module';
 import { StrengthModule } from './strength/strength.module';
 import { StyleguideComponent } from './styleguide/styleguide.component';
+import { provideHttpClient } from '@angular/common/http';
 
 @NgModule({
 	declarations: [
@@ -39,7 +40,7 @@ import { StyleguideComponent } from './styleguide/styleguide.component';
 		NutritionModule,
 		GlobalSettingsModule,
 	],
-	providers: [],
+	providers: [provideHttpClient()],
 	bootstrap: [AppComponent],
 })
 export class AppModule {}
