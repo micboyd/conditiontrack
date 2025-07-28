@@ -30,6 +30,12 @@ export class WorkoutLibraryComponent implements OnInit {
         });
     }
 
+    deleteWorkout(workoutId: string): void {
+        this.workoutService.deleteWorkout(workoutId).subscribe(() => {
+            this.getAllWorkouts();
+        });
+    }
+
     openEditMode(workout?: Workout): void {
         this. selectedWorkout = workout ?? null;
         this.editModeEnabled = true;
