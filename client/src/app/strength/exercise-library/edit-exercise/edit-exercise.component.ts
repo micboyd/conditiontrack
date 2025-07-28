@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { Exercise } from '../../models/Exercise';
+import { ExerciseService } from '../exercise.service';
 
 @Component({
 	selector: 'app-edit-exercise',
@@ -11,13 +12,13 @@ import { Exercise } from '../../models/Exercise';
 export class EditExerciseComponent {
 	exerciseForm!: FormGroup;
 
-	@Output() closeEditModeEvent: EventEmitter<void> = new EventEmitter<void>();
+	@Input() selectedExercise: Exercise | null = null;
+	@Output() closeEditModeEvent = new EventEmitter<void>();
 
-	constructor(private fb: FormBuilder) {}
+	constructor(private fb: FormBuilder, public exerciseService: ExerciseService) {}
 
 	ngOnInit(): void {
-		const sampleExercise = new Exercise('', '', '', []);
-		this.exerciseForm = Exercise.toFormGroup(sampleExercise, this.fb);
+		this.exerciseForm = Exercise.toFormGroup(this.selectedExercise ?? new Exercise(null), this.fb);
 	}
 
 	closeEditMode(): void {
@@ -25,8 +26,14 @@ export class EditExerciseComponent {
 	}
 
 	onSubmit(): void {
-		if (this.exerciseForm.valid) {
-			console.log('Exercise submitted:', this.exerciseForm.value);
+		if (this.selectedExercise) {
+			this.exerciseService.updateExercise(this.selectedExercise._id, this.exerciseForm.value).subscribe(() => {
+				this.closeEditModeEvent.emit();
+			});
+		} else {
+			this.exerciseService.createExercise(this.exerciseForm.value).subscribe(() => {
+				this.closeEditModeEvent.emit();
+			});
 		}
 	}
 }

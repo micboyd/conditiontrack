@@ -1,0 +1,76 @@
+<h2 class="text-xl font-semibold text-gray-900 tracking-tight mb-6">Edit Workout</h2>
+
+<form [formGroup]="workoutForm" (ngSubmit)="onSubmit()" class="space-y-6">
+	<!-- Workout Name -->
+	<div>
+		<label for="name" class="block text-sm mb-1">Workout Name</label>
+		<input
+			id="name"
+			type="text"
+			formControlName="name"
+			placeholder="e.g. Full Body Blast"
+			class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300" />
+	</div>
+
+	<!-- Description -->
+	<div>
+		<label for="description" class="block text-sm mb-1">Description</label>
+		<textarea
+			id="description"
+			formControlName="description"
+			placeholder="e.g. Combines cardio and strength training"
+			rows="4"
+			class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"></textarea>
+	</div>
+
+	<div class="max-w-4xl mx-auto">
+		<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+			<!-- Available Exercises -->
+			<div>
+				<h3 class="text-lg font-semibold mb-3 text-gray-800">Available Exercises</h3>
+				<div class="space-y-2">
+					@for(exercise of avalibleExercises; track exercise._id) {
+					<div
+						(click)="selectExercise(exercise)"
+						class="flex justify-between items-center bg-white border border-gray-300 rounded-xl p-3 hover:border-blue-500 cursor-pointer">
+						<span class="text-gray-800 text-sm">{{ exercise.name }}</span>
+						<i class="fa-solid fa-plus text-sm"></i>
+					</div>
+					}
+				</div>
+			</div>
+
+			<!-- Selected Exercises -->
+			<div>
+				<h3 class="text-lg font-semibold mb-3 text-gray-800">Selected Exercises</h3>
+				<div class="space-y-2">
+					@for(exercise of selectedExercises; track exercise._id) {
+					<div
+                        (click)="removeExercise(exercise)"
+						class="flex justify-between items-center bg-blue-50 border border-blue-300 rounded-xl p-3 hover:border-blue-500 cursor-pointer">
+						<span class="text-blue-800 text-sm">{{ exercise.name }}</span>
+						<i class="fa-solid fa-trash text-blue-500 text-sm"></i>
+					</div>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Buttons -->
+	<div class="flex gap-3">
+		<button
+			type="submit"
+			class="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition cursor-pointer"
+			[disabled]="workoutForm.invalid">
+			Save Workout
+		</button>
+
+		<button
+			type="button"
+			class="bg-purple-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-purple-700 transition cursor-pointer"
+			(click)="closeEditMode()">
+			Close
+		</button>
+	</div>
+</form>

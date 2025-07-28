@@ -16,6 +16,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from './shared/shared.module';
 import { StrengthModule } from './strength/strength.module';
 import { StyleguideComponent } from './styleguide/styleguide.component';
+import { WorkoutService } from './strength/workout-library/workout.service';
 import { provideHttpClient } from '@angular/common/http';
 
 @NgModule({
@@ -40,7 +41,7 @@ import { provideHttpClient } from '@angular/common/http';
 		NutritionModule,
 		GlobalSettingsModule,
 	],
-	providers: [provideHttpClient()],
+	providers: [provideHttpClient(), WorkoutService],
 	bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -1,23 +1,23 @@
 import { FormBuilder, FormGroup } from '@angular/forms';
 
-import { ExerciseSet } from './ExerciseSet';
-
 export class Exercise {
-    constructor(
-        public id: string,
-        public name: string,
-        public description: string,
-        public sets: ExerciseSet[]
-    ) {}
+    _id: string = '';
+    userId: string;
+    name: string;
+    description: string;
+
+    constructor(exercise: Exercise | null) {
+        this._id = exercise?._id || '';
+        this.userId = exercise?.userId || '';
+        this.name = exercise?.name || '';
+        this.description = exercise?.description || '';
+    }
 
     static toFormGroup(exercise: Exercise, fb: FormBuilder): FormGroup {
         return fb.group({
-            id: [exercise.id],
+            userId: [localStorage.getItem('id')],
             name: [exercise.name],
-            description: [exercise.description],
-            sets: fb.array(
-                exercise.sets.map(set => ExerciseSet.toFormGroup(set, fb))
-            )
+            description: [exercise.description]
         });
     }
 }

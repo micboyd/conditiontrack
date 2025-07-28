@@ -1,4 +1,4 @@
 export const environment = {
-    baseApiUrl: 'https://munro-api-pees.onrender.com/api',
+    baseApiUrl: 'http://localhost:3000/api',
     production: false,
 };

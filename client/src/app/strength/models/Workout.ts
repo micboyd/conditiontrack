@@ -3,21 +3,25 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { Exercise } from './Exercise';
 
 export class Workout {
-    constructor(
-        public id: string,
-        public name: string,
-        public description: string,
-        public exercises: Exercise[]
-    ) {}
+    _id: string;
+    userId: string;
+    name: string;
+    description: string;
+    exercises: string[];
+
+    constructor(workout: Workout | null) {
+        this._id = workout?._id || '';
+        this.userId = workout?.userId || '';
+        this.name = workout?.name || '';
+        this.description = workout?.description || '';
+        this.exercises = workout?.exercises || [];
+    }
 
     static toFormGroup(workout: Workout, fb: FormBuilder): FormGroup {
         return fb.group({
-            id: [workout.id],
+            userId: [localStorage.getItem('id')],
             name: [workout.name],
-            description: [workout.description],
-            exercises: fb.array(
-                workout.exercises.map(ex => Exercise.toFormGroup(ex, fb))
-            )
+            description: [workout.description]
         });
     }
 }
