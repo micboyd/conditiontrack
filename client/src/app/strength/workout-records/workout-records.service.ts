@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { WorkoutRecord } from '../models/WorkoutRecord';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 @Injectable()
 export class WorkoutRecordService {
@@ -13,7 +13,10 @@ export class WorkoutRecordService {
 	}
 
 	updateWorkoutRecord(workoutRecordId: string, workoutRecord: WorkoutRecord): Observable<WorkoutRecord> {
-		return this.http.put<WorkoutRecord>(`${environment.baseApiUrl}/strength/workout-record/${workoutRecordId}`, workoutRecord);
+		return this.http.put<WorkoutRecord>(
+			`${environment.baseApiUrl}/strength/workout-record/${workoutRecordId}`,
+			workoutRecord,
+		);
 	}
 
 	getAllWorkoutRecords(): Observable<Array<WorkoutRecord>> {
@@ -29,3 +32,4 @@ export class WorkoutRecordService {
 		return this.http.delete<void>(`${environment.baseApiUrl}/strength/workout-record/${workoutRecordId}`);
 	}
 }
+

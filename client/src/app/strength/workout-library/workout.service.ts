@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Workout } from '../models/Workout';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 @Injectable()
 export class WorkoutService {
@@ -29,3 +29,4 @@ export class WorkoutService {
 		return this.http.delete<void>(`${environment.baseApiUrl}/strength/workout/${workoutId}`);
 	}
 }
+

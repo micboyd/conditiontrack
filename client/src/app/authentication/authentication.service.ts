@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 import { LoginRequest } from '../shared/models/LoginRequest';
 import { LoginResponse } from '../shared/models/LoginResponse';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../environments/environment';
 import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
