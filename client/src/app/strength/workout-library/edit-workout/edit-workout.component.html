@@ -1,5 +1,4 @@
 <h2 class="text-xl font-semibold text-gray-900 tracking-tight mb-6">Edit Workout</h2>
-
 <form [formGroup]="workoutForm" (ngSubmit)="onSubmit()" class="space-y-6">
 	<!-- Workout Name -->
 	<div>
@@ -9,7 +8,14 @@
 			type="text"
 			formControlName="name"
 			placeholder="e.g. Full Body Blast"
+			[ngClass]="{
+				'border-red-600': isInvalid('name'),
+				'border-gray-300': !isInvalid('name')
+			}"
 			class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300" />
+		@if (isInvalid('name')) {
+		<p class="text-sm text-red-600">Please enter a name</p>
+		}
 	</div>
 
 	<!-- Description -->
@@ -19,10 +25,20 @@
 			id="description"
 			formControlName="description"
 			placeholder="e.g. Combines cardio and strength training"
+			[ngClass]="{
+				'border-red-600': isInvalid('description'),
+				'border-gray-300': !isInvalid('description')
+			}"
 			rows="4"
 			class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"></textarea>
+		@if (isInvalid('description')) {
+		<p class="text-sm text-red-600">Please enter a description</p>
+		}
 	</div>
 
+	@if (exercisesLoading) {
+	<app-loading-indicator [loading]="exercisesLoading"></app-loading-indicator>
+	} @else {
 	<div class="max-w-4xl mx-auto">
 		<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
 			<!-- Available Exercises -->
@@ -46,7 +62,7 @@
 				<div class="space-y-2">
 					@for(exercise of selectedExercises; track exercise._id) {
 					<div
-                        (click)="removeExercise(exercise)"
+						(click)="removeExercise(exercise)"
 						class="flex justify-between items-center bg-blue-50 border border-blue-300 rounded-xl p-3 hover:border-blue-500 cursor-pointer">
 						<span class="text-blue-800 text-sm">{{ exercise.name }}</span>
 						<i class="fa-solid fa-trash text-blue-500 text-sm"></i>
@@ -56,14 +72,18 @@
 			</div>
 		</div>
 	</div>
+	}
 
 	<!-- Buttons -->
 	<div class="flex gap-3">
 		<button
 			type="submit"
 			class="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition cursor-pointer"
+			[ngClass]="{ 'opacity-50': workoutForm.invalid }"
 			[disabled]="workoutForm.invalid">
-			Save Workout
+			@if (formLoading) {
+			<app-loading-indicator [spinner]="true" [loading]="exercisesLoading"></app-loading-indicator>
+			} @else { Save Workout }
 		</button>
 
 		<button
@@ -74,3 +94,4 @@
 		</button>
 	</div>
 </form>
+

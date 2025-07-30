@@ -9,8 +9,8 @@ import { ExerciseService } from './exercise.service';
 	standalone: false,
 })
 export class ExerciseLibraryComponent implements OnInit {
-
-    selectedExercise: Exercise | null = null;
+	exercisesLoading: boolean = false;
+	selectedExercise: Exercise | null = null;
 	private _allExercises: Array<Exercise> = [];
 	editModeEnabled: boolean = false;
 
@@ -25,26 +25,29 @@ export class ExerciseLibraryComponent implements OnInit {
 	}
 
 	getAllExercises(): void {
-		this.exerciseService
-			.getAllExercises()
-			.subscribe((exercises: Array<Exercise>) => {
-				this._allExercises = exercises.map(e => new Exercise(e));
-			});
+		this.exercisesLoading = true;
+		this.exerciseService.getAllExercises().subscribe((exercises: Array<Exercise>) => {
+			this.exercisesLoading = false;
+			this._allExercises = exercises.map(e => new Exercise(e));
+		});
 	}
 
 	deleteExercise(exerciseId: string): void {
+		this.exercisesLoading = true;
 		this.exerciseService.deleteExercise(exerciseId).subscribe(() => {
+			this.exercisesLoading = false;
 			this.getAllExercises();
 		});
 	}
 
-    openEditMode(exercise?: Exercise): void {
-        this.selectedExercise = exercise ?? null;
-        this.editModeEnabled = true;
-    }
+	openEditMode(exercise?: Exercise): void {
+		this.selectedExercise = exercise ?? null;
+		this.editModeEnabled = true;
+	}
 
 	closeEditMode(): void {
-        this.getAllExercises();
+		this.getAllExercises();
 		this.editModeEnabled = false;
 	}
 }
+

@@ -11,6 +11,7 @@ import { ExerciseService } from '../exercise.service';
 })
 export class EditExerciseComponent {
 	exerciseForm!: FormGroup;
+	formLoading: boolean = false;
 
 	@Input() selectedExercise: Exercise | null = null;
 	@Output() closeEditModeEvent = new EventEmitter<void>();
@@ -25,15 +26,25 @@ export class EditExerciseComponent {
 		this.closeEditModeEvent.emit();
 	}
 
+	isInvalid(controlName: string): boolean {
+		const control = this.exerciseForm.get(controlName);
+		return !!(control && control.invalid && control.touched);
+	}
+
 	onSubmit(): void {
+		this.formLoading = true;
+
 		if (this.selectedExercise) {
 			this.exerciseService.updateExercise(this.selectedExercise._id, this.exerciseForm.value).subscribe(() => {
 				this.closeEditModeEvent.emit();
+				this.formLoading = false;
 			});
 		} else {
 			this.exerciseService.createExercise(this.exerciseForm.value).subscribe(() => {
 				this.closeEditModeEvent.emit();
+				this.formLoading = false;
 			});
 		}
 	}
 }
+

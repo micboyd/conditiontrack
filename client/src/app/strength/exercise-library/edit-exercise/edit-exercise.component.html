@@ -9,7 +9,14 @@
 			type="text"
 			formControlName="name"
 			placeholder="e.g. Push-Ups"
-			class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300" />
+			[ngClass]="{
+				'border-red-600': isInvalid('name'),
+				'border-gray-300': !isInvalid('name')
+			}"
+			class="w-full px-4 py-2 border rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 mb-2" />
+		@if (isInvalid('name')) {
+		<p class="text-sm text-red-600">Please enter a name</p>
+		}
 	</div>
 
 	<!-- Description -->
@@ -20,7 +27,14 @@
 			formControlName="description"
 			placeholder="e.g. Upper body strength exercise"
 			rows="4"
-			class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"></textarea>
+			[ngClass]="{
+				'border-red-600': isInvalid('description'),
+				'border-gray-300': !isInvalid('description')
+			}"
+			class="w-full px-4 py-2 border rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 mb-1"></textarea>
+		@if (isInvalid('description')) {
+		<p class="text-sm text-red-600">Please enter a description</p>
+		}
 	</div>
 
 	<!-- Buttons -->
@@ -28,16 +42,19 @@
 		<button
 			type="submit"
 			class="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition cursor-pointer"
+			[ngClass]="{ 'opacity-50': exerciseForm.invalid }"
 			[disabled]="exerciseForm.invalid">
-			Save Exercise
+			@if(formLoading) {
+			<app-loading-indicator [spinner]="true" [loading]="formLoading"></app-loading-indicator>
+			} @else { Save Exercise }
 		</button>
 
 		<button
-            (click)="closeEditMode()"
+			(click)="closeEditMode()"
 			type="button"
-			class="bg-purple-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-purple-700 transition cursor-pointer"
-			[disabled]="exerciseForm.invalid">
+			class="bg-purple-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-purple-700 transition cursor-pointer">
 			Close
 		</button>
 	</div>
 </form>
+

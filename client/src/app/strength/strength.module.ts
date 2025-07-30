@@ -7,7 +7,7 @@ import { ExerciseLibraryComponent } from './exercise-library/exercise-library.co
 import { ExerciseService } from './exercise-library/exercise.service';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { SharedModule } from "../shared/shared.module";
+import { SharedModule } from '../shared/shared.module';
 import { StrengthComponent } from './strength.component';
 import { WorkoutLibraryComponent } from './workout-library/workout-library.component';
 import { WorkoutRecordService } from './workout-records/workout-records.service';
@@ -15,11 +15,18 @@ import { WorkoutRecordsComponent } from './workout-records/workout-records.compo
 import { WorkoutService } from './workout-library/workout.service';
 
 @NgModule({
-	declarations: [StrengthComponent, WorkoutLibraryComponent, WorkoutRecordsComponent, ExerciseLibraryComponent, EditExerciseComponent, EditWorkoutComponent, EditWorkoutRecordsComponent],
+	declarations: [
+		StrengthComponent,
+		WorkoutLibraryComponent,
+		WorkoutRecordsComponent,
+		ExerciseLibraryComponent,
+		EditExerciseComponent,
+		EditWorkoutComponent,
+		EditWorkoutRecordsComponent,
+	],
 	imports: [CommonModule, AppRoutingModule, ReactiveFormsModule, SharedModule],
 	exports: [StrengthComponent],
-    providers: [WorkoutService, ExerciseService, WorkoutRecordService]
+	providers: [WorkoutService, ExerciseService, WorkoutRecordService],
 })
-export class StrengthModule {
-}
+export class StrengthModule {}
 

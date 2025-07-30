@@ -1,8 +1,12 @@
 @if(editModeEnabled) {
 <app-edit-workout [selectedWorkout]="selectedWorkout" (closeEditModeEvent)="closeEditMode()"></app-edit-workout>
+} @else { @if(workoutsLoading) {
+<app-loading-indicator [loading]="workoutsLoading"></app-loading-indicator>
 } @else {
 <div class="mb-4">
-	<button (click)="openEditMode()" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-md text-sm font-medium cursor-pointer">
+	<button
+		(click)="openEditMode()"
+		class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-md text-sm font-medium cursor-pointer">
 		Add a Workout
 	</button>
 </div>
@@ -26,10 +30,10 @@
 		</div>
 		<div class="mt-4 flex justify-end gap-3 text-gray-500">
 			<i (click)="openEditMode(workout)" class="fa-solid fa-pen-to-square cursor-pointer hover:text-gray-700"></i>
-			<i (click)="deleteWorkout(workout._id)" class="fa-solid fa-trash-can cursor-pointer hover:text-red-600"></i>
+			<i (click)="deleteWorkout(workout)" class="fa-solid fa-trash-can cursor-pointer hover:text-red-600"></i>
 		</div>
 	</div>
 	}
 </div>
+} }
 
-}

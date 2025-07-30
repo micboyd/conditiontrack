@@ -1,6 +1,9 @@
 @if(editModeEnabled) {
 <app-edit-exercise [selectedExercise]="selectedExercise" (closeEditModeEvent)="closeEditMode()"></app-edit-exercise>
+} @else { @if(exercisesLoading) {
+<app-loading-indicator [loading]="exercisesLoading"></app-loading-indicator>
 } @else {
+
 <div class="mb-4">
 	<button
 		(click)="openEditMode()"
@@ -26,4 +29,5 @@
 	</div>
 	}
 </div>
-}
+} }
+
