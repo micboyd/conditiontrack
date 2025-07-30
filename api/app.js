@@ -7,6 +7,7 @@ const userRoutes = require('./routes/user');
 
 const exerciseRoutes = require('./routes/strength/exercise');
 const workoutRoutes = require('./routes/strength/workout');
+const workoutRecordRoutes = require('./routes/strength/workoutRecord');
 
 const cors = require('cors');
 
@@ -23,6 +24,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/strength/exercise', exerciseRoutes);
 app.use('/api/strength/workout', workoutRoutes);
+app.use('/api/strength/workout-record', workoutRecordRoutes);
 
 mongoose
 	.connect(process.env.MONGO_URI, {

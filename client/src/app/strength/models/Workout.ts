@@ -7,7 +7,7 @@ export class Workout {
     userId: string;
     name: string;
     description: string;
-    exercises: string[];
+    exercises: Exercise[];
 
     constructor(workout: Workout | null) {
         this._id = workout?._id || '';

@@ -42,7 +42,7 @@ export class EditWorkoutComponent implements OnInit {
 			this.avalibleExercises = [];
 
 			this.allExercises.forEach(ex => {
-				if (selectedIds.includes(ex._id)) {
+				if (selectedIds.includes(ex)) {
 					this.selectedExercises.push(ex);
 				} else {
 					this.avalibleExercises.push(ex);
@@ -77,13 +77,13 @@ export class EditWorkoutComponent implements OnInit {
 			exercises: this.selectedExercises,
 		};
 
-		console.log('Submitting workout:', payload);
-
 		if (this.selectedWorkout) {
 			console.log(this.selectedWorkout._id);
-			this.workoutService.updateWorkout(this.selectedWorkout._id, payload).subscribe(() => {
-				this.closeEditModeEvent.emit();
-			});
+			if (this.selectedWorkout && this.selectedWorkout._id) {
+				this.workoutService.updateWorkout(this.selectedWorkout._id, payload).subscribe(() => {
+					this.closeEditModeEvent.emit();
+				});
+			}
 		} else {
 			this.workoutService.createWorkout(payload).subscribe(() => {
 				this.closeEditModeEvent.emit();
