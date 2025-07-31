@@ -12,7 +12,9 @@
 	</div>
 	}
 </div>
-} @if(workoutRecordForm) {
+} @else { @if (workoutsLoading) {
+<app-loading-indicator [loading]="workoutsLoading"></app-loading-indicator>
+} @else { @if (workoutRecordForm) {
 <!-- Workout Form -->
 <form [formGroup]="workoutRecordForm" (ngSubmit)="saveRecord()" class="space-y-6">
 	@if (selectedWorkout || selectedWorkoutRecord) {
@@ -27,7 +29,14 @@
 			id="date"
 			type="date"
 			formControlName="date"
+			[ngClass]="{
+				'border-red-600': isInvalid('date'),
+				'border-gray-300': !isInvalid('date')
+			}"
 			class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700" />
+		@if (isInvalid('date')) {
+		<p class="text-sm text-red-600">Please enter a date</p>
+		}
 	</div>
 
 	<!-- Duration -->
@@ -37,7 +46,14 @@
 			id="duration"
 			type="number"
 			formControlName="duration"
+			[ngClass]="{
+				'border-red-600': isInvalid('duration'),
+				'border-gray-300': !isInvalid('duration')
+			}"
 			class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700" />
+		@if (isInvalid('duration')) {
+		<p class="text-sm text-red-600">Please enter a duration</p>
+		}
 	</div>
 
 	<!-- Notes -->
@@ -46,15 +62,21 @@
 		<textarea
 			id="notes"
 			formControlName="notes"
+			[ngClass]="{
+				'border-red-600': isInvalid('notes'),
+				'border-gray-300': !isInvalid('notes')
+			}"
 			class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700"></textarea>
+		@if (isInvalid('notes')) {
+		<p class="text-sm text-red-600">Please enter some brief notes</p>
+		}
 	</div>
 
 	<!-- Exercises -->
 	<div formArrayName="exercises">
 		@for (ex of exercisesArray.controls; track $index; let i = $index) {
 		<div [formGroupName]="i" class="p-4 border border-gray-200 rounded-lg bg-gray-50 mb-4">
-			<h3 class="text-lg font-medium mb-4">{{ ex.get('name')?.value }}</h3>
-
+			<h3 class="text-lg font-medium mb-2">{{ ex.get('name')?.value }}</h3>
 			<div formArrayName="sets">
 				@for (set of getSets(i).controls; track $index; let j = $index) {
 				<div [formGroupName]="j" class="flex items-center gap-3 mb-2">
@@ -82,22 +104,28 @@
 			</button>
 		</div>
 		}
-		<!-- Buttons -->
-		<div class="flex gap-3">
-			<button
-				type="submit"
-				class="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition cursor-pointer">
-				Save Exercise
-			</button>
+	</div>
 
-			<button
-				(click)="closeEditMode()"
-				type="button"
-				class="bg-purple-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-purple-700 transition cursor-pointer">
-				Close
-			</button>
-		</div>
+	<!-- Buttons -->
+	<div class="flex gap-3">
+		<button
+			type="submit"
+            [disabled]=""
+            [ngClass]="{ 'opacity-50': workoutRecordForm.invalid }"
+			[disabled]="workoutRecordForm.invalid"
+			class="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition cursor-pointer">
+			@if (formLoading) {
+			<app-loading-indicator [spinner]="true" [loading]="formLoading"></app-loading-indicator>
+			} @else { Save Workout Record }
+		</button>
+
+		<button
+			(click)="closeEditMode()"
+			type="button"
+			class="bg-purple-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-purple-700 transition cursor-pointer">
+			Close
+		</button>
 	</div>
 	}
 </form>
-}
+} } }

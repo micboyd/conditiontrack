@@ -36,27 +36,29 @@ export class WorkoutRecord {
 
 	static createSetFormGroup(fb: FormBuilder) {
 		return fb.group({
-			reps: ['', Validators.required],
-			weight: ['', Validators.required], // now required
+			reps: ['', [Validators.required]], // now required
+			weight: ['', [Validators.required]], // now required
 		});
 	}
 
 	static createExerciseFormGroup(exerciseName: string, fb: FormBuilder) {
 		return fb.group({
-			name: [exerciseName, Validators.required],
-			sets: fb.array([]),
+			name: [exerciseName, [Validators.required]], // exercise name required
+			sets: fb.array([]), // still empty until sets are added
 		});
 	}
 
 	static toFormGroup(record: WorkoutRecord, fb: FormBuilder): FormGroup {
 		return fb.group({
 			_id: [record._id],
-			notes: [record.notes],
-			duration: [record.duration, Validators.required],
-			userId: [record.userId, Validators.required],
-			workoutId: [record.workoutId, Validators.required],
-			date: [record.date, Validators.required],
-			exercises: fb.array(record.exercises.map(e => this.createExerciseFormGroup(e.name, fb))),
+			notes: [record.notes, [Validators.required]],
+			duration: [record.duration, [Validators.required]],
+			userId: [record.userId, [Validators.required]],
+			workoutId: [record.workoutId, [Validators.required]],
+			date: [record.date, [Validators.required]],
+			exercises: fb.array(
+				record.exercises.map(e => this.createExerciseFormGroup(e.name, fb))
+			),
 		});
 	}
 

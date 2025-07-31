@@ -2,6 +2,8 @@
 <app-edit-workout-record
 	[selectedWorkoutRecord]="selectedWorkoutRecord"
 	(closeEditModeEvent)="closeEditMode()"></app-edit-workout-record>
+} @else { @if(workoutRecordLibraryLoading) {
+<app-loading-indicator [loading]="workoutRecordLibraryLoading"></app-loading-indicator>
 } @else {
 <div class="mb-4">
 	<button
@@ -15,9 +17,9 @@
 	<div class="bg-white border border-gray-200 rounded-2xl p-4 flex flex-col justify-between h-full">
 		<div>
 			<div class="text-lg font-semibold text-gray-900 mb-1">{{ formatDate(workoutRecord.date) }}</div>
-            <div class="text-sm font-semibold text-gray-600 mb-1">{{ getWorkoutName(workoutRecord.workoutId) }}</div>
+			<div class="text-sm font-semibold text-gray-600 mb-1">{{ getWorkoutName(workoutRecord.workoutId) }}</div>
 			<div class="text-sm text-gray-700 mb-4">
-                <p>{{ workoutRecord.notes }}</p>
+				<p>{{ workoutRecord.notes }}</p>
 			</div>
 			<div class="flex items-center justify-between gap-2 mb-2">
 				<div class="text-sm text-gray-600">
@@ -32,10 +34,14 @@
 			</div>
 		</div>
 		<div class="mt-4 flex justify-end gap-3 text-gray-500">
-			<i (click)="openEditMode(workoutRecord)" class="fa-solid fa-pen-to-square cursor-pointer hover:text-gray-700"></i>
-			<i (click)="deleteWorkoutRecord(workoutRecord)" class="fa-solid fa-trash-can cursor-pointer hover:text-red-600"></i>
+			<i
+				(click)="openEditMode(workoutRecord)"
+				class="fa-solid fa-pen-to-square cursor-pointer hover:text-gray-700"></i>
+			<i
+				(click)="deleteWorkoutRecord(workoutRecord)"
+				class="fa-solid fa-trash-can cursor-pointer hover:text-red-600"></i>
 		</div>
 	</div>
 	}
 </div>
-}
+} }

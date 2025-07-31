@@ -12,6 +12,10 @@ import { format } from 'date-fns';
 	standalone: false,
 })
 export class WorkoutRecordsComponent implements OnInit {
+
+    workoutsLoading: boolean = false;
+    workoutRecordsLoading: boolean = false;
+
 	private _allWorkoutRecords: WorkoutRecord[] = [];
 	private _allWorkouts: Workout[] = [];
 
@@ -32,6 +36,10 @@ export class WorkoutRecordsComponent implements OnInit {
 	get allWorkoutRecords(): Array<WorkoutRecord> {
 		return this._allWorkoutRecords;
 	}
+
+    get workoutRecordLibraryLoading(): boolean {
+        return this.workoutRecordsLoading || this.workoutsLoading;
+    }
 
     formatDate(dateInput: string): string {
 	    return format(dateInput, "dd/MM/yyyy");
@@ -54,20 +62,26 @@ export class WorkoutRecordsComponent implements OnInit {
 	}
 
 	getAllWorkouts() {
+        this.workoutsLoading = true;
 		this.workoutService.getAllWorkouts().subscribe(allWorkouts => {
 			this._allWorkouts = allWorkouts;
+            this.workoutsLoading = false;
+		});
+	}
+
+    getAllWorkoutRecords(): void {
+        this.workoutRecordsLoading = true;
+		this.workoutRecordService.getAllWorkoutRecords().subscribe(allWorkoutRecords => {
+			this._allWorkoutRecords = allWorkoutRecords;
+            this.workoutRecordsLoading = false;
 		});
 	}
 
     deleteWorkoutRecord(workoutRecord: WorkoutRecord): void {
+        this.workoutRecordsLoading = true;
         this.workoutRecordService.deleteWorkoutRecord(workoutRecord._id).subscribe(() => {
             this.getAllWorkoutRecords();
+            this.workoutRecordsLoading = false;
         })
     }
-
-	getAllWorkoutRecords(): void {
-		this.workoutRecordService.getAllWorkoutRecords().subscribe(allWorkoutRecords => {
-			this._allWorkoutRecords = allWorkoutRecords;
-		});
-	}
 }
