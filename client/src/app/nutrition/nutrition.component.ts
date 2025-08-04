@@ -7,9 +7,8 @@ import { MenuItem } from '../shared/models/MenuItem';
 	standalone: false,
 })
 export class NutritionComponent {
-    meunItems: MenuItem[] = [
-        { route: '/nutrition/stuff', label: 'Meal Library' }
-    ]
+	menuItems: MenuItem[] = [{ route: '/nutrition/meal-library', label: 'Meal Library' }];
 
 	constructor() {}
 }
+

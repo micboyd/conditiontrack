@@ -17,6 +17,7 @@ import { StrengthComponent } from './strength/strength.component';
 import { StyleguideComponent } from './styleguide/styleguide.component';
 import { WorkoutLibraryComponent } from './strength/workout-library/workout-library.component';
 import { WorkoutRecordsComponent } from './strength/workout-records/workout-records.component';
+import { MealLibraryComponent } from './nutrition/meal-library/meal-library.component';
 
 const routes: Routes = [
 	// Login remains at top level
@@ -67,6 +68,13 @@ const routes: Routes = [
 				path: 'nutrition',
 				component: NutritionComponent,
 				canActivate: [AuthGuard],
+				children: [
+					{
+						path: 'meal-library',
+						component: MealLibraryComponent,
+						canActivate: [AuthGuard],
+					},
+				],
 			},
 			{
 				path: 'global-settings',
