@@ -4,11 +4,14 @@ import { AuthGuard } from './shared/guards/authentication.guard';
 import { AuthenticationComponent } from './authentication/authentication.component';
 import { BodyCompositionComponent } from './body-composition/body-composition.component';
 import { ConditioningComponent } from './conditioning/conditioning.component';
+import { ConditioningLibraryComponent } from './conditioning/conditioning-library/conditioning-library.component';
+import { ConditioningRecordsComponent } from './conditioning/conditioning-records/conditioning-records.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ExerciseLibraryComponent } from './strength/exercise-library/exercise-library.component';
 import { GlobalSettingsComponent } from './global-settings/global-settings.component';
 import { GoalsComponent } from './goals/goals.component';
 import { MainLayoutComponent } from './shared/components/main-layout/main-layout.component';
+import { MealLibraryComponent } from './nutrition/meal-library/meal-library.component';
 import { NgModule } from '@angular/core';
 import { NotesComponent } from './notes/notes.component';
 import { NutritionComponent } from './nutrition/nutrition.component';
@@ -17,7 +20,6 @@ import { StrengthComponent } from './strength/strength.component';
 import { StyleguideComponent } from './styleguide/styleguide.component';
 import { WorkoutLibraryComponent } from './strength/workout-library/workout-library.component';
 import { WorkoutRecordsComponent } from './strength/workout-records/workout-records.component';
-import { MealLibraryComponent } from './nutrition/meal-library/meal-library.component';
 
 const routes: Routes = [
 	// Login remains at top level
@@ -63,6 +65,18 @@ const routes: Routes = [
 				path: 'conditioning',
 				component: ConditioningComponent,
 				canActivate: [AuthGuard],
+                				children: [
+					{
+						path: 'conditioning-records',
+						component: ConditioningRecordsComponent,
+						canActivate: [AuthGuard],
+					},
+					{
+						path: 'conditioning-library',
+						component: ConditioningLibraryComponent,
+						canActivate: [AuthGuard],
+					},
+				],
 			},
 			{
 				path: 'nutrition',

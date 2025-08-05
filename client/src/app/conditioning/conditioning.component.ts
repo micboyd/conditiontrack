@@ -9,8 +9,8 @@ import { MenuItem } from '../shared/models/MenuItem';
 export class ConditioningComponent {
 
     meunItems: MenuItem[] = [
-        { route: '/conditioning/conditioning-sessions', label: 'Record a Session' },
-        { route: '/strength/workout-library', label: 'Sessions' }
+        { route: '/conditioning/conditioning-records', label: 'Record a Session' },
+        { route: '/conditioning/conditioning-library', label: 'Conditioning Library' }
     ]
 
 	constructor() {}
