@@ -1,20 +1,24 @@
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 export class Meal {
+    _id: string;
 	name: string;
 	calories: number;
 	fat: number;
 	protein: number;
 	carbs: number;
 	description: string;
+    category: string;
 
-	constructor(meal?: Partial<Meal>) {
+	constructor(meal?: Partial<Meal> | null) {
+        this._id = meal?._id || '';
 		this.name = meal?.name || '';
 		this.calories = meal?.calories ?? 0;
 		this.fat = meal?.fat ?? 0;
 		this.protein = meal?.protein ?? 0;
 		this.carbs = meal?.carbs ?? 0;
 		this.description = meal?.description || '';
+        this.category = meal?.category || '';
 	}
 
 	static createFormGroup(fb: FormBuilder, meal?: Meal): FormGroup {
@@ -24,6 +28,7 @@ export class Meal {
 			fat: [meal?.fat ?? 0, [Validators.required, Validators.min(0)]],
 			protein: [meal?.protein ?? 0, [Validators.required, Validators.min(0)]],
 			carbs: [meal?.carbs ?? 0, [Validators.required, Validators.min(0)]],
+            category: [meal?.category ?? 0, [Validators.required, Validators.min(0)]],
 			description: [meal?.description || ''],
 		});
 	}

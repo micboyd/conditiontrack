@@ -91,6 +91,17 @@
 		}
 	</div>
 
+    	<!-- Multi-select example -->
+     <div>
+        <app-button-toggle
+            label="Category"
+            [options]="['Breakfast', 'Lunch', 'Dinner', 'Snack']"
+            [singleSelect]="true"
+            [selected]="selectedMealTypes"
+            (selectionChange)="updateCategory($event)"
+            colorClass="blue"></app-button-toggle>
+     </div>
+
 	<!-- Description -->
 	<div>
 		<label for="description" class="block text-sm mb-1">Description</label>
@@ -116,7 +127,9 @@
 			class="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition cursor-pointer"
 			[ngClass]="{ 'opacity-50': mealForm.invalid }"
 			[disabled]="mealForm.invalid">
-			Save Meal
+			@if(formLoading) {
+			<app-loading-indicator [spinner]="true" [loading]="formLoading"></app-loading-indicator>
+			} @else { Save Meal }
 		</button>
 
 		<button

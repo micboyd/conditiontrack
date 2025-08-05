@@ -1,29 +1,40 @@
-import { Component } from '@angular/core';
-import { Meal } from '../../models/Meal';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+
+import { Meal } from '../../models/Meal';
+import { MealLibraryService } from '../meal-library.service';
 
 @Component({
 	selector: 'app-edit-meal',
 	templateUrl: './edit-meal.component.html',
 	standalone: false,
 })
-export class EditMealComponent {
-	mealForm: FormGroup;
+export class EditMealComponent implements OnInit {
+	mealForm!: FormGroup;
+    formLoading: boolean = false;
 
+    @Input() selectedMeal: Meal | null = null;
+
+	selectedMealTypes: string[] = [];
+	selectedDietType: string[] = [];
 	@Output() closeEditModeEvent = new EventEmitter<void>();
 
-	constructor(private fb: FormBuilder) {
-		const meal = new Meal({
-			name: 'Grilled Chicken Salad',
-			calories: 350,
-			fat: 10,
-			protein: 30,
-			carbs: 20,
-			description: 'A healthy grilled chicken salad with greens and vinaigrette.',
-		});
+	constructor(private fb: FormBuilder, public mealService: MealLibraryService) {}
 
-		this.mealForm = Meal.createFormGroup(this.fb, meal);
-	}
+    ngOnInit(): void {
+		this.mealForm = Meal.createFormGroup(this.fb, this.selectedMeal?? new Meal(null));
+        this.setSelectedMealType();
+    }
+
+    setSelectedMealType() {
+        this.selectedMealTypes = this.mealForm.get('category')?.value;
+    }
+
+    updateCategory(event: string[]) {
+        this.selectedMealTypes = event;
+        this.mealForm.get('category')?.setValue(event[0]);
+        console.log(this.mealForm.value);
+    }
 
 	closeEditMode(): void {
 		this.closeEditModeEvent.emit();
@@ -34,10 +45,30 @@ export class EditMealComponent {
 		return !!(control && control.invalid && control.touched);
 	}
 
-	onSubmit() {
-		if (this.mealForm.valid) {
-			const submittedMeal = new Meal(this.mealForm.value);
-			console.log('Submitted:', submittedMeal);
+	toggleSelection(type: string) {
+		if (this.selectedMealTypes.includes(type)) {
+			this.selectedMealTypes = this.selectedMealTypes.filter(t => t !== type);
+		} else {
+			this.selectedMealTypes.push(type);
+		}
+	}
+
+	isSelected(type: string): boolean {
+		return this.selectedMealTypes.includes(type);
+	}
+
+	onSubmit(): void {
+        this.formLoading = true;
+		if (this.selectedMeal) {
+			this.mealService.updateMeal(this.selectedMeal._id, this.mealForm.value).subscribe(() => {
+				this.closeEditModeEvent.emit();
+                this.formLoading = false;
+			});
+		} else {
+			this.mealService.createMeal(this.mealForm.value).subscribe(() => {
+				this.closeEditModeEvent.emit();
+                this.formLoading = false;
+			});
 		}
 	}
 }

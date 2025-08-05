@@ -1,0 +1,17 @@
+@if (label) {
+<label class="block text-sm mb-1">{{ label }}</label>
+}
+<div class="flex flex-wrap gap-2">
+	@for (option of options; track option) {
+	<button
+		type="button"
+		(click)="toggle(option)"
+		class="px-4 py-1.5 rounded-full border text-sm font-medium transition focus:outline-none cursor-pointer"
+		[class]="'px-4 py-1.5 rounded-full border text-sm font-medium transition focus:outline-none cursor-pointer ' +
+        (isSelected(option)
+          ? `bg-${colorClass}-600 text-white border-${colorClass}-600`
+          : 'border-gray-300 text-gray-700 hover:border-gray-400')">
+		{{ option }}
+	</button>
+	}
+</div>
