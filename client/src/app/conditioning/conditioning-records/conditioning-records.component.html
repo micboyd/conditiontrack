@@ -1,5 +1,9 @@
-<div class="mb-4">
+@if(editModeEnabled) {
+    <app-edit-record></app-edit-record>
+} @else {
+    <div class="mb-4">
 	<button
+        (click)="openEditMode(null)"
 		class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-md text-sm font-medium cursor-pointer">
 		Record a Session
 	</button>
@@ -29,3 +33,5 @@
 		</div>
 	</div>
 </div>
+
+}
