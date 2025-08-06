@@ -33,7 +33,6 @@ export class EditMealComponent implements OnInit {
     updateCategory(event: string[]) {
         this.selectedMealTypes = event;
         this.mealForm.get('category')?.setValue(event[0]);
-        console.log(this.mealForm.value);
     }
 
 	closeEditMode(): void {
@@ -43,14 +42,6 @@ export class EditMealComponent implements OnInit {
 	isInvalid(controlName: string): boolean {
 		const control = this.mealForm.get(controlName);
 		return !!(control && control.invalid && control.touched);
-	}
-
-	toggleSelection(type: string) {
-		if (this.selectedMealTypes.includes(type)) {
-			this.selectedMealTypes = this.selectedMealTypes.filter(t => t !== type);
-		} else {
-			this.selectedMealTypes.push(type);
-		}
 	}
 
 	isSelected(type: string): boolean {

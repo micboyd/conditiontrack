@@ -1,1 +1,88 @@
-<p>edit-session works!</p>
+<h2 class="text-xl font-semibold text-gray-900 tracking-tight mb-6">Edit Conditioning Session</h2>
+
+<form [formGroup]="sessionForm" (ngSubmit)="onSubmit()" class="space-y-6">
+	<!-- Session Name -->
+	<div>
+		<label for="name" class="block text-sm mb-1">Session Name</label>
+		<input
+			id="name"
+			type="text"
+			formControlName="name"
+			placeholder="e.g. Full Body HIIT"
+			[ngClass]="{
+				'border-red-600': isInvalid('name'),
+				'border-gray-300': !isInvalid('name')
+			}"
+			class="w-full px-4 py-2 border rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 mb-2" />
+		@if (isInvalid('name')) {
+		<p class="text-sm text-red-600">Please enter a session name</p>
+		}
+	</div>
+
+	<!-- Duration -->
+	<div>
+		<label for="duration" class="block text-sm mb-1">Duration (minutes)</label>
+		<input
+			id="duration"
+			type="number"
+			formControlName="duration"
+			placeholder="e.g. 45"
+			[ngClass]="{
+				'border-red-600': isInvalid('duration'),
+				'border-gray-300': !isInvalid('duration')
+			}"
+			class="w-full px-4 py-2 border rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 mb-2" />
+		@if (isInvalid('duration')) {
+		<p class="text-sm text-red-600">Please enter a valid duration</p>
+		}
+	</div>
+
+	<!-- Category -->
+	<div>
+		<app-button-toggle
+			label="Category"
+			[options]="['HIIT', 'Cardio', 'Endurance', 'Mobility']"
+			[singleSelect]="true"
+			[selected]="selectedCategories"
+			(selectionChange)="updateCategory($event)"
+			colorClass="blue"></app-button-toggle>
+	</div>
+
+	<!-- Description -->
+	<div>
+		<label for="description" class="block text-sm mb-1">Description</label>
+		<textarea
+			id="description"
+			formControlName="description"
+			placeholder="e.g. A quick full-body workout with high-intensity intervals"
+			rows="4"
+			[ngClass]="{
+				'border-red-600': isInvalid('description'),
+				'border-gray-300': !isInvalid('description')
+			}"
+			class="w-full px-4 py-2 border rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 mb-1"></textarea>
+		@if (isInvalid('description')) {
+		<p class="text-sm text-red-600">Please enter a description</p>
+		}
+	</div>
+
+	<!-- Buttons -->
+	<div class="flex gap-3">
+		<button
+			type="submit"
+			class="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition cursor-pointer"
+			[ngClass]="{ 'opacity-50': sessionForm.invalid }"
+			[disabled]="sessionForm.invalid">
+			@if(formLoading) {
+			<app-loading-indicator [spinner]="true" [loading]="formLoading"></app-loading-indicator>
+			} @else { Save Session }
+		</button>
+
+		<button
+			type="button"
+			(click)="closeEditMode()"
+			class="bg-purple-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-purple-700 transition cursor-pointer">
+			Close
+		</button>
+	</div>
+</form>
