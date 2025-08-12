@@ -6,7 +6,7 @@ export class ConditioningRecord {
 	_id: string; // record ID
 	userId: string;
 	sessionId: string; // reference to ConditioningSession _id
-	date: Date; // when the session took place
+	date: string; // when the session took place
 	duration: number; // actual time spent (could differ from planned duration)
 	notes: string; // user’s personal notes or feedback
 	completed: boolean; // whether the session was finished
@@ -16,7 +16,7 @@ export class ConditioningRecord {
 		this._id = record?._id || '';
 		this.userId = record?.userId || '';
 		this.sessionId = record?.sessionId || '';
-		this.date = record?.date ? new Date(record.date) : new Date();
+		this.date = record?.date || '';
 		this.duration = record?.duration ?? 0;
 		this.notes = record?.notes || '';
 		this.completed = record?.completed ?? false;

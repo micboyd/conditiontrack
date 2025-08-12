@@ -1,16 +1,15 @@
-<h2 class="text-xl font-semibold text-gray-900 tracking-tight mb-6">Edit Conditioning Record</h2>
+<h2 class="text-xl font-semibold text-gray-900 tracking-tight mb-6">{{ selectedSessionTemplate?.name }}</h2>
 
-@if (!selectedSessionTemplate) {
+@if (!selectedSessionTemplate && !selectedRecord) {
 <div class="grid grid-cols-2 gap-4">
 	@for (session of allConditioningSessions; track session._id) {
 	<div
-        (click)="selectSession(session)"
+		(click)="selectSession(session)"
 		class="group relative bg-white border border-gray-200 rounded-2xl p-4 h-32 flex items-center justify-center cursor-pointer hover:border-gray-400">
 		<span class="font-medium text-lg text-gray-900 text-center">{{ session.name }}</span>
 	</div>
 	}
 </div>
-
 } @else {
 <form [formGroup]="recordForm" (ngSubmit)="onSubmit()" class="space-y-6">
 	<!-- Date -->

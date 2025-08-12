@@ -12,6 +12,7 @@ const workoutRecordRoutes = require('./routes/strength/workoutRecord');
 const mealRoutes = require('./routes/nutrition/meal');
 
 const conditionSessionRoutes = require('./routes/conditioning/conditioningSession');
+const conditionRecordRoutes = require('./routes/conditioning/conditioningRecord');
 
 const cors = require('cors');
 
@@ -31,6 +32,7 @@ app.use('/api/strength/workout', workoutRoutes);
 app.use('/api/strength/workout-record', workoutRecordRoutes);
 app.use('/api/nutrition/meal', mealRoutes);
 app.use('/api/conditioning/conditioning-session', conditionSessionRoutes);
+app.use('/api/conditioning/conditioning-record', conditionRecordRoutes);
 
 mongoose
 	.connect(process.env.MONGO_URI, {
