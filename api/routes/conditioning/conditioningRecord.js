@@ -8,7 +8,6 @@ const router = express.Router();
 router.post('/', async (req, res) => {
 	try {
 		const newRecord = new ConditioningRecord(req.body);
-		console.log(newRecord);
 		const savedRecord = await newRecord.save();
 		res.status(201).json(savedRecord);
 	} catch (err) {

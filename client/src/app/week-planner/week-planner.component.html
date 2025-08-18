@@ -1,0 +1,30 @@
+<h1 class="text-4xl font-semibold text-gray-900 tracking-tight mb-4">Week Planner</h1>
+<!-- Full-screen Weekly Workout Planner (Read-only) -->
+<div class="flex flex-col">
+	<!-- Content -->
+	<main class="flex-1">
+
+		<section aria-label="Week schedule" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+            @for(day in seededWeek.days; trackBy: day.id) {}
+
+			<article class="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between h-full">
+				<div>
+					<div class="flex items-center justify-between mb-4">
+						<h2 class="text-lg font-semibold text-gray-900">Monday</h2>
+					</div>
+					<div class="space-y-4 text-sm text-gray-700">
+						<div class="bg-gray-50 rounded-xl p-3">
+							<div class="text-md font-semibold text-gray-900">Strength</div>
+							<div>Strength Name</div>
+						</div>
+						<div class="bg-gray-50 rounded-xl p-3">
+							<div class="text-md font-semibold text-gray-900">Conditioning</div>
+							<div>Conditioning Name</div>
+						</div>
+					</div>
+				</div>
+			</article>
+		</section>
+	</main>
+</div>

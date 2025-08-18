@@ -18,6 +18,7 @@ import { NutritionComponent } from './nutrition/nutrition.component';
 import { ProfileComponent } from './profile/profile.component';
 import { StrengthComponent } from './strength/strength.component';
 import { StyleguideComponent } from './styleguide/styleguide.component';
+import { WeekPlannerComponent } from './week-planner/week-planner.component';
 import { WorkoutLibraryComponent } from './strength/workout-library/workout-library.component';
 import { WorkoutRecordsComponent } from './strength/workout-records/workout-records.component';
 
@@ -113,6 +114,11 @@ const routes: Routes = [
 			{
 				path: 'profile',
 				component: ProfileComponent,
+				canActivate: [AuthGuard],
+			},
+            			{
+				path: 'week-planner',
+				component: WeekPlannerComponent,
 				canActivate: [AuthGuard],
 			},
 		],

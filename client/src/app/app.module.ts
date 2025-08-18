@@ -16,6 +16,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from './shared/shared.module';
 import { StrengthModule } from './strength/strength.module';
 import { StyleguideComponent } from './styleguide/styleguide.component';
+import { WeekPlannerModule } from './week-planner/week-planner.module';
 import { WorkoutService } from './strength/workout-library/workout.service';
 import { provideHttpClient } from '@angular/common/http';
 
@@ -40,6 +41,7 @@ import { provideHttpClient } from '@angular/common/http';
 		ConditioningModule,
 		NutritionModule,
 		GlobalSettingsModule,
+        WeekPlannerModule
 	],
 	providers: [provideHttpClient(), WorkoutService],
 	bootstrap: [AppComponent],

@@ -13,8 +13,7 @@ import { format } from 'date-fns';
 })
 export class ConditioningRecordsComponent implements OnInit {
 	editModeEnabled: boolean = false;
-	mealsLoading: boolean = false;
-	selectedConditioningRecord: ConditioningRecord | null = null;
+	selectedConditioningRecord: ConditioningRecord = null;
 
 	private _allRecords: Array<ConditioningRecord> = [];
     private _allSessions: Array<ConditioningSession> = [];
@@ -51,7 +50,6 @@ export class ConditioningRecordsComponent implements OnInit {
 	}
 
     getSessionNameById(sessionId: string): string {
-        console.log(this.allConditioningSessions);
         const session = this.allConditioningSessions.find((session) => session._id === sessionId);
         return session ? session.name : '';
     }
@@ -59,7 +57,6 @@ export class ConditioningRecordsComponent implements OnInit {
     getAllSessions() {
         this.conditioningLibraryService.getAllConditioningSessions().subscribe(allSessions => {
             this._allSessions = allSessions;
-            console.log(allSessions);
         })
     }
 

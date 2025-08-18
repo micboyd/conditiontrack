@@ -3,13 +3,13 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ConditioningSession } from './ConditioningSession';
 
 export class ConditioningRecord {
-	_id: string; // record ID
+	_id: string;
 	userId: string;
-	sessionId: string; // reference to ConditioningSession _id
-	date: string; // when the session took place
-	duration: number; // actual time spent (could differ from planned duration)
-	notes: string; // user’s personal notes or feedback
-	completed: boolean; // whether the session was finished
+	sessionId: string;
+	date: string;
+	duration: number;
+	notes: string;
+	completed: boolean;
     caloriesBurned: number;
 
 	constructor(record?: Partial<ConditioningRecord> | null) {

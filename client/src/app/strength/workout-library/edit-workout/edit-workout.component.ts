@@ -91,7 +91,6 @@ export class EditWorkoutComponent implements OnInit {
 		};
 
 		if (this.selectedWorkout) {
-			console.log(this.selectedWorkout._id);
 			if (this.selectedWorkout && this.selectedWorkout._id) {
 				this.workoutService.updateWorkout(this.selectedWorkout._id, payload).subscribe(() => {
 					this.formLoading = false;

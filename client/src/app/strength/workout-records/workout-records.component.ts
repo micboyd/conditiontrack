@@ -56,7 +56,6 @@ export class WorkoutRecordsComponent implements OnInit {
 	}
 
 	getWorkoutName(workoutId: string): string {
-        console.log(workoutId)
 		const workout = this.allWorkouts.find(w => w._id === workoutId);
 		return workout?.name ?? '';
 	}

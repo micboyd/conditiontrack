@@ -17,8 +17,8 @@
 					placeholder="you@example.com"
 					formControlName="username"
 					[ngClass]="{
-						'border-red-600': isInvalid('email'),
-						'border-gray-300': !isInvalid('email')
+						'border-red-600': isInvalid('username'),
+						'border-gray-300': !isInvalid('username')
 					}"
 					class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300" />
 				@if (isInvalid('username')) {

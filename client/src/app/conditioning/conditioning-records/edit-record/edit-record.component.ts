@@ -13,7 +13,7 @@ import { format } from 'date-fns';
 	templateUrl: './edit-record.component.html',
 })
 export class EditRecordComponent {
-	@Input() selectedRecord?: ConditioningRecord | null = null;
+	@Input() selectedRecord?: ConditioningRecord = null;
 
 	formLoading = false;
 	sessionsLoading = false;
@@ -42,6 +42,7 @@ export class EditRecordComponent {
 	/** Build the form once we know the session */
 	private buildForm(session: ConditioningSession) {
 		const recordToEdit = this.selectedRecord ?? new ConditioningRecord(null);
+        this.selectedSessionTemplate = session;
 		this.recordForm = ConditioningRecord.createFormGroup(this.fb, recordToEdit, session);
 	}
 
@@ -73,7 +74,6 @@ export class EditRecordComponent {
 		return session || null;
 	}
 
-	/** When creating a new record, selecting a session should build the form */
 	selectSession(conditioningSession: ConditioningSession) {
 		this.selectedSessionTemplate = conditioningSession;
 		this.buildForm(conditioningSession);

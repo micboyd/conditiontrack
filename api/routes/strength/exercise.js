@@ -7,9 +7,6 @@ const router = express.Router();
 router.post('/', async (req, res) => {
     try {
         const newExercise = new Exercise(req.body);
-
-        console.log(newExercise);
-
         const savedExercise = await newExercise.save();
         res.status(201).json(savedExercise);
     } catch (err) {
