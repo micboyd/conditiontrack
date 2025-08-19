@@ -1,43 +1,82 @@
-// week-planner.component.ts
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { DayPlan, WeekPlan } from './models/WeekPlan';
 
-import { Component } from '@angular/core';
+import { ConditioningLibraryService } from '../conditioning/conditioning-library/conditioning-library.service';
 import { ConditioningSession } from '../conditioning/models/ConditioningSession';
-import { Week, Day } from './models/WeekPlan';
+import { SideDrawerComponent } from '../shared/components/side-drawer/side-drawer.component';
 import { Workout } from '../strength/models/Workout';
+import { WorkoutService } from '../strength/workout-library/workout.service';
+import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 
 @Component({
 	selector: 'app-week-planner',
 	templateUrl: './week-planner.component.html',
 	standalone: false,
 })
-export class WeekPlannerComponent {
-	seededWeek: Week = [
+export class WeekPlannerComponent implements OnInit {
+	@ViewChild(SideDrawerComponent) drawer: SideDrawerComponent;
 
-        new Day()
+	resourcesLoading: boolean = false;
 
-		{
-			day: {
-				name: 'Monday',
-				conditioning: [
-					new ConditioningSession({
-						_id: 'c1',
-						userId: 'u1',
-						name: 'HIIT Intervals',
-						description: '10 rounds of 1 min sprint / 1 min walk',
-						duration: 20,
-						category: 'Cardio',
-					}),
-				],
-				strength: [
-					new Workout({
-						_id: 'w1',
-						userId: 'u1',
-						name: 'Push Day',
-						description: 'Chest, shoulders, triceps',
-						exercises: [],
-					}),
-				],
+	private _selectedDay: DayPlan | null = null;
+
+	private _weekPlan: WeekPlan = new WeekPlan();
+	private _allWorkouts: Workout[] = [];
+	private _allConditioningSessions: ConditioningSession[] = [];
+
+	constructor(
+		private workoutService: WorkoutService,
+		private conditioningLibraryService: ConditioningLibraryService,
+	) {}
+
+	get weekPlan(): WeekPlan {
+		return this._weekPlan;
+	}
+
+	get selectedDay(): DayPlan | null {
+		return this._selectedDay;
+	}
+
+	get allWorkouts(): Workout[] {
+		return this._allWorkouts;
+	}
+
+	get allConditioningSessions(): ConditioningSession[] {
+		return this._allConditioningSessions;
+	}
+
+	ngOnInit() {
+		const conditioning$ = this.conditioningLibraryService.getAllConditioningSessions();
+		const workouts$ = this.workoutService.getAllWorkouts();
+
+		this.resourcesLoading = true;
+
+		forkJoin({
+			conditioningSessions: conditioning$,
+			workouts: workouts$,
+		}).subscribe({
+			next: ({ conditioningSessions, workouts }) => {
+				this._allConditioningSessions = conditioningSessions;
+				this._allWorkouts = workouts;
+				this.resourcesLoading = false;
 			},
-		},
-	];
+		});
+	}
+
+	getWeekPlan() {}
+
+	editDay(day: DayPlan) {
+		this._selectedDay = day;
+		this.drawer.open();
+	}
+
+	addWorkoutToDay(day: string, workout: Workout) {
+		this._weekPlan.addWorkout(day, workout);
+		this.drawer.close();
+	}
+
+	addConditioningToDay(day: string, session: ConditioningSession) {
+		this._weekPlan.addConditioning(day, session);
+		this.drawer.close();
+	}
 }
