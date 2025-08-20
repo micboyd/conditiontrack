@@ -1,9 +1,14 @@
 @if (resourcesLoading) {
-<div class="flex items-center justify-center h-full">
-	<p class="text-gray-500">Loading resources...</p>
-</div>
+<app-loading-indicator [loading]="resourcesLoading"></app-loading-indicator>
 } @else {
 <h1 class="text-4xl font-semibold text-gray-900 tracking-tight mb-4">Week Planner</h1>
+<button
+	type="submit"
+	class="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition cursor-pointer mb-4"
+	(click)="updateWeekPlan()">
+	Save
+</button>
+
 <div class="flex flex-col">
 	<main class="flex-1">
 		<section aria-label="Week schedule" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -15,16 +20,24 @@
 					</div>
 					<div class="space-y-4 text-sm text-gray-700">
 						@for (workout of day.workouts; track workout._id) {
-						<div class="bg-gray-50 rounded-xl p-3">
-							<div class="text-md font-semibold text-gray-900">{{ workout.name }}</div>
-							<div>Strength</div>
-                            <a (click)="removeWorkout(day.dayName, workout)">remove</a>
+						<div class="bg-gray-50 rounded-xl p-3 flex justify-between items-center">
+							<div>
+								<div class="text-md font-semibold text-gray-900">{{ workout.name }}</div>
+								<div>Strength</div>
+							</div>
+							<a (click)="removeWorkout(day.dayName, workout)" class="ml-2 cursor-pointer">
+								<i class="fa-solid fa-trash-can"></i>
+							</a>
 						</div>
 						} @for (session of day.conditioning; track session._id) {
-						<div class="bg-gray-50 rounded-xl p-3">
-							<div class="text-md font-semibold text-gray-900">{{ session.name }}</div>
-							<div>Conditioning</div>
-                            <a (click)="removeConditioning(day.dayName, session)">remove</a>
+						<div class="bg-gray-50 rounded-xl p-3 flex justify-between items-center">
+							<div>
+								<div class="text-md font-semibold text-gray-900">{{ session.name }}</div>
+								<div>Conditioning</div>
+							</div>
+							<a (click)="removeConditioning(day.dayName, session)" class="ml-2 cursor-pointer">
+								<i class="fa-solid fa-trash-can"></i>
+							</a>
 						</div>
 						}
 					</div>
@@ -37,19 +50,16 @@
 			}
 		</section>
 	</main>
-    <button (click)="updateWeekPlan()">Save Week</button>
 </div>
 
 <app-side-drawer side="left">
-		<!-- Page title (auto height) -->
-		<h2 class="text-lg font-semibold text-gray-900 p-4">
-			{{ selectedDay?.dayName }}
-		</h2>
+	<h1 class="text-4xl font-semibold text-gray-900 tracking-tight mb-4">{{ selectedDay?.dayName }}</h1>
 
+	<div class="overflow-y-auto">
 		<!-- Top half -->
-		<section class="min-h-0 grid grid-rows-[auto,1fr] overflow-hidden">
-			<h2 class="text-lg font-semibold text-gray-900 p-4">Strength Workouts</h2>
-			<div class="min-h-0 overflow-y-auto p-4">
+		<section class="overflow-y-auto mb-4">
+			<h2 class="text-lg font-semibold text-gray-900 pb-4">Strength Workouts</h2>
+			<div class="">
 				@for (workout of allWorkouts; track workout._id) {
 				<div class="space-y-4 text-sm text-gray-700 mb-2">
 					<div class="bg-gray-50 rounded-xl p-3">
@@ -58,6 +68,7 @@
 							(click)="addWorkoutToDay(selectedDay?.dayName, workout)"
 							class="mt-2 text-blue-600 hover:underline cursor-pointer">
 							Add to day
+							<i class="fa-solid fa-plus"></i>
 						</button>
 					</div>
 				</div>
@@ -66,9 +77,9 @@
 		</section>
 
 		<!-- Bottom half -->
-		<section class="min-h-0 grid grid-rows-[auto,1fr] overflow-hidden">
-			<h2 class="text-lg font-semibold text-gray-900 p-4">Conditioning Sessions</h2>
-			<div class="min-h-0 overflow-y-auto p-4">
+		<section>
+			<h2 class="text-lg font-semibold text-gray-900 pb-4">Conditioning Sessions</h2>
+			<div>
 				@for (conditioning of allConditioningSessions; track conditioning._id) {
 				<div class="space-y-4 text-sm text-gray-700 mb-2">
 					<div class="bg-gray-50 rounded-xl p-3">
@@ -77,11 +88,14 @@
 							(click)="addConditioningToDay(selectedDay?.dayName, conditioning)"
 							class="mt-2 text-blue-600 hover:underline cursor-pointer">
 							Add to Day
+							<i class="fa-solid fa-plus"></i>
 						</button>
 					</div>
 				</div>
 				}
 			</div>
 		</section>
+	</div>
 </app-side-drawer>
 }
+

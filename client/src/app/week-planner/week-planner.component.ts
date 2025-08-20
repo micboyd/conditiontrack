@@ -7,8 +7,7 @@ import { SideDrawerComponent } from '../shared/components/side-drawer/side-drawe
 import { WeekPlannerService } from './week-planner.service';
 import { Workout } from '../strength/models/Workout';
 import { WorkoutService } from '../strength/workout-library/workout.service';
-import { distinctUntilChanged } from 'rxjs';
-import { forkJoin } from 'rxjs/internal/observable/forkJoin';
+import { forkJoin } from 'rxjs';
 
 @Component({
 	selector: 'app-week-planner',
@@ -27,7 +26,7 @@ export class WeekPlannerComponent implements OnInit {
 	private _allConditioningSessions: ConditioningSession[] = [];
 
 	constructor(
-        private weekPlannerService: WeekPlannerService,
+		private weekPlannerService: WeekPlannerService,
 		private workoutService: WorkoutService,
 		private conditioningLibraryService: ConditioningLibraryService,
 	) {}
@@ -63,32 +62,38 @@ export class WeekPlannerComponent implements OnInit {
 				this._allWorkouts = workouts;
 				this.resourcesLoading = false;
 
-                this.getWeekPlan();
+				this.getWeekPlan();
 			},
 		});
 	}
 
 	getWeekPlan() {
-        this.weekPlannerService.getAllWeekPlans().subscribe((weekPlan) => {
-            if (weekPlan.length === 0) {
-                this.createWeekPlan();
-            } else {
-                this._weekPlan = new WeekPlan(weekPlan[0]);
-            }
-        })
-    }
+		this.weekPlannerService.getAllWeekPlans().subscribe(weekPlan => {
+			if (!weekPlan) {
+				this.createWeekPlan();
+			} else {
+				this._weekPlan = new WeekPlan(weekPlan);
+			}
+		});
+	}
 
-    createWeekPlan() {
-        this.weekPlannerService.createWeekPlan(this._weekPlan.payload()).subscribe((weekPlan) => {
-            this._weekPlan = weekPlan;
-        });
-    }
+	createWeekPlan() {
+		this.resourcesLoading = true;
 
-    updateWeekPlan() {
-        this.weekPlannerService.updateWeekPlan(this.weekPlan._id, this._weekPlan.payload()).subscribe(() => {
+		this._weekPlan = new WeekPlan();
 
-        });
-    }
+		this.weekPlannerService.createWeekPlan(this._weekPlan.payload()).subscribe(weekPlan => {
+			this._weekPlan = new WeekPlan(weekPlan);
+			this.resourcesLoading = false;
+		});
+	}
+
+	updateWeekPlan() {
+		this.resourcesLoading = true;
+		this.weekPlannerService.updateWeekPlan(this.weekPlan._id, this._weekPlan.payload()).subscribe(() => {
+			this.resourcesLoading = false;
+		});
+	}
 
 	editDay(day: DayPlan) {
 		this._selectedDay = day;
@@ -105,7 +110,6 @@ export class WeekPlannerComponent implements OnInit {
 		this.drawer.close();
 	}
 
-
 	removeWorkout(day: string, workout: Workout) {
 		this._weekPlan.removeWorkout(day, workout);
 	}
@@ -114,3 +118,4 @@ export class WeekPlannerComponent implements OnInit {
 		this._weekPlan.removeConditioning(day, session);
 	}
 }
+

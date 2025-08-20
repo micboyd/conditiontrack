@@ -35,7 +35,7 @@ router.put('/:id', async (req, res) => {
 router.get('/:userId', async (req, res) => {
 	try {
 		const plans = await WeekPlan.find({ userId: req.params.userId }).populate(POPULATE_PATHS);
-		res.json(plans);
+		res.json(plans[0]);
 	} catch (err) {
 		res.status(500).json({ error: err.message });
 	}
@@ -65,3 +65,4 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
+
