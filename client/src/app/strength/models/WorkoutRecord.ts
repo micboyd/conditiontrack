@@ -1,6 +1,7 @@
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { Workout } from './Workout';
+import { WorkoutSet } from './WorkoutSet';
 
 export class WorkoutRecord {
 	_id: string;
@@ -67,7 +68,7 @@ export class WorkoutRecord {
 		record.workoutId = workout._id;
 		record.exercises = workout.exercises.map(exName => ({
 			name: exName.name,
-			sets: [],
+			sets: [] as WorkoutSet[],
 		}));
 		return record;
 	}

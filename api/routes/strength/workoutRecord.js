@@ -26,7 +26,6 @@ router.post('/', async (req, res) => {
         res.status(201).json(savedWorkoutRecord);
         
     } catch (err) {
-        console.error(err);
         res.status(400).json({ error: err.message });
     }
 });

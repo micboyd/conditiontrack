@@ -7,7 +7,6 @@ const router = express.Router();
 router.post('/', async (req, res) => {
     try {
         const newSession = new ConditioningSession(req.body);
-        console.log(newSession);
         const savedSession = await newSession.save();
         res.status(201).json(savedSession);
     } catch (err) {

@@ -8,7 +8,10 @@
 	</div>
 	}
 </div>
-} @else { @if (recordForm) {
+} @else { @if (recordForm && selectedSessionTemplate) {
+
+<h1 class="text-lg font-semibold text-gray-900 mb-2">{{ this.selectedSessionTemplate.name }}</h1>
+
 <form [formGroup]="recordForm" (ngSubmit)="onSubmit()" class="space-y-6">
 	<div>
 		<label for="date" class="block text-sm mb-1">Date</label>

@@ -7,9 +7,6 @@ const router = express.Router();
 router.post('/', async (req, res) => {
     try {
         const newMeal = new Meal(req.body);
-
-        console.log(newMeal);
-
         const savedMeal = await newMeal.save();
         res.status(201).json(savedMeal);
     } catch (err) {
