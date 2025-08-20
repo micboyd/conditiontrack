@@ -14,6 +14,8 @@ const mealRoutes = require('./routes/nutrition/meal');
 const conditionSessionRoutes = require('./routes/conditioning/conditioningSession');
 const conditionRecordRoutes = require('./routes/conditioning/conditioningRecord');
 
+const weekPlannerRoutes = require('./routes/week-planner/week');
+
 const cors = require('cors');
 
 require('dotenv').config();
@@ -33,6 +35,7 @@ app.use('/api/strength/workout-record', workoutRecordRoutes);
 app.use('/api/nutrition/meal', mealRoutes);
 app.use('/api/conditioning/conditioning-session', conditionSessionRoutes);
 app.use('/api/conditioning/conditioning-record', conditionRecordRoutes);
+app.use('/api/week-planner/week', weekPlannerRoutes);
 
 mongoose
 	.connect(process.env.MONGO_URI, {

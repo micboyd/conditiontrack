@@ -7,7 +7,7 @@
 <div class="flex flex-col">
 	<main class="flex-1">
 		<section aria-label="Week schedule" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-			@for (day of weekPlan.days; track day) {
+			@for (day of weekPlan?.days; track day) {
 			<article class="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between h-full">
 				<div class="mb-4">
 					<div class="flex items-center justify-between mb-4">
@@ -18,11 +18,13 @@
 						<div class="bg-gray-50 rounded-xl p-3">
 							<div class="text-md font-semibold text-gray-900">{{ workout.name }}</div>
 							<div>Strength</div>
+                            <a (click)="removeWorkout(day.dayName, workout)">remove</a>
 						</div>
 						} @for (session of day.conditioning; track session._id) {
 						<div class="bg-gray-50 rounded-xl p-3">
 							<div class="text-md font-semibold text-gray-900">{{ session.name }}</div>
 							<div>Conditioning</div>
+                            <a (click)="removeConditioning(day.dayName, session)">remove</a>
 						</div>
 						}
 					</div>
@@ -35,6 +37,7 @@
 			}
 		</section>
 	</main>
+    <button (click)="updateWeekPlan()">Save Week</button>
 </div>
 
 <app-side-drawer side="left">
@@ -80,6 +83,5 @@
 				}
 			</div>
 		</section>
-
 </app-side-drawer>
 }
