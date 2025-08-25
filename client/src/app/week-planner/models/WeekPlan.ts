@@ -34,6 +34,7 @@ export class WeekPlan {
 			// Try to find an existing day in input, else init fresh
 			const existingDay = weekPlan?.days?.find(d => d.dayName === day);
 			return {
+                _id: existingDay?._id || '',
 				dayName: day,
 				workouts: existingDay?.workouts ?? [],
 				conditioning: existingDay?.conditioning ?? [],
@@ -77,6 +78,7 @@ export class WeekPlan {
 		return {
 			userId: this.userId,
 			days: this.days.map(d => ({
+                id: d._id,
 				dayName: d.dayName,
 				workouts: d.workouts.map(w => w._id),
 				conditioning: d.conditioning.map(c => c._id),

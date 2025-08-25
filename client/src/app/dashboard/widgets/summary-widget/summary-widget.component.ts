@@ -14,18 +14,22 @@ export class SummaryWidgetComponent implements OnInit {
 
     private _weekPlan: WeekPlan;
 
+    weekPlanLoading = false;
+
     get weekPlan(): WeekPlan {
         return this._weekPlan;
     }
 
     get nexThreeDays(): Array<DayPlan> {
+        console.log([this.getWorkoutsForDay(1), this.getWorkoutsForDay(2), this.getWorkoutsForDay(3)])
         return [this.getWorkoutsForDay(1), this.getWorkoutsForDay(2), this.getWorkoutsForDay(3)];
     }
 
     ngOnInit() {
+        this.weekPlanLoading = true;
         this.weekPlannerService.getAllWeekPlans().subscribe((data) => {
             this._weekPlan = new WeekPlan(data);
-            console.log(this.weekPlan)
+            this.weekPlanLoading = false;
         });
     }
 
