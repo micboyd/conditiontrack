@@ -4,51 +4,13 @@
 </div>
 
 <!-- Top Modules -->
-<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
 	<!-- Strength -->
-	<div class="bg-gray-900 text-white rounded-2xl shadow-md p-6 flex flex-col justify-between h-full">
-		<div>
-			<h2 class="text-xl font-semibold mb-4">Strength</h2>
-			<div class="text-sm opacity-70 mb-2">Todays workout</div>
-			<div class="text-2xl font-bold mb-4">Upper Body</div>
-			<div class="flex justify-between text-sm opacity-80">
-				<div>
-					<div class="text-lg font-semibold">Duration</div>
-					45 Minutes
-				</div>
-			</div>
-		</div>
-		<div class="mt-6">
-			<a routerLink="/strength/workout-records" class="text-sm text-blue-400 hover:underline">
-				Strength
-				<i class="fa-sharp fa-thin fa-arrow-right ml-2"></i>
-			</a>
-		</div>
-	</div>
-
-	<!-- Conditioning -->
-	<div class="bg-gray-900 text-white rounded-2xl shadow-md p-6 flex flex-col justify-between h-full">
-		<div>
-			<h2 class="text-xl font-semibold mb-4">Conditioning</h2>
-			<div class="text-sm opacity-70 mb-2">Todays session</div>
-			<div class="text-2xl font-bold mb-4">Rugby Training</div>
-			<div class="flex justify-between text-sm opacity-80">
-				<div>
-					<div class="text-lg font-semibold">Duration</div>
-					1 Hour 30 Minutes
-				</div>
-			</div>
-		</div>
-		<div class="mt-6">
-			<a routerLink="/conditioning/conditioning-records" class="text-sm text-blue-400 hover:underline">
-				Conditioning
-				<i class="fa-sharp fa-thin fa-arrow-right ml-2"></i>
-			</a>
-		</div>
-	</div>
+    <app-strength-widget></app-strength-widget>
+    <app-conditioning-widget></app-conditioning-widget>
 
 	<!-- Nutrition -->
-	<div class="bg-gray-900 text-white rounded-2xl shadow-md p-6 flex flex-col justify-between h-full">
+	<!-- <div class="bg-gray-900 text-white rounded-2xl shadow-md p-6 flex flex-col justify-between h-full">
 		<div>
 			<h2 class="text-xl font-semibold mb-4">Nutrition</h2>
 			<div class="text-sm opacity-70 mb-2">Calories Consumed</div>
@@ -74,11 +36,11 @@
 				<i class="fa-sharp fa-thin fa-arrow-right ml-2"></i>
 			</a>
 		</div>
-	</div>
+	</div> -->
 </div>
 
 <!-- Weekly + Calorie Breakdown -->
-<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-1 gap-6 mt-6">
 	<!-- Weekly Summary -->
 	<div class="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between h-full">
 		<div>
@@ -139,8 +101,7 @@
 		</div>
 	</div>
 
-	<!-- Calorie Breakdown -->
-	<div class="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between h-full">
+	<!-- <div class="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between h-full">
 		<div>
 			<h2 class="text-xl font-semibold text-gray-900 mb-4">Calorie Breakdown</h2>
 			<div class="grid grid-cols-2 gap-4 mb-4 text-sm text-gray-700">
@@ -182,12 +143,11 @@
 				<i class="fa-sharp fa-thin fa-arrow-right ml-2"></i>
 			</a>
 		</div>
-	</div>
+	</div> -->
 </div>
 
-<!-- Notes & Body Comp -->
-<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-	<!-- Session Notes -->
+<!-- <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+
 	<div class="bg-gray-900 text-white border border-gray-800 rounded-2xl p-6 flex flex-col justify-between h-full">
 		<div>
 			<div class="mb-4">
@@ -206,7 +166,6 @@
 		</div>
 	</div>
 
-	<!-- Body Composition -->
 	<div class="bg-gray-900 text-white border border-gray-800 rounded-2xl p-6 flex flex-col justify-between h-full">
 		<div>
 			<div class="mb-4">
@@ -234,10 +193,10 @@
 			</a>
 		</div>
 	</div>
-</div>
+</div> -->
 
 <!-- Goal Tracker -->
-<div class="max-w-7xl mx-auto mt-6">
+<!-- <div class="max-w-7xl mx-auto mt-6">
 	<div class="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between h-full">
 		<div>
 			<h2 class="text-xl font-semibold text-gray-900 mb-4">Goals</h2>
@@ -270,4 +229,4 @@
 			</a>
 		</div>
 	</div>
-</div>
+</div> -->

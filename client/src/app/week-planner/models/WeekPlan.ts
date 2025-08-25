@@ -27,7 +27,7 @@ export class WeekPlan {
 		this._id = weekPlan?._id ?? '';
 		this.userId = weekPlan?.userId ?? localStorage.getItem('id') ?? '';
 
-		const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+		const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 		this.days = weekDays.map(day => {
 			// Try to find an existing day in input, else init fresh
