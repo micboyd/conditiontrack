@@ -1,0 +1,39 @@
+<div class="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between h-full">
+	<div>
+		<h2 class="text-xl font-semibold text-gray-900 mb-4">Upcoming Workouts</h2>
+
+		<div class="space-y-6">
+			@for(day of nexThreeDays; track day._id; let idx = $index) {
+			<div>
+				<div class="text-sm text-gray-500 mb-2">{{ dayOfWeek(idx + 1) }}</div>
+				<div class="grid grid-cols-2 gap-4 text-sm text-gray-700">
+					@for(strength of day.workouts; track strength.name;) {
+					<div class="bg-gray-50 rounded-xl p-3">
+						<div class="text-md font-semibold text-gray-900">Strength</div>
+						<div>{{ strength.name }}</div>
+					</div>
+					}
+
+                    @for(session of day.conditioning; track session.name;) {
+					<div class="bg-gray-50 rounded-xl p-3">
+						<div class="text-md font-semibold text-gray-900">Conditioning</div>
+						<div>{{ session.name }}</div>
+					</div>
+					}
+
+					<!-- <div class="bg-gray-50 rounded-xl p-3">
+						<div class="text-md font-semibold text-gray-900">Conditioning</div>
+						<div>Interval Sprints</div>
+					</div> -->
+				</div>
+			</div>
+			}
+		</div>
+		<div class="mt-6">
+			<a routerLink="/week-planner" href="#" class="text-sm text-blue-600 hover:underline">
+				Week Planner
+				<i class="fa-sharp fa-thin fa-arrow-right ml-2"></i>
+			</a>
+		</div>
+	</div>
+</div>

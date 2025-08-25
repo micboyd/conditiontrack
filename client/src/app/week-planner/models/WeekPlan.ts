@@ -2,6 +2,7 @@ import { ConditioningSession } from '../../conditioning/models/ConditioningSessi
 import { Workout } from '../../strength/models/Workout';
 
 export interface DayPlan {
+    _id: string;
 	dayName: string;
 	workouts: Workout[];
 	conditioning: ConditioningSession[];

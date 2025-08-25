@@ -39,68 +39,10 @@
 	</div> -->
 </div>
 
-<!-- Weekly + Calorie Breakdown -->
+
 <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-1 gap-6 mt-6">
-	<!-- Weekly Summary -->
-	<div class="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between h-full">
-		<div>
-			<h2 class="text-xl font-semibold text-gray-900 mb-4">Upcoming Workouts</h2>
-			<!-- Next Three Days -->
-			<div class="space-y-6">
-				<!-- Day 1 -->
-				<div>
-					<div class="text-sm text-gray-500 mb-2">Tomorrow</div>
-					<div class="grid grid-cols-2 gap-4 text-sm text-gray-700">
-						<div class="bg-gray-50 rounded-xl p-3">
-							<div class="text-md font-semibold text-gray-900">Strength</div>
-							<div>Upper Body – Push</div>
-						</div>
-						<div class="bg-gray-50 rounded-xl p-3">
-							<div class="text-md font-semibold text-gray-900">Conditioning</div>
-							<div>Interval Sprints</div>
-						</div>
-					</div>
-				</div>
 
-				<!-- Day 2 -->
-				<div>
-					<div class="text-sm text-gray-500 mb-2">In 2 Days</div>
-					<div class="grid grid-cols-2 gap-4 text-sm text-gray-700">
-						<div class="bg-gray-50 rounded-xl p-3">
-							<div class="text-md font-semibold text-gray-900">Strength</div>
-							<div>Lower Body – Squat</div>
-						</div>
-						<div class="bg-gray-50 rounded-xl p-3">
-							<div class="text-md font-semibold text-gray-900">Conditioning</div>
-							<div>Row Ergometer</div>
-						</div>
-					</div>
-				</div>
-
-				<!-- Day 3 -->
-				<div>
-					<div class="text-sm text-gray-500 mb-2">In 3 Days</div>
-					<div class="grid grid-cols-2 gap-4 text-sm text-gray-700">
-						<div class="bg-gray-50 rounded-xl p-3">
-							<div class="text-md font-semibold text-gray-900">Strength</div>
-							<div>Full Body – Deadlift</div>
-						</div>
-						<div class="bg-gray-50 rounded-xl p-3">
-							<div class="text-md font-semibold text-gray-900">Conditioning</div>
-							<div>Circuit Training</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="mt-6">
-				<a routerLink="/nutrition" href="#" class="text-sm text-blue-600 hover:underline">
-					Weekly Planner
-					<i class="fa-sharp fa-thin fa-arrow-right ml-2"></i>
-				</a>
-			</div>
-		</div>
-	</div>
-
+    <app-summary-widget></app-summary-widget>
 	<!-- <div class="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between h-full">
 		<div>
 			<h2 class="text-xl font-semibold text-gray-900 mb-4">Calorie Breakdown</h2>

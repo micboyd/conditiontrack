@@ -18,6 +18,7 @@ export class StrengthWidgetComponent {
 
 	todaysDate = new Date();
 	formattedDate = format(this.todaysDate, "eeee, do 'of' MMMM yyyy");
+    weekPlanLoading = false;
 
     workDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -26,10 +27,10 @@ export class StrengthWidgetComponent {
     }
 
     getAllWorkouts() {
+        this.weekPlanLoading = true;
         this.weekPlannerService.getAllWeekPlans().subscribe((weekPlan) => {
+            this.weekPlanLoading = false;
             this._weekPlan = new WeekPlan(weekPlan);
-
-            console.log(this.todaysWorkouts, this._weekPlan);
         });
     }
 
@@ -40,7 +41,7 @@ export class StrengthWidgetComponent {
     get todaysWorkouts(): Workout[] {
         const today = getDay(this.todaysDate);
 
-        const day = this.weekPlan.days.find((day) => {
+        const day = this.weekPlan?.days.find((day) => {
             return day.dayName === this.mapWorkDay(today);
         });
 
