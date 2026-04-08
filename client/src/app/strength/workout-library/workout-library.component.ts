@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 
+import { SideDrawerComponent } from '../../shared/components/side-drawer/side-drawer.component';
 import { Workout } from '../models/Workout';
 import { WorkoutService } from './workout.service';
 
@@ -9,45 +10,43 @@ import { WorkoutService } from './workout.service';
 	standalone: false,
 })
 export class WorkoutLibraryComponent implements OnInit {
-	constructor(public workoutService: WorkoutService) {}
+	@ViewChild(SideDrawerComponent) drawer!: SideDrawerComponent;
 
-	workoutsLoading: boolean = false;
-	private _allWorkouts: Workout[] = [];
-	editModeEnabled: boolean = false;
+	workoutsLoading = false;
 	selectedWorkout: Workout | null = null;
+	private _allWorkouts: Workout[] = [];
+
+	constructor(public workoutService: WorkoutService) {}
 
 	ngOnInit(): void {
 		this.getAllWorkouts();
 	}
 
-	get allWorkouts(): Array<Workout> {
+	get allWorkouts(): Workout[] {
 		return this._allWorkouts;
 	}
 
 	getAllWorkouts(): void {
 		this.workoutsLoading = true;
-		this.workoutService.getAllWorkouts().subscribe((workouts: Array<Workout>) => {
+		this.workoutService.getAllWorkouts().subscribe((workouts) => {
 			this.workoutsLoading = false;
-			this._allWorkouts = workouts.map(e => new Workout(e));
+			this._allWorkouts = workouts.map((w) => new Workout(w));
 		});
 	}
 
 	deleteWorkout(workout: Workout): void {
-		this.workoutsLoading = true;
 		this.workoutService.deleteWorkout(workout._id).subscribe(() => {
-			this.workoutsLoading = false;
 			this.getAllWorkouts();
 		});
 	}
 
-	openEditMode(workout?: Workout): void {
+	openDrawer(workout?: Workout): void {
 		this.selectedWorkout = workout ?? null;
-		this.editModeEnabled = true;
+		this.drawer.open();
 	}
 
-	closeEditMode(): void {
+	closeDrawer(): void {
 		this.getAllWorkouts();
-		this.editModeEnabled = false;
+		this.drawer.close();
 	}
 }
-

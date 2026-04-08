@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { ConditioningLibraryService } from './conditioning-library.service';
 import { ConditioningSession } from '../models/ConditioningSession';
+import { SideDrawerComponent } from '../../shared/components/side-drawer/side-drawer.component';
 
 @Component({
 	selector: 'app-conditioning-library',
@@ -9,40 +10,43 @@ import { ConditioningSession } from '../models/ConditioningSession';
 	templateUrl: './conditioning-library.component.html',
 })
 export class ConditioningLibraryComponent implements OnInit {
-	editModeEnabled: boolean = false;
-	mealsLoading: boolean = false;
+	@ViewChild(SideDrawerComponent) drawer!: SideDrawerComponent;
+
+	loading = false;
 	selectedConditioningSession: ConditioningSession | null = null;
-	private _allSessions: Array<ConditioningSession> = [];
+	private _allSessions: ConditioningSession[] = [];
 
-    constructor(public conditioningLibraryService: ConditioningLibraryService) {}
+	constructor(public conditioningLibraryService: ConditioningLibraryService) {}
 
-    ngOnInit(): void {
-        this.getAllConditioningSessions();
-    }
-
-    get conditioningSessions(): Array<ConditioningSession> {
-        return this._allSessions;
-    }
-
-	openEditMode(conditioningSession: ConditioningSession | null): void {
-        this.selectedConditioningSession = conditioningSession ?? null;
-		this.editModeEnabled = true;
+	ngOnInit(): void {
+		this.getAllConditioningSessions();
 	}
 
-    getAllConditioningSessions(): void {
-        this.conditioningLibraryService.getAllConditioningSessions().subscribe(allSessions => {
-            this._allSessions = allSessions;
-        })
-    }
+	get conditioningSessions(): ConditioningSession[] {
+		return this._allSessions;
+	}
 
-    deleteConditioningSessions(session: ConditioningSession): void {
-        this.conditioningLibraryService.deleteConditioningSession(session._id).subscribe(allSessions => {
-            this.getAllConditioningSessions();
-        })
-    }
+	openDrawer(session: ConditioningSession | null): void {
+		this.selectedConditioningSession = session;
+		this.drawer.open();
+	}
 
-	closeEditMode(): void {
-		this.editModeEnabled = false;
-        this.getAllConditioningSessions();
+	getAllConditioningSessions(): void {
+		this.loading = true;
+		this.conditioningLibraryService.getAllConditioningSessions().subscribe((sessions) => {
+			this._allSessions = sessions;
+			this.loading = false;
+		});
+	}
+
+	deleteConditioningSessions(session: ConditioningSession): void {
+		this.conditioningLibraryService.deleteConditioningSession(session._id).subscribe(() => {
+			this.getAllConditioningSessions();
+		});
+	}
+
+	closeDrawer(): void {
+		this.getAllConditioningSessions();
+		this.drawer.close();
 	}
 }

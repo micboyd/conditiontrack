@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 
+import { SideDrawerComponent } from '../../shared/components/side-drawer/side-drawer.component';
 import { Workout } from '../models/Workout';
 import { WorkoutRecord } from '../models/WorkoutRecord';
 import { WorkoutRecordService } from './workout-records.service';
 import { WorkoutService } from '../workout-library/workout.service';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 
 @Component({
 	selector: 'app-workout-records',
@@ -12,14 +13,14 @@ import { format } from 'date-fns';
 	standalone: false,
 })
 export class WorkoutRecordsComponent implements OnInit {
+	@ViewChild(SideDrawerComponent) drawer!: SideDrawerComponent;
 
-    workoutsLoading: boolean = false;
-    workoutRecordsLoading: boolean = false;
+	workoutsLoading = false;
+	workoutRecordsLoading = false;
 
 	private _allWorkoutRecords: WorkoutRecord[] = [];
 	private _allWorkouts: Workout[] = [];
 
-	editModeEnabled: boolean = false;
 	selectedWorkoutRecord: WorkoutRecord | null = null;
 
 	constructor(public workoutRecordService: WorkoutRecordService, public workoutService: WorkoutService) {}
@@ -29,58 +30,59 @@ export class WorkoutRecordsComponent implements OnInit {
 		this.getAllWorkouts();
 	}
 
-	get allWorkouts(): Array<Workout> {
+	get allWorkouts(): Workout[] {
 		return this._allWorkouts;
 	}
 
-	get allWorkoutRecords(): Array<WorkoutRecord> {
+	get allWorkoutRecords(): WorkoutRecord[] {
 		return this._allWorkoutRecords;
 	}
 
-    get workoutRecordLibraryLoading(): boolean {
-        return this.workoutRecordsLoading || this.workoutsLoading;
-    }
-
-    formatDate(dateInput: string): string {
-	    return format(dateInput, "dd/MM/yyyy");
-    }
-
-	openEditMode(workoutRecord?: WorkoutRecord): void {
-		this.selectedWorkoutRecord = workoutRecord ?? null;
-		this.editModeEnabled = true;
+	get loading(): boolean {
+		return this.workoutRecordsLoading || this.workoutsLoading;
 	}
 
-	closeEditMode(): void {
+	formatDate(dateInput: string): string {
+		try {
+			return format(parseISO(dateInput), 'dd MMM yyyy');
+		} catch {
+			return dateInput;
+		}
+	}
+
+	openDrawer(workoutRecord?: WorkoutRecord): void {
+		this.selectedWorkoutRecord = workoutRecord ?? null;
+		this.drawer.open();
+	}
+
+	closeDrawer(): void {
 		this.getAllWorkoutRecords();
-		this.editModeEnabled = false;
+		this.drawer.close();
 	}
 
 	getWorkoutName(workoutId: string): string {
-		const workout = this.allWorkouts.find(w => w._id === workoutId);
-		return workout?.name ?? '';
+		return this._allWorkouts.find((w) => w._id === workoutId)?.name ?? '—';
 	}
 
 	getAllWorkouts() {
-        this.workoutsLoading = true;
-		this.workoutService.getAllWorkouts().subscribe(allWorkouts => {
-			this._allWorkouts = allWorkouts;
-            this.workoutsLoading = false;
+		this.workoutsLoading = true;
+		this.workoutService.getAllWorkouts().subscribe((workouts) => {
+			this._allWorkouts = workouts;
+			this.workoutsLoading = false;
 		});
 	}
 
-    getAllWorkoutRecords(): void {
-        this.workoutRecordsLoading = true;
-		this.workoutRecordService.getAllWorkoutRecords().subscribe(allWorkoutRecords => {
-			this._allWorkoutRecords = allWorkoutRecords;
-            this.workoutRecordsLoading = false;
+	getAllWorkoutRecords(): void {
+		this.workoutRecordsLoading = true;
+		this.workoutRecordService.getAllWorkoutRecords().subscribe((records) => {
+			this._allWorkoutRecords = records;
+			this.workoutRecordsLoading = false;
 		});
 	}
 
-    deleteWorkoutRecord(workoutRecord: WorkoutRecord): void {
-        this.workoutRecordsLoading = true;
-        this.workoutRecordService.deleteWorkoutRecord(workoutRecord._id).subscribe(() => {
-            this.getAllWorkoutRecords();
-            this.workoutRecordsLoading = false;
-        })
-    }
+	deleteWorkoutRecord(record: WorkoutRecord): void {
+		this.workoutRecordService.deleteWorkoutRecord(record._id).subscribe(() => {
+			this.getAllWorkoutRecords();
+		});
+	}
 }

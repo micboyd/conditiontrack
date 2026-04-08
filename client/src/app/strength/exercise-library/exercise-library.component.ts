@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { Exercise } from '../models/Exercise';
 import { ExerciseService } from './exercise.service';
+import { SideDrawerComponent } from '../../shared/components/side-drawer/side-drawer.component';
 
 @Component({
 	selector: 'app-exercise-library',
@@ -9,14 +10,15 @@ import { ExerciseService } from './exercise.service';
 	standalone: false,
 })
 export class ExerciseLibraryComponent implements OnInit {
-	exercisesLoading: boolean = false;
+	@ViewChild(SideDrawerComponent) drawer!: SideDrawerComponent;
+
+	exercisesLoading = false;
 	selectedExercise: Exercise | null = null;
-	private _allExercises: Array<Exercise> = [];
-	editModeEnabled: boolean = false;
+	private _allExercises: Exercise[] = [];
 
 	constructor(public exerciseService: ExerciseService) {}
 
-	get allExercises(): Array<Exercise> {
+	get allExercises(): Exercise[] {
 		return this._allExercises;
 	}
 
@@ -26,28 +28,25 @@ export class ExerciseLibraryComponent implements OnInit {
 
 	getAllExercises(): void {
 		this.exercisesLoading = true;
-		this.exerciseService.getAllExercises().subscribe((exercises: Array<Exercise>) => {
+		this.exerciseService.getAllExercises().subscribe((exercises) => {
 			this.exercisesLoading = false;
-			this._allExercises = exercises.map(e => new Exercise(e));
+			this._allExercises = exercises.map((e) => new Exercise(e));
 		});
 	}
 
 	deleteExercise(exerciseId: string): void {
-		this.exercisesLoading = true;
 		this.exerciseService.deleteExercise(exerciseId).subscribe(() => {
-			this.exercisesLoading = false;
 			this.getAllExercises();
 		});
 	}
 
-	openEditMode(exercise?: Exercise): void {
+	openDrawer(exercise?: Exercise): void {
 		this.selectedExercise = exercise ?? null;
-		this.editModeEnabled = true;
+		this.drawer.open();
 	}
 
-	closeEditMode(): void {
+	closeDrawer(): void {
 		this.getAllExercises();
-		this.editModeEnabled = false;
+		this.drawer.close();
 	}
 }
-

@@ -5,7 +5,6 @@ import { AuthenticationComponent } from './authentication/authentication.compone
 import { BodyCompositionComponent } from './body-composition/body-composition.component';
 import { ConditioningComponent } from './conditioning/conditioning.component';
 import { ConditioningLibraryComponent } from './conditioning/conditioning-library/conditioning-library.component';
-import { ConditioningRecordsComponent } from './conditioning/conditioning-records/conditioning-records.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ExerciseLibraryComponent } from './strength/exercise-library/exercise-library.component';
 import { GlobalSettingsComponent } from './global-settings/global-settings.component';
@@ -20,7 +19,6 @@ import { StrengthComponent } from './strength/strength.component';
 import { StyleguideComponent } from './styleguide/styleguide.component';
 import { WeekPlannerComponent } from './week-planner/week-planner.component';
 import { WorkoutLibraryComponent } from './strength/workout-library/workout-library.component';
-import { WorkoutRecordsComponent } from './strength/workout-records/workout-records.component';
 
 const routes: Routes = [
 	// Login remains at top level
@@ -45,11 +43,7 @@ const routes: Routes = [
 				component: StrengthComponent,
 				canActivate: [AuthGuard],
 				children: [
-					{
-						path: 'workout-records',
-						component: WorkoutRecordsComponent,
-						canActivate: [AuthGuard],
-					},
+					{ path: '', redirectTo: 'workout-library', pathMatch: 'full' },
 					{
 						path: 'workout-library',
 						component: WorkoutLibraryComponent,
@@ -66,12 +60,8 @@ const routes: Routes = [
 				path: 'conditioning',
 				component: ConditioningComponent,
 				canActivate: [AuthGuard],
-                				children: [
-					{
-						path: 'conditioning-records',
-						component: ConditioningRecordsComponent,
-						canActivate: [AuthGuard],
-					},
+				children: [
+					{ path: '', redirectTo: 'conditioning-library', pathMatch: 'full' },
 					{
 						path: 'conditioning-library',
 						component: ConditioningLibraryComponent,

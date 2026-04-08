@@ -1,4 +1,4 @@
-import { Component, HostListener, Input } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 
 @Component({
 	selector: 'app-side-drawer',
@@ -13,6 +13,7 @@ export class SideDrawerComponent {
 	isOpen = false;
 
 	@Input() side: 'right' | 'left' = 'right';
+	@Output() closeEvent = new EventEmitter<void>();
 
 	/** Optional: widths per breakpoint */
 	@Input() widths = { base: 'w-full', md: 'lg:w-[50%]', lg: 'lg:w-[50%]' };
@@ -29,6 +30,7 @@ export class SideDrawerComponent {
 	close() {
 		this.isOpen = false;
 		this.unlockScroll();
+		this.closeEvent.emit();
 	}
 
 	toggle() {

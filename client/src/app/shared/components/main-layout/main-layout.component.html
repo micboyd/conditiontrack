@@ -1,5 +1,6 @@
-<app-menu></app-menu>
-
-<app-container>
-    <router-outlet></router-outlet>
-</app-container>
+<div class="flex h-screen bg-gray-50 overflow-hidden">
+	<app-menu></app-menu>
+	<main class="flex-1 overflow-y-auto ml-64">
+		<router-outlet></router-outlet>
+	</main>
+</div>

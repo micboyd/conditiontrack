@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { Meal } from '../models/Meal';
 import { MealLibraryService } from './meal-library.service';
+import { SideDrawerComponent } from '../../shared/components/side-drawer/side-drawer.component';
 
 @Component({
 	selector: 'app-meal-library',
@@ -9,10 +10,11 @@ import { MealLibraryService } from './meal-library.service';
 	standalone: false,
 })
 export class MealLibraryComponent implements OnInit {
-	mealsLoading: boolean = false;
+	@ViewChild(SideDrawerComponent) drawer!: SideDrawerComponent;
+
+	loading = false;
 	selectedMeal: Meal | null = null;
-	private _allMeals: Array<Meal> = [];
-	editModeEnabled: boolean = false;
+	private _allMeals: Meal[] = [];
 
 	constructor(public mealService: MealLibraryService) {}
 
@@ -20,33 +22,31 @@ export class MealLibraryComponent implements OnInit {
 		this.getAllMeals();
 	}
 
-	get allMeals(): Array<Meal> {
+	get allMeals(): Meal[] {
 		return this._allMeals;
 	}
 
-	openEditMode(meal: Meal | null): void {
-        this.selectedMeal = meal ?? null;
-		this.editModeEnabled = true;
+	openDrawer(meal: Meal | null): void {
+		this.selectedMeal = meal;
+		this.drawer.open();
 	}
 
-	closeEditMode(): void {
+	closeDrawer(): void {
 		this.getAllMeals();
-		this.editModeEnabled = false;
+		this.drawer.close();
 	}
 
 	getAllMeals(): void {
-        this.mealsLoading = true;
-		this.mealService.getAllMeals().subscribe(allMeals => {
-			this._allMeals = allMeals;
-            this.mealsLoading = false;
+		this.loading = true;
+		this.mealService.getAllMeals().subscribe((meals) => {
+			this._allMeals = meals;
+			this.loading = false;
 		});
 	}
 
 	deleteMeal(meal: Meal): void {
-        this.mealsLoading = true;
 		this.mealService.deleteMeal(meal._id).subscribe(() => {
 			this.getAllMeals();
-            this.mealsLoading = false;
 		});
 	}
 }

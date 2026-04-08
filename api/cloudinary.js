@@ -1,5 +1,5 @@
 const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const CloudinaryStorage = require('multer-storage-cloudinary');
 
 require('dotenv').config();
 
@@ -9,13 +9,11 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const storage = new CloudinaryStorage({
+const storage = CloudinaryStorage({
   cloudinary,
-  params: {
-    folder: 'conditiontrack',
-    allowed_formats: ['jpg', 'png', 'jpeg'],
-    transformation: [{ width: 1000, height: 1000, crop: 'limit' }],
-  },
+  folder: 'conditiontrack',
+  allowedFormats: ['jpg', 'png', 'jpeg'],
+  transformation: [{ width: 1000, height: 1000, crop: 'limit' }],
 });
 
 

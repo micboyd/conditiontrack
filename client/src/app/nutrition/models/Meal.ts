@@ -28,7 +28,7 @@ export class Meal {
 			fat: [meal?.fat ?? 0, [Validators.required, Validators.min(0)]],
 			protein: [meal?.protein ?? 0, [Validators.required, Validators.min(0)]],
 			carbs: [meal?.carbs ?? 0, [Validators.required, Validators.min(0)]],
-            category: [meal?.category ?? 0, [Validators.required, Validators.min(0)]],
+            category: [meal?.category || '', Validators.required],
 			description: [meal?.description || ''],
 		});
 	}

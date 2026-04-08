@@ -11,32 +11,24 @@ import { MealLibraryService } from '../meal-library.service';
 })
 export class EditMealComponent implements OnInit {
 	mealForm!: FormGroup;
-    formLoading: boolean = false;
+	formLoading = false;
 
-    @Input() selectedMeal: Meal | null = null;
+	@Input() selectedMeal: Meal | null = null;
+	@Output() closeEditModeEvent = new EventEmitter<void>();
 
 	selectedMealTypes: string[] = [];
-	selectedDietType: string[] = [];
-	@Output() closeEditModeEvent = new EventEmitter<void>();
 
 	constructor(private fb: FormBuilder, public mealService: MealLibraryService) {}
 
-    ngOnInit(): void {
-		this.mealForm = Meal.createFormGroup(this.fb, this.selectedMeal?? new Meal(null));
-        this.setSelectedMealType();
-    }
+	ngOnInit(): void {
+		this.mealForm = Meal.createFormGroup(this.fb, this.selectedMeal ?? new Meal(null));
+		this.selectedMealTypes = this.selectedMeal?.category ? [this.selectedMeal.category] : [];
+	}
 
-    setSelectedMealType() {
-        this.selectedMealTypes = this.mealForm.get('category')?.value;
-    }
-
-    updateCategory(event: string[]) {
-        this.selectedMealTypes = event;
-        this.mealForm.get('category')?.setValue(event[0]);
-    }
-
-	closeEditMode(): void {
-		this.closeEditModeEvent.emit();
+	updateCategory(event: string[]): void {
+		this.selectedMealTypes = event;
+		this.mealForm.get('category')?.setValue(event[0] ?? '');
+		this.mealForm.get('category')?.markAsTouched();
 	}
 
 	isInvalid(controlName: string): boolean {
@@ -44,23 +36,25 @@ export class EditMealComponent implements OnInit {
 		return !!(control && control.invalid && control.touched);
 	}
 
-	isSelected(type: string): boolean {
-		return this.selectedMealTypes.includes(type);
+	closeEditMode(): void {
+		this.closeEditModeEvent.emit();
 	}
 
 	onSubmit(): void {
-        this.formLoading = true;
+		this.mealForm.markAllAsTouched();
+		if (this.mealForm.invalid) return;
+
+		this.formLoading = true;
 		if (this.selectedMeal) {
 			this.mealService.updateMeal(this.selectedMeal._id, this.mealForm.value).subscribe(() => {
 				this.closeEditModeEvent.emit();
-                this.formLoading = false;
+				this.formLoading = false;
 			});
 		} else {
 			this.mealService.createMeal(this.mealForm.value).subscribe(() => {
 				this.closeEditModeEvent.emit();
-                this.formLoading = false;
+				this.formLoading = false;
 			});
 		}
 	}
 }
-

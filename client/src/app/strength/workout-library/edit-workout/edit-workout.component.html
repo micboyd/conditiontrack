@@ -1,97 +1,82 @@
-<h2 class="text-xl font-semibold text-gray-900 tracking-tight mb-6">Edit Workout</h2>
-<form [formGroup]="workoutForm" (ngSubmit)="onSubmit()" class="space-y-6">
-	<!-- Workout Name -->
-	<div>
-		<label for="name" class="block text-sm mb-1">Workout Name</label>
-		<input
-			id="name"
-			type="text"
-			formControlName="name"
-			placeholder="e.g. Full Body Blast"
-			[ngClass]="{
-				'border-red-600': isInvalid('name'),
-				'border-gray-300': !isInvalid('name')
-			}"
-			class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300" />
-		@if (isInvalid('name')) {
-		<p class="text-sm text-red-600">Please enter a name</p>
-		}
-	</div>
+<div class="p-6">
+	<h2 class="text-base font-semibold text-gray-900 mb-6">
+		{{ selectedWorkout ? 'Edit Workout' : 'New Workout' }}
+	</h2>
 
-	<!-- Description -->
-	<div>
-		<label for="description" class="block text-sm mb-1">Description</label>
-		<textarea
-			id="description"
-			formControlName="description"
-			placeholder="e.g. Combines cardio and strength training"
-			[ngClass]="{
-				'border-red-600': isInvalid('description'),
-				'border-gray-300': !isInvalid('description')
-			}"
-			rows="4"
-			class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"></textarea>
-		@if (isInvalid('description')) {
-		<p class="text-sm text-red-600">Please enter a description</p>
-		}
-	</div>
+	<form [formGroup]="workoutForm" (ngSubmit)="onSubmit()" class="space-y-5">
 
-	@if (exercisesLoading) {
-	<app-loading-indicator [loading]="exercisesLoading"></app-loading-indicator>
-	} @else {
-	<div class="max-w-4xl mx-auto">
-		<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-			<!-- Available Exercises -->
-			<div>
-				<h3 class="text-lg font-semibold mb-3 text-gray-800">Available Exercises</h3>
-				<div class="space-y-2">
-					@for(exercise of avalibleExercises; track exercise._id) {
-					<div
-						(click)="selectExercise(exercise)"
-						class="flex justify-between items-center bg-white border border-gray-300 rounded-xl p-3 hover:border-blue-500 cursor-pointer">
-						<span class="text-gray-800 text-sm">{{ exercise.name }}</span>
-						<i class="fa-solid fa-plus text-sm"></i>
-					</div>
-					}
-				</div>
-			</div>
-
-			<!-- Selected Exercises -->
-			<div>
-				<h3 class="text-lg font-semibold mb-3 text-gray-800">Selected Exercises</h3>
-				<div class="space-y-2">
-					@for(exercise of selectedExercises; track exercise._id) {
-					<div
-						(click)="removeExercise(exercise)"
-						class="flex justify-between items-center bg-blue-50 border border-blue-300 rounded-xl p-3 hover:border-blue-500 cursor-pointer">
-						<span class="text-blue-800 text-sm">{{ exercise.name }}</span>
-						<i class="fa-solid fa-trash text-blue-500 text-sm"></i>
-					</div>
-					}
-				</div>
-			</div>
+		<div>
+			<label class="block text-xs font-medium text-gray-500 mb-1.5">Workout Name</label>
+			<input type="text" formControlName="name" placeholder="e.g. Full Body Blast"
+				class="w-full px-3 py-2 border rounded-lg text-sm text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+				[ngClass]="isInvalid('name') ? 'border-red-400' : 'border-gray-200'" />
+			@if (isInvalid('name')) {
+				<p class="text-xs text-red-500 mt-1">Name is required</p>
+			}
 		</div>
-	</div>
-	}
 
-	<!-- Buttons -->
-	<div class="flex gap-3">
-		<button
-			type="submit"
-			class="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition cursor-pointer"
-			[ngClass]="{ 'opacity-50': workoutForm.invalid }"
-			[disabled]="workoutForm.invalid">
-			@if (formLoading) {
-			<app-loading-indicator [spinner]="true" [loading]="exercisesLoading"></app-loading-indicator>
-			} @else { Save Workout }
-		</button>
+		<div>
+			<label class="block text-xs font-medium text-gray-500 mb-1.5">Description</label>
+			<textarea formControlName="description" placeholder="e.g. Combines cardio and strength training" rows="3"
+				class="w-full px-3 py-2 border rounded-lg text-sm text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+				[ngClass]="isInvalid('description') ? 'border-red-400' : 'border-gray-200'"></textarea>
+			@if (isInvalid('description')) {
+				<p class="text-xs text-red-500 mt-1">Description is required</p>
+			}
+		</div>
 
-		<button
-			type="button"
-			class="bg-purple-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-purple-700 transition cursor-pointer"
-			(click)="closeEditMode()">
-			Close
-		</button>
-	</div>
-</form>
+		@if (exercisesLoading) {
+			<app-loading-indicator [loading]="true"></app-loading-indicator>
+		} @else {
+			<div class="grid grid-cols-2 gap-4">
+				<div>
+					<p class="text-xs font-medium text-gray-500 mb-2">Available</p>
+					<div class="space-y-1.5 max-h-64 overflow-y-auto">
+						@for (exercise of avalibleExercises; track exercise._id) {
+							<div (click)="selectExercise(exercise)"
+								class="flex items-center justify-between px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 hover:border-blue-300 hover:bg-blue-50 cursor-pointer transition-colors">
+								<span>{{ exercise.name }}</span>
+								<i class="fa-sharp fa-solid fa-plus text-gray-400 text-xs"></i>
+							</div>
+						}
+						@if (avalibleExercises.length === 0) {
+							<p class="text-xs text-gray-300 italic px-1">All exercises selected</p>
+						}
+					</div>
+				</div>
 
+				<div>
+					<p class="text-xs font-medium text-gray-500 mb-2">Selected</p>
+					<div class="space-y-1.5 max-h-64 overflow-y-auto">
+						@for (exercise of selectedExercises; track exercise._id) {
+							<div (click)="removeExercise(exercise)"
+								class="flex items-center justify-between px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800 hover:bg-red-50 hover:border-red-200 hover:text-red-700 cursor-pointer transition-colors">
+								<span>{{ exercise.name }}</span>
+								<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
+							</div>
+						}
+						@if (selectedExercises.length === 0) {
+							<p class="text-xs text-gray-300 italic px-1">None selected</p>
+						}
+					</div>
+				</div>
+			</div>
+		}
+
+		<div class="flex gap-3 pt-2">
+			<button type="submit" [disabled]="workoutForm.invalid"
+				class="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors cursor-pointer">
+				@if (formLoading) {
+					<app-loading-indicator [spinner]="true" [loading]="true"></app-loading-indicator>
+				} @else {
+					Save Workout
+				}
+			</button>
+			<button type="button" (click)="closeEditMode()"
+				class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors cursor-pointer">
+				Cancel
+			</button>
+		</div>
+
+	</form>
+</div>

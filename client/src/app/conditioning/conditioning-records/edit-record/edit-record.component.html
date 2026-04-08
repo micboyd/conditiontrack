@@ -1,105 +1,95 @@
-@if (!selectedSessionTemplate && !selectedRecord) {
-<div class="grid grid-cols-2 gap-4">
-	@for (session of allConditioningSessions; track session._id) {
-	<div
-		(click)="selectSession(session)"
-		class="group relative bg-white border border-gray-200 rounded-2xl p-4 h-32 flex items-center justify-center cursor-pointer hover:border-gray-400">
-		<span class="font-medium text-lg text-gray-900 text-center">{{ session.name }}</span>
-	</div>
+<div class="p-6">
+
+	@if (sessionsLoading) {
+		<app-loading-indicator [loading]="true"></app-loading-indicator>
+	} @else if (!selectedSessionTemplate && !selectedRecord) {
+
+		<!-- Step 1: Pick a session -->
+		<h2 class="text-base font-semibold text-gray-900 mb-1">Log Cardio</h2>
+		<p class="text-sm text-gray-400 mb-6">Select a session template to log</p>
+
+		<div class="space-y-2">
+			@for (session of allConditioningSessions; track session._id) {
+				<div (click)="selectSession(session)"
+					class="flex items-center justify-between px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 cursor-pointer transition-colors">
+					<div>
+						<p class="text-sm font-medium text-gray-800">{{ session.name }}</p>
+						<p class="text-xs text-gray-400 mt-0.5">{{ session.category }} · {{ session.duration }} min</p>
+					</div>
+					<i class="fa-sharp fa-solid fa-chevron-right text-gray-400 text-xs"></i>
+				</div>
+			}
+			@if (allConditioningSessions.length === 0) {
+				<p class="text-sm text-gray-400 text-center py-8">No sessions in your library yet.</p>
+			}
+		</div>
+
+	} @else {
+
+		<!-- Step 2: Fill in the record -->
+		<h2 class="text-base font-semibold text-gray-900 mb-6">
+			{{ selectedSessionTemplate?.name }}
+		</h2>
+
+		@if (recordForm) {
+		<form [formGroup]="recordForm" (ngSubmit)="onSubmit()" class="space-y-5">
+
+			<div class="grid grid-cols-2 gap-4">
+				<div>
+					<label class="block text-xs font-medium text-gray-500 mb-1.5">Date</label>
+					<input type="date" formControlName="date"
+						class="w-full px-3 py-2 border rounded-lg text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+						[ngClass]="isInvalid('date') ? 'border-red-400' : 'border-gray-200'" />
+					@if (isInvalid('date')) {
+						<p class="text-xs text-red-500 mt-1">Required</p>
+					}
+				</div>
+
+				<div>
+					<label class="block text-xs font-medium text-gray-500 mb-1.5">Duration (min)</label>
+					<input type="number" formControlName="duration" placeholder="45"
+						class="w-full px-3 py-2 border rounded-lg text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+						[ngClass]="isInvalid('duration') ? 'border-red-400' : 'border-gray-200'" />
+					@if (isInvalid('duration')) {
+						<p class="text-xs text-red-500 mt-1">Required</p>
+					}
+				</div>
+			</div>
+
+			<div>
+				<label class="block text-xs font-medium text-gray-500 mb-1.5">Calories Burned</label>
+				<input type="number" formControlName="caloriesBurned" placeholder="e.g. 350"
+					class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+			</div>
+
+			<div>
+				<label class="block text-xs font-medium text-gray-500 mb-1.5">Notes</label>
+				<textarea formControlName="notes" placeholder="How did the session feel?" rows="3"
+					class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"></textarea>
+			</div>
+
+			<div class="flex items-center gap-2">
+				<input id="completed" type="checkbox" formControlName="completed"
+					class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+				<label for="completed" class="text-sm text-gray-600">Mark as completed</label>
+			</div>
+
+			<div class="flex gap-3 pt-2">
+				<button type="submit" [disabled]="recordForm.invalid"
+					class="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors cursor-pointer">
+					@if (formLoading) {
+						<app-loading-indicator [spinner]="true" [loading]="true"></app-loading-indicator>
+					} @else {
+						Save Record
+					}
+				</button>
+				<button type="button" (click)="onCancel()"
+					class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors cursor-pointer">
+					Cancel
+				</button>
+			</div>
+
+		</form>
+		}
 	}
 </div>
-} @else { @if (recordForm && selectedSessionTemplate) {
-
-<h1 class="text-lg font-semibold text-gray-900 mb-2">{{ this.selectedSessionTemplate.name }}</h1>
-
-<form [formGroup]="recordForm" (ngSubmit)="onSubmit()" class="space-y-6">
-	<div>
-		<label for="date" class="block text-sm mb-1">Date</label>
-		<input
-			id="date"
-			type="date"
-			formControlName="date"
-			[ngClass]="{
-				'border-red-600': isInvalid('date'),
-				'border-gray-300': !isInvalid('date')
-			}"
-			class="w-full px-4 py-2 border rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300 mb-2" />
-		@if (isInvalid('date')) {
-		<p class="text-sm text-red-600">Please select a date</p>
-		}
-	</div>
-
-	<!-- Duration -->
-	<div>
-		<label for="duration" class="block text-sm mb-1">Duration (minutes)</label>
-		<input
-			id="duration"
-			type="number"
-			formControlName="duration"
-			placeholder="e.g. 45"
-			[ngClass]="{
-				'border-red-600': isInvalid('duration'),
-				'border-gray-300': !isInvalid('duration')
-			}"
-			class="w-full px-4 py-2 border rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 mb-2" />
-		@if (isInvalid('duration')) {
-		<p class="text-sm text-red-600">Please enter a valid duration</p>
-		}
-	</div>
-
-	<div>
-		<label for="caloriesBurned" class="block text-sm mb-1">Calories Burned</label>
-		<input
-			id="caloriesBurned"
-			type="number"
-			formControlName="caloriesBurned"
-			placeholder="e.g. 45"
-			[ngClass]="{
-				'border-red-600': isInvalid('caloriesBurned'),
-				'border-gray-300': !isInvalid('caloriesBurned')
-			}"
-			class="w-full px-4 py-2 border rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 mb-2" />
-		@if (isInvalid('caloriesBurned')) {
-		<p class="text-sm text-red-600">Please enter a valid calorie number</p>
-		}
-	</div>
-
-	<!-- Completed -->
-	<div class="flex items-center gap-2">
-		<input id="completed" type="checkbox" formControlName="completed" class="w-4 h-4" />
-		<label for="completed" class="text-sm">Completed</label>
-	</div>
-
-	<!-- Notes -->
-	<div>
-		<label for="notes" class="block text-sm mb-1">Notes</label>
-		<textarea
-			id="notes"
-			formControlName="notes"
-			placeholder="e.g. Felt great, but could improve pace in final set"
-			rows="3"
-			class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"></textarea>
-	</div>
-
-	<!-- Buttons -->
-	<div class="flex gap-3">
-		<button
-			type="submit"
-			class="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition cursor-pointer"
-			[ngClass]="{ 'opacity-50': recordForm.invalid }"
-			[disabled]="recordForm.invalid">
-			@if(formLoading) {
-			<app-loading-indicator [spinner]="true" [loading]="formLoading"></app-loading-indicator>
-			} @else { Save Record }
-		</button>
-
-		<button
-			type="button"
-			(click)="onCancel()"
-			class="bg-purple-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-purple-700 transition cursor-pointer">
-			Close
-		</button>
-	</div>
-</form>
-
-} }

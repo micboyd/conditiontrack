@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { ConditioningLibraryService } from '../conditioning-library/conditioning-library.service';
 import { ConditioningRecord } from '../models/ConditioningRecord';
 import { ConditioningRecordService } from './conditioning-records.service';
 import { ConditioningSession } from '../models/ConditioningSession';
-import { format } from 'date-fns';
+import { SideDrawerComponent } from '../../shared/components/side-drawer/side-drawer.component';
+import { format, parseISO } from 'date-fns';
 
 @Component({
 	selector: 'app-conditioning-records',
@@ -12,58 +13,71 @@ import { format } from 'date-fns';
 	templateUrl: './conditioning-records.component.html',
 })
 export class ConditioningRecordsComponent implements OnInit {
-	editModeEnabled: boolean = false;
-	selectedConditioningRecord: ConditioningRecord = null;
+	@ViewChild(SideDrawerComponent) drawer!: SideDrawerComponent;
 
-	private _allRecords: Array<ConditioningRecord> = [];
-    private _allSessions: Array<ConditioningSession> = [];
+	selectedConditioningRecord: ConditioningRecord | null = null;
+	loading = false;
 
-    constructor(
-        public conditioningRecordService: ConditioningRecordService,
-        public conditioningLibraryService: ConditioningLibraryService) {}
+	private _allRecords: ConditioningRecord[] = [];
+	private _allSessions: ConditioningSession[] = [];
 
-    ngOnInit(): void {
-        this.getAllRecords();
-        this.getAllSessions();
-    }
+	constructor(
+		public conditioningRecordService: ConditioningRecordService,
+		public conditioningLibraryService: ConditioningLibraryService,
+	) {}
 
-    get allConditioningRecords(): Array<ConditioningRecord> {
-        return this._allRecords;
-    }
-
-    get allConditioningSessions(): Array<ConditioningSession> {
-        return this._allSessions;
-    }
-
-    formatDate(dateInput: string): string {
-        return format(dateInput, "dd/MM/yyyy");
-    }
-
-	openEditMode(conditioningSession: ConditioningRecord | null): void {
-		this.selectedConditioningRecord = conditioningSession ?? null;
-		this.editModeEnabled = true;
+	ngOnInit(): void {
+		this.getAllRecords();
+		this.getAllSessions();
 	}
 
-	closeEditMode(): void {
-		this.editModeEnabled = false;
-        this.getAllRecords();
+	get allConditioningRecords(): ConditioningRecord[] {
+		return this._allRecords;
 	}
 
-    getSessionNameById(sessionId: string): string {
-        const session = this.allConditioningSessions.find((session) => session._id === sessionId);
-        return session ? session.name : '';
-    }
+	get allConditioningSessions(): ConditioningSession[] {
+		return this._allSessions;
+	}
 
-    getAllSessions() {
-        this.conditioningLibraryService.getAllConditioningSessions().subscribe(allSessions => {
-            this._allSessions = allSessions;
-        })
-    }
+	formatDate(dateInput: string): string {
+		try {
+			return format(parseISO(dateInput), 'dd MMM yyyy');
+		} catch {
+			return dateInput;
+		}
+	}
 
-    getAllRecords() {
-        this.conditioningRecordService.getAllConditioningRecords().subscribe(allRecords => {
-            this._allRecords = allRecords;
-        })
-    }
+	openDrawer(record: ConditioningRecord | null): void {
+		this.selectedConditioningRecord = record;
+		this.drawer.open();
+	}
 
+	closeDrawer(): void {
+		this.getAllRecords();
+		this.drawer.close();
+	}
+
+	getSessionNameById(sessionId: string): string {
+		return this._allSessions.find((s) => s._id === sessionId)?.name ?? '—';
+	}
+
+	getAllSessions() {
+		this.conditioningLibraryService.getAllConditioningSessions().subscribe((sessions) => {
+			this._allSessions = sessions;
+		});
+	}
+
+	getAllRecords() {
+		this.loading = true;
+		this.conditioningRecordService.getAllConditioningRecords().subscribe((records) => {
+			this._allRecords = records;
+			this.loading = false;
+		});
+	}
+
+	deleteRecord(record: ConditioningRecord): void {
+		this.conditioningRecordService.deleteConditioningRecord(record._id).subscribe(() => {
+			this.getAllRecords();
+		});
+	}
 }
