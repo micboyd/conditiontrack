@@ -11,6 +11,13 @@ export class SideDrawerComponent {
     showButton = false;
 
 	isOpen = false;
+	isReady = false;
+
+	ngAfterViewInit() {
+		// Defer enabling transitions until after initial render so the
+		// closed drawer snaps off-screen without animating on mount.
+		setTimeout(() => (this.isReady = true));
+	}
 
 	@Input() side: 'right' | 'left' = 'right';
 	@Output() closeEvent = new EventEmitter<void>();

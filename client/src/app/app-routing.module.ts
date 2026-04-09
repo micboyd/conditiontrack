@@ -5,6 +5,7 @@ import { AuthenticationComponent } from './authentication/authentication.compone
 import { BodyCompositionComponent } from './body-composition/body-composition.component';
 import { ConditioningComponent } from './conditioning/conditioning.component';
 import { ConditioningLibraryComponent } from './conditioning/conditioning-library/conditioning-library.component';
+import { ConditioningRecordsComponent } from './conditioning/conditioning-records/conditioning-records.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ExerciseLibraryComponent } from './strength/exercise-library/exercise-library.component';
 import { GlobalSettingsComponent } from './global-settings/global-settings.component';
@@ -17,6 +18,7 @@ import { NutritionComponent } from './nutrition/nutrition.component';
 import { ProfileComponent } from './profile/profile.component';
 import { StrengthComponent } from './strength/strength.component';
 import { StyleguideComponent } from './styleguide/styleguide.component';
+import { WorkoutRecordsComponent } from './strength/workout-records/workout-records.component';
 import { WeekPlannerComponent } from './week-planner/week-planner.component';
 import { WorkoutLibraryComponent } from './strength/workout-library/workout-library.component';
 
@@ -43,7 +45,12 @@ const routes: Routes = [
 				component: StrengthComponent,
 				canActivate: [AuthGuard],
 				children: [
-					{ path: '', redirectTo: 'workout-library', pathMatch: 'full' },
+					{ path: '', redirectTo: 'workout-records', pathMatch: 'full' },
+					{
+						path: 'workout-records',
+						component: WorkoutRecordsComponent,
+						canActivate: [AuthGuard],
+					},
 					{
 						path: 'workout-library',
 						component: WorkoutLibraryComponent,
@@ -61,7 +68,12 @@ const routes: Routes = [
 				component: ConditioningComponent,
 				canActivate: [AuthGuard],
 				children: [
-					{ path: '', redirectTo: 'conditioning-library', pathMatch: 'full' },
+					{ path: '', redirectTo: 'conditioning-records', pathMatch: 'full' },
+					{
+						path: 'conditioning-records',
+						component: ConditioningRecordsComponent,
+						canActivate: [AuthGuard],
+					},
 					{
 						path: 'conditioning-library',
 						component: ConditioningLibraryComponent,
