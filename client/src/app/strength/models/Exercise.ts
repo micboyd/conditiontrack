@@ -17,7 +17,7 @@ export class Exercise {
 		return fb.group({
 			userId: [localStorage.getItem('id')],
 			name: [exercise.name, [Validators.required]],
-			description: [exercise.description, [Validators.required]],
+			description: [exercise.description],
 		});
 	}
 }

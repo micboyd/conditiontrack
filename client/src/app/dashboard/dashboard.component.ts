@@ -244,6 +244,33 @@ export class DashboardComponent implements OnInit {
 			.reduce((sum, r) => sum + (r.caloriesBurned ?? 0), 0);
 	}
 
+	get totalTrainingTimeThisWeek(): number {
+		const strengthMins = this.workoutRecords
+			.filter((r) => this.isThisWeek(r.date))
+			.reduce((sum, r) => sum + (r.duration ?? 0), 0);
+		const cardioMins = this.conditioningRecords
+			.filter((r) => this.isThisWeek(r.date))
+			.reduce((sum, r) => sum + (r.duration ?? 0), 0);
+		return strengthMins + cardioMins;
+	}
+
+	get activeDaysThisWeek(): number {
+		const days = new Set<string>();
+		this.workoutRecords
+			.filter((r) => this.isThisWeek(r.date))
+			.forEach((r) => days.add(this.toDateStr(r.date)));
+		this.conditioningRecords
+			.filter((r) => this.isThisWeek(r.date))
+			.forEach((r) => days.add(this.toDateStr(r.date)));
+		return days.size;
+	}
+
+	get totalSetsThisWeek(): number {
+		return this.workoutRecords
+			.filter((r) => this.isThisWeek(r.date))
+			.reduce((sum, r) => sum + r.exercises.reduce((s, e) => s + (e.sets?.length ?? 0), 0), 0);
+	}
+
 	// ── Recent activity ──────────────────────────────────────────────────────
 
 	get recentActivity(): ActivityEntry[] {

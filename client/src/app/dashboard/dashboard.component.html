@@ -237,25 +237,59 @@
 		<!-- Panel header + weekly summary -->
 		<div class="px-10 pt-10 pb-8">
 			<p class="text-base font-medium uppercase tracking-widest text-zinc-400 mb-2">My Week</p>
-			<div class="flex items-end justify-between mb-8">
-				<h2 class="text-3xl font-bold text-zinc-900 tracking-tight">{{ currentWeekDays[0].label }} {{ currentWeekDays[0].dayNum }} – {{ currentWeekDays[6].label }} {{ currentWeekDays[6].dayNum }} {{ currentWeekDays[6].month }}</h2>
-				<div class="flex items-center gap-4 text-sm pb-1">
-					<div class="flex items-center gap-1.5">
-						<i class="fa-sharp fa-solid fa-dumbbell text-blue-500 text-xs"></i>
-						<span class="font-semibold text-zinc-900">{{ workoutsThisWeek }}</span>
-						<span class="text-zinc-400 text-xs">workouts</span>
+			<h2 class="text-3xl font-bold text-zinc-900 tracking-tight mb-6">{{ currentWeekDays[0].label }} {{ currentWeekDays[0].dayNum }} – {{ currentWeekDays[6].label }} {{ currentWeekDays[6].dayNum }} {{ currentWeekDays[6].month }}</h2>
+
+			<!-- Weekly stat chips -->
+			<div class="grid grid-cols-3 gap-3 mb-8">
+
+				<div class="bg-zinc-50 rounded-xl px-4 py-3">
+					<div class="flex items-center gap-1.5 mb-2">
+						<i class="fa-sharp fa-solid fa-calendar-check text-zinc-400 text-[10px]"></i>
+						<span class="text-[10px] font-medium uppercase tracking-wider text-zinc-400">Active Days</span>
 					</div>
-					<div class="flex items-center gap-1.5">
-						<i class="fa-sharp fa-solid fa-person-running text-green-500 text-xs"></i>
-						<span class="font-semibold text-zinc-900">{{ cardioThisWeek }}</span>
-						<span class="text-zinc-400 text-xs">cardio</span>
-					</div>
-					<div class="flex items-center gap-1.5">
-						<i class="fa-sharp fa-solid fa-fire text-orange-400 text-xs"></i>
-						<span class="font-semibold text-zinc-900">{{ caloriesThisWeek }}</span>
-						<span class="text-zinc-400 text-xs">kcal</span>
-					</div>
+					<p class="text-2xl font-bold text-zinc-900 leading-none">{{ activeDaysThisWeek }}<span class="text-sm font-normal text-zinc-400 ml-1">/ 7</span></p>
 				</div>
+
+				<div class="bg-blue-50 rounded-xl px-4 py-3">
+					<div class="flex items-center gap-1.5 mb-2">
+						<i class="fa-sharp fa-solid fa-dumbbell text-blue-400 text-[10px]"></i>
+						<span class="text-[10px] font-medium uppercase tracking-wider text-blue-400">Workouts</span>
+					</div>
+					<p class="text-2xl font-bold text-zinc-900 leading-none">{{ workoutsThisWeek }}</p>
+				</div>
+
+				<div class="bg-green-50 rounded-xl px-4 py-3">
+					<div class="flex items-center gap-1.5 mb-2">
+						<i class="fa-sharp fa-solid fa-person-running text-green-500 text-[10px]"></i>
+						<span class="text-[10px] font-medium uppercase tracking-wider text-green-500">Cardio</span>
+					</div>
+					<p class="text-2xl font-bold text-zinc-900 leading-none">{{ cardioThisWeek }}</p>
+				</div>
+
+				<div class="bg-zinc-50 rounded-xl px-4 py-3">
+					<div class="flex items-center gap-1.5 mb-2">
+						<i class="fa-sharp fa-solid fa-clock text-zinc-400 text-[10px]"></i>
+						<span class="text-[10px] font-medium uppercase tracking-wider text-zinc-400">Training Time</span>
+					</div>
+					<p class="text-2xl font-bold text-zinc-900 leading-none">{{ totalTrainingTimeThisWeek }}<span class="text-sm font-normal text-zinc-400 ml-1">min</span></p>
+				</div>
+
+				<div class="bg-zinc-50 rounded-xl px-4 py-3">
+					<div class="flex items-center gap-1.5 mb-2">
+						<i class="fa-sharp fa-solid fa-layer-group text-zinc-400 text-[10px]"></i>
+						<span class="text-[10px] font-medium uppercase tracking-wider text-zinc-400">Total Sets</span>
+					</div>
+					<p class="text-2xl font-bold text-zinc-900 leading-none">{{ totalSetsThisWeek }}</p>
+				</div>
+
+				<div class="bg-orange-50 rounded-xl px-4 py-3">
+					<div class="flex items-center gap-1.5 mb-2">
+						<i class="fa-sharp fa-solid fa-fire text-orange-400 text-[10px]"></i>
+						<span class="text-[10px] font-medium uppercase tracking-wider text-orange-400">Kcal Burned</span>
+					</div>
+					<p class="text-2xl font-bold text-zinc-900 leading-none">{{ caloriesThisWeek }}</p>
+				</div>
+
 			</div>
 		</div>
 
