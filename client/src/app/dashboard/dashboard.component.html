@@ -4,102 +4,152 @@
 	</div>
 } @else {
 
-<!-- ─── SECTION 1: Header ─────────────────────────────────────────────────── -->
-<div class="bg-white border-b border-zinc-100 px-8 lg:px-16 py-10">
-	<div class="flex items-end justify-between gap-6">
-		<div>
-			<p class="text-xs font-medium uppercase tracking-widest text-zinc-400 mb-2">{{ viewDateFormatted }}</p>
-			<h1 class="text-5xl font-bold text-zinc-900 leading-tight tracking-tight">
-				Welcome back{{ user ? ', ' + user.firstname : '' }}.
-			</h1>
-		</div>
-		<div class="flex items-center gap-2 flex-shrink-0 pb-1">
-			<button (click)="prevDay()"
-				class="w-9 h-9 flex items-center justify-center rounded-full bg-zinc-100 text-zinc-500 hover:bg-zinc-200 transition cursor-pointer">
-				<i class="fa-sharp fa-solid fa-chevron-left text-xs"></i>
-			</button>
-			<button (click)="nextDay()" [disabled]="isToday"
-				class="w-9 h-9 flex items-center justify-center rounded-full transition"
-				[class]="isToday ? 'bg-zinc-50 text-zinc-300 cursor-not-allowed' : 'bg-zinc-100 text-zinc-500 hover:bg-zinc-200 cursor-pointer'">
-				<i class="fa-sharp fa-solid fa-chevron-right text-xs"></i>
-			</button>
-		</div>
-	</div>
+<!-- ─── Header ────────────────────────────────────────────────────────────── -->
+<div class="bg-white border-b border-zinc-100 px-10 lg:px-14 py-10">
+	<h1 class="text-4xl font-bold text-zinc-900 tracking-tight">
+		Welcome back{{ user ? ', ' + user.firstname : '' }}.
+	</h1>
 </div>
 
-<!-- ─── SECTION 2: Daily Totals (dark) ───────────────────────────────────── -->
-<div class="bg-zinc-900 px-8 lg:px-16 py-12">
-	<p class="text-[11px] font-medium uppercase tracking-widest text-zinc-500 mb-8">Daily Totals</p>
-	<div class="grid grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
+<!-- ─── Two-panel body ───────────────────────────────────────────────────── -->
+<div class="flex flex-col lg:flex-row" style="min-height: calc(100vh - 112px)">
 
-		<div>
-			<p class="text-xs text-zinc-500 mb-3">Calories Eaten</p>
-			<p class="text-6xl font-bold text-white leading-none tracking-tight">{{ totalCaloriesEaten }}</p>
-			<p class="text-xs text-zinc-600 mt-2">kcal</p>
-		</div>
+	<!-- ══ LEFT PANEL — My Day ══════════════════════════════════════════════ -->
+	<div class="lg:w-1/2 lg:border-r border-zinc-100 flex flex-col bg-zinc-50">
 
-		<div>
-			<p class="text-xs text-zinc-500 mb-3">Calories Burned</p>
-			<p class="text-6xl font-bold text-white leading-none tracking-tight">{{ totalCaloriesBurned }}</p>
-			<p class="text-xs text-zinc-600 mt-2">kcal</p>
-		</div>
-
-		<div>
-			<p class="text-xs text-zinc-500 mb-3">Protein</p>
-			<p class="text-6xl font-bold text-white leading-none tracking-tight">{{ totalProtein }}</p>
-			<p class="text-xs text-zinc-600 mt-2">grams</p>
-		</div>
-
-		<div>
-			<p class="text-xs text-zinc-500 mb-3">Carbs</p>
-			<p class="text-6xl font-bold text-white leading-none tracking-tight">{{ totalCarbs }}</p>
-			<p class="text-xs text-zinc-600 mt-2">grams</p>
-		</div>
-
-		<div>
-			<p class="text-xs text-zinc-500 mb-3">Fat</p>
-			<p class="text-6xl font-bold text-white leading-none tracking-tight">{{ totalFat }}</p>
-			<p class="text-xs text-zinc-600 mt-2">grams</p>
-		</div>
-
-	</div>
-</div>
-
-<!-- ─── SECTION 3: Today's Activity ──────────────────────────────────────── -->
-<div class="bg-zinc-50 px-8 lg:px-16 py-10">
-	<p class="text-[11px] font-medium uppercase tracking-widest text-zinc-400 mb-6">Today's Activity</p>
-	<div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-
-		<!-- Meals -->
-		<div class="bg-white rounded-2xl overflow-hidden shadow-sm">
-			<div class="px-6 py-5 flex items-center justify-between border-b border-zinc-50">
-				<div class="flex items-center gap-3">
-					<div class="w-8 h-8 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0">
-						<i class="fa-sharp fa-solid fa-utensils text-emerald-600 text-xs"></i>
-					</div>
-					<span class="text-base font-semibold text-zinc-900">Meals</span>
-				</div>
-				<button (click)="openMealPicker()"
-					class="flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 px-3 py-1.5 rounded-full transition cursor-pointer">
-					<i class="fa-sharp fa-solid fa-plus text-[10px]"></i>
-					Add
+		<!-- Panel header + date nav -->
+		<div class="relative flex items-end justify-between px-10 pt-10 pb-8">
+			<div>
+				<p class="text-base font-medium uppercase tracking-widest text-zinc-400 mb-2">My Day</p>
+				<h2 class="text-3xl font-bold text-zinc-900 tracking-tight">{{ viewDateFormatted }}</h2>
+			</div>
+			<div class="flex items-center gap-1.5 pb-1">
+				<button (click)="prevDay()"
+					class="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-zinc-200 text-zinc-500 hover:bg-zinc-100 transition cursor-pointer">
+					<i class="fa-sharp fa-solid fa-chevron-left text-xs"></i>
+				</button>
+				<button (click)="goToToday()" [disabled]="isToday"
+					class="px-3 h-8 rounded-full text-xs font-medium border transition"
+					[class]="isToday ? 'border-zinc-100 bg-zinc-50 text-zinc-300 cursor-not-allowed' : 'border-zinc-200 bg-white text-zinc-500 hover:bg-zinc-100 cursor-pointer'">
+					Today
+				</button>
+				<button (click)="nextDay()" [disabled]="isToday"
+					class="w-8 h-8 flex items-center justify-center rounded-full border transition"
+					[class]="isToday ? 'bg-zinc-50 border-zinc-100 text-zinc-300 cursor-not-allowed' : 'bg-white border-zinc-200 text-zinc-500 hover:bg-zinc-100 cursor-pointer'">
+					<i class="fa-sharp fa-solid fa-chevron-right text-xs"></i>
+				</button>
+				<button (click)="toggleDatePicker()"
+					class="w-8 h-8 flex items-center justify-center rounded-full border transition cursor-pointer ml-1"
+					[class]="showDatePicker ? 'bg-zinc-900 border-zinc-900 text-white' : 'bg-white border-zinc-200 text-zinc-500 hover:bg-zinc-100'">
+					<i class="fa-sharp fa-solid fa-calendar text-xs"></i>
 				</button>
 			</div>
-			<div class="px-6 py-4 min-h-[80px]">
+
+			<!-- Date Picker Dropdown -->
+			@if (showDatePicker) {
+				<div class="fixed inset-0 z-40" (click)="showDatePicker = false"></div>
+				<div class="absolute top-full right-10 z-50 bg-white rounded-2xl shadow-xl border border-zinc-100 p-5 w-72 mt-2">
+
+					<!-- Month navigation -->
+					<div class="flex items-center justify-between mb-4">
+						<button (click)="prevPickerMonth()"
+							class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-zinc-100 text-zinc-500 transition cursor-pointer">
+							<i class="fa-sharp fa-solid fa-chevron-left text-xs"></i>
+						</button>
+						<span class="text-sm font-semibold text-zinc-900">{{ pickerMonthLabel }}</span>
+						<button (click)="nextPickerMonth()" [disabled]="pickerNextMonthDisabled"
+							class="w-7 h-7 flex items-center justify-center rounded-lg transition"
+							[class]="pickerNextMonthDisabled ? 'text-zinc-200 cursor-not-allowed' : 'hover:bg-zinc-100 text-zinc-500 cursor-pointer'">
+							<i class="fa-sharp fa-solid fa-chevron-right text-xs"></i>
+						</button>
+					</div>
+
+					<!-- Day of week headers -->
+					<div class="grid grid-cols-7 mb-1">
+						@for (d of ['Mo','Tu','We','Th','Fr','Sa','Su']; track d) {
+							<div class="text-center text-[10px] font-medium text-zinc-400 uppercase py-1">{{ d }}</div>
+						}
+					</div>
+
+					<!-- Day cells -->
+					<div class="grid grid-cols-7 gap-y-1">
+						@for (day of pickerDays; track $index) {
+							@if (day === null) {
+								<div></div>
+							} @else {
+								<button (click)="selectPickerDate(day)" [disabled]="isFutureDate(day)"
+									class="h-8 w-8 mx-auto flex items-center justify-center rounded-full text-sm transition"
+									[class]="isFutureDate(day) ? 'text-zinc-200 cursor-not-allowed' : isPickerSelected(day) ? 'bg-zinc-900 text-white font-semibold cursor-pointer' : isPickerToday(day) ? 'bg-zinc-100 text-zinc-900 font-semibold hover:bg-zinc-200 cursor-pointer' : 'text-zinc-700 hover:bg-zinc-100 cursor-pointer'">
+									{{ day.getDate() }}
+								</button>
+							}
+						}
+					</div>
+
+				</div>
+			}
+		</div>
+
+		<!-- Daily totals card -->
+		<div class="mx-10 mb-6 bg-zinc-900 rounded-2xl px-8 py-7">
+			<p class="text-xs font-medium uppercase tracking-widest text-zinc-500 mb-5">Daily Totals</p>
+			<div class="grid grid-cols-2 gap-y-5 gap-x-4 mb-5">
+				<div>
+					<p class="text-sm text-zinc-400 mb-1.5">Calories Eaten</p>
+					<p class="text-4xl font-bold text-white leading-none tracking-tight">{{ totalCaloriesEaten }}</p>
+					<p class="text-sm text-zinc-500 mt-1.5">kcal</p>
+				</div>
+				<div>
+					<p class="text-sm text-zinc-400 mb-1.5">Calories Burned</p>
+					<p class="text-4xl font-bold text-white leading-none tracking-tight">{{ totalCaloriesBurned }}</p>
+					<p class="text-sm text-zinc-500 mt-1.5">kcal</p>
+				</div>
+			</div>
+			<div class="border-t border-zinc-800 pt-5 grid grid-cols-3 gap-4">
+				<div>
+					<p class="text-sm text-zinc-400 mb-1.5">Protein</p>
+					<p class="text-2xl font-bold text-white leading-none">{{ totalProtein }}<span class="text-sm text-zinc-500 font-normal ml-0.5">g</span></p>
+				</div>
+				<div>
+					<p class="text-sm text-zinc-400 mb-1.5">Carbs</p>
+					<p class="text-2xl font-bold text-white leading-none">{{ totalCarbs }}<span class="text-sm text-zinc-500 font-normal ml-0.5">g</span></p>
+				</div>
+				<div>
+					<p class="text-sm text-zinc-400 mb-1.5">Fat</p>
+					<p class="text-2xl font-bold text-white leading-none">{{ totalFat }}<span class="text-sm text-zinc-500 font-normal ml-0.5">g</span></p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Activity sections -->
+		<div class="px-10 pb-10 space-y-5 flex-1">
+
+			<!-- Meals -->
+			<div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+				<div class="px-5 py-4 flex items-center justify-between border-b border-zinc-50">
+					<div class="flex items-center gap-2.5">
+						<div class="w-7 h-7 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
+							<i class="fa-sharp fa-solid fa-utensils text-emerald-600 text-[11px]"></i>
+						</div>
+						<span class="text-sm font-semibold text-zinc-900">Meals</span>
+					</div>
+					<button (click)="openMealPicker()"
+						class="flex items-center gap-1 text-xs font-medium text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 px-3 py-1.5 rounded-full transition cursor-pointer">
+						<i class="fa-sharp fa-solid fa-plus text-[9px]"></i>
+						Add
+					</button>
+				</div>
 				@if (viewDayMealObjects.length === 0) {
-					<p class="text-sm text-zinc-300 py-4 text-center">No meals logged</p>
+					<p class="text-sm text-zinc-300 py-5 text-center">No meals logged</p>
 				} @else {
-					<ul class="divide-y divide-zinc-50">
+					<ul class="divide-y divide-zinc-50 px-5">
 						@for (meal of viewDayMealObjects; track $index) {
 						<li class="flex items-center justify-between py-3">
 							<div class="min-w-0">
 								<p class="text-sm font-medium text-zinc-800 truncate">{{ meal.name }}</p>
-								<p class="text-xs text-zinc-400 mt-0.5">
-									{{ meal.calories }} kcal · P{{ meal.protein }}g · C{{ meal.carbs }}g · F{{ meal.fat }}g
-								</p>
+								<p class="text-xs text-zinc-400 mt-0.5">{{ meal.calories }} kcal · P{{ meal.protein }}g · C{{ meal.carbs }}g · F{{ meal.fat }}g</p>
 							</div>
-							<button (click)="removeMealFromDay(meal._id)"
-								class="text-zinc-300 hover:text-red-400 transition cursor-pointer ml-3 flex-shrink-0">
+							<button (click)="removeMealFromDay(meal._id)" class="text-zinc-300 hover:text-red-400 transition cursor-pointer ml-3 flex-shrink-0">
 								<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
 							</button>
 						</li>
@@ -107,36 +157,33 @@
 					</ul>
 				}
 			</div>
-		</div>
 
-		<!-- Workouts -->
-		<div class="bg-white rounded-2xl overflow-hidden shadow-sm">
-			<div class="px-6 py-5 flex items-center justify-between border-b border-zinc-50">
-				<div class="flex items-center gap-3">
-					<div class="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
-						<i class="fa-sharp fa-solid fa-dumbbell text-blue-600 text-xs"></i>
+			<!-- Workouts -->
+			<div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+				<div class="px-5 py-4 flex items-center justify-between border-b border-zinc-50">
+					<div class="flex items-center gap-2.5">
+						<div class="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+							<i class="fa-sharp fa-solid fa-dumbbell text-blue-600 text-[11px]"></i>
+						</div>
+						<span class="text-sm font-semibold text-zinc-900">Workouts</span>
 					</div>
-					<span class="text-base font-semibold text-zinc-900">Workouts</span>
+					<button (click)="openLogWorkout()"
+						class="flex items-center gap-1 text-xs font-medium text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 px-3 py-1.5 rounded-full transition cursor-pointer">
+						<i class="fa-sharp fa-solid fa-plus text-[9px]"></i>
+						Log
+					</button>
 				</div>
-				<button (click)="openLogWorkout()"
-					class="flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 px-3 py-1.5 rounded-full transition cursor-pointer">
-					<i class="fa-sharp fa-solid fa-plus text-[10px]"></i>
-					Log
-				</button>
-			</div>
-			<div class="px-6 py-4 min-h-[80px]">
 				@if (viewDayWorkouts.length === 0) {
-					<p class="text-sm text-zinc-300 py-4 text-center">No workouts logged</p>
+					<p class="text-sm text-zinc-300 py-5 text-center">No workouts logged</p>
 				} @else {
-					<ul class="divide-y divide-zinc-50">
+					<ul class="divide-y divide-zinc-50 px-5">
 						@for (record of viewDayWorkouts; track record._id) {
 						<li class="flex items-center justify-between py-3">
 							<div class="min-w-0">
 								<p class="text-sm font-medium text-zinc-800 truncate">{{ getWorkoutName(record.workoutId) }}</p>
 								<p class="text-xs text-zinc-400 mt-0.5">{{ record.duration }} min</p>
 							</div>
-							<button (click)="removeWorkoutRecord(record)"
-								class="text-zinc-300 hover:text-red-400 transition cursor-pointer ml-3 flex-shrink-0">
+							<button (click)="removeWorkoutRecord(record)" class="text-zinc-300 hover:text-red-400 transition cursor-pointer ml-3 flex-shrink-0">
 								<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
 							</button>
 						</li>
@@ -144,39 +191,35 @@
 					</ul>
 				}
 			</div>
-		</div>
 
-		<!-- Cardio -->
-		<div class="bg-white rounded-2xl overflow-hidden shadow-sm">
-			<div class="px-6 py-5 flex items-center justify-between border-b border-zinc-50">
-				<div class="flex items-center gap-3">
-					<div class="w-8 h-8 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
-						<i class="fa-sharp fa-solid fa-person-running text-green-600 text-xs"></i>
+			<!-- Cardio -->
+			<div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+				<div class="px-5 py-4 flex items-center justify-between border-b border-zinc-50">
+					<div class="flex items-center gap-2.5">
+						<div class="w-7 h-7 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+							<i class="fa-sharp fa-solid fa-person-running text-green-600 text-[11px]"></i>
+						</div>
+						<span class="text-sm font-semibold text-zinc-900">Cardio</span>
 					</div>
-					<span class="text-base font-semibold text-zinc-900">Cardio</span>
+					<button (click)="openLogCardio()"
+						class="flex items-center gap-1 text-xs font-medium text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 px-3 py-1.5 rounded-full transition cursor-pointer">
+						<i class="fa-sharp fa-solid fa-plus text-[9px]"></i>
+						Log
+					</button>
 				</div>
-				<button (click)="openLogCardio()"
-					class="flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 px-3 py-1.5 rounded-full transition cursor-pointer">
-					<i class="fa-sharp fa-solid fa-plus text-[10px]"></i>
-					Log
-				</button>
-			</div>
-			<div class="px-6 py-4 min-h-[80px]">
 				@if (viewDayCardio.length === 0) {
-					<p class="text-sm text-zinc-300 py-4 text-center">No cardio logged</p>
+					<p class="text-sm text-zinc-300 py-5 text-center">No cardio logged</p>
 				} @else {
-					<ul class="divide-y divide-zinc-50">
+					<ul class="divide-y divide-zinc-50 px-5">
 						@for (record of viewDayCardio; track record._id) {
 						<li class="flex items-center justify-between py-3">
 							<div class="min-w-0">
 								<p class="text-sm font-medium text-zinc-800 truncate">{{ getCardioName(record.sessionId) }}</p>
 								<p class="text-xs text-zinc-400 mt-0.5">
-									{{ record.duration }} min
-									@if (record.caloriesBurned) { · {{ record.caloriesBurned }} kcal burned }
+									{{ record.duration }} min@if (record.caloriesBurned) { · {{ record.caloriesBurned }} kcal burned }
 								</p>
 							</div>
-							<button (click)="removeCardioRecord(record)"
-								class="text-zinc-300 hover:text-red-400 transition cursor-pointer ml-3 flex-shrink-0">
+							<button (click)="removeCardioRecord(record)" class="text-zinc-300 hover:text-red-400 transition cursor-pointer ml-3 flex-shrink-0">
 								<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
 							</button>
 						</li>
@@ -184,133 +227,110 @@
 					</ul>
 				}
 			</div>
+
 		</div>
-
-	</div>
-</div>
-
-<!-- ─── SECTION 4: This Week ──────────────────────────────────────────────── -->
-<div class="bg-white px-8 lg:px-16 py-10 border-t border-zinc-100">
-
-	<p class="text-[11px] font-medium uppercase tracking-widest text-zinc-400 mb-6">This Week</p>
-
-	<div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10">
-
-		<div class="bg-zinc-50 rounded-2xl p-6">
-			<div class="flex items-center gap-3 mb-5">
-				<div class="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-					<i class="fa-sharp fa-solid fa-dumbbell text-blue-600 text-xs"></i>
-				</div>
-				<span class="text-sm font-medium text-zinc-500">Workouts</span>
-			</div>
-			<div class="text-5xl font-bold text-zinc-900 leading-none">{{ workoutsThisWeek }}</div>
-			<p class="text-xs text-zinc-400 mt-2">sessions logged</p>
-		</div>
-
-		<div class="bg-zinc-50 rounded-2xl p-6">
-			<div class="flex items-center gap-3 mb-5">
-				<div class="w-8 h-8 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
-					<i class="fa-sharp fa-solid fa-person-running text-green-600 text-xs"></i>
-				</div>
-				<span class="text-sm font-medium text-zinc-500">Cardio</span>
-			</div>
-			<div class="text-5xl font-bold text-zinc-900 leading-none">{{ cardioThisWeek }}</div>
-			<p class="text-xs text-zinc-400 mt-2">sessions logged</p>
-		</div>
-
-		<div class="bg-zinc-50 rounded-2xl p-6">
-			<div class="flex items-center gap-3 mb-5">
-				<div class="w-8 h-8 rounded-xl bg-orange-50 flex items-center justify-center flex-shrink-0">
-					<i class="fa-sharp fa-solid fa-fire text-orange-500 text-xs"></i>
-				</div>
-				<span class="text-sm font-medium text-zinc-500">Calories Burned</span>
-			</div>
-			<div class="text-5xl font-bold text-zinc-900 leading-none">{{ caloriesThisWeek }}</div>
-			<p class="text-xs text-zinc-400 mt-2">kcal this week</p>
-		</div>
-
 	</div>
 
-	<!-- Recent Activity + Upcoming -->
-	<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+	<!-- ══ RIGHT PANEL — My Week ════════════════════════════════════════════ -->
+	<div class="lg:w-1/2 bg-white flex flex-col">
 
-		<div class="lg:col-span-2 bg-zinc-50 rounded-2xl overflow-hidden">
-			<div class="px-6 py-5 border-b border-zinc-100">
-				<h2 class="text-base font-semibold text-zinc-900">Recent Activity</h2>
-			</div>
-			@if (recentActivity.length === 0) {
-				<div class="px-6 py-14 text-center text-sm text-zinc-400">
-					No sessions logged yet. Start tracking your workouts!
+		<!-- Panel header + weekly summary -->
+		<div class="px-10 pt-10 pb-8">
+			<p class="text-base font-medium uppercase tracking-widest text-zinc-400 mb-2">My Week</p>
+			<div class="flex items-end justify-between mb-8">
+				<h2 class="text-3xl font-bold text-zinc-900 tracking-tight">{{ currentWeekDays[0].label }} {{ currentWeekDays[0].dayNum }} – {{ currentWeekDays[6].label }} {{ currentWeekDays[6].dayNum }} {{ currentWeekDays[6].month }}</h2>
+				<div class="flex items-center gap-4 text-sm pb-1">
+					<div class="flex items-center gap-1.5">
+						<i class="fa-sharp fa-solid fa-dumbbell text-blue-500 text-xs"></i>
+						<span class="font-semibold text-zinc-900">{{ workoutsThisWeek }}</span>
+						<span class="text-zinc-400 text-xs">workouts</span>
+					</div>
+					<div class="flex items-center gap-1.5">
+						<i class="fa-sharp fa-solid fa-person-running text-green-500 text-xs"></i>
+						<span class="font-semibold text-zinc-900">{{ cardioThisWeek }}</span>
+						<span class="text-zinc-400 text-xs">cardio</span>
+					</div>
+					<div class="flex items-center gap-1.5">
+						<i class="fa-sharp fa-solid fa-fire text-orange-400 text-xs"></i>
+						<span class="font-semibold text-zinc-900">{{ caloriesThisWeek }}</span>
+						<span class="text-zinc-400 text-xs">kcal</span>
+					</div>
 				</div>
-			} @else {
-				<table class="w-full text-sm">
-					<thead>
-						<tr class="border-b border-zinc-100">
-							<th class="px-6 py-3 text-left text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Session</th>
-							<th class="px-6 py-3 text-left text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Type</th>
-							<th class="px-6 py-3 text-left text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Duration</th>
-							<th class="px-6 py-3 text-left text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Date</th>
-						</tr>
-					</thead>
-					<tbody class="divide-y divide-zinc-100">
-						@for (entry of recentActivity; track entry.date + entry.name) {
-						<tr class="hover:bg-zinc-100 transition-colors">
-							<td class="px-6 py-4 font-medium text-zinc-800">{{ entry.name }}</td>
-							<td class="px-6 py-4">
-								@if (entry.type === 'Strength') {
-									<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
-										<i class="fa-sharp fa-solid fa-dumbbell text-[10px]"></i>
-										Strength
-									</span>
-								} @else {
-									<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700">
-										<i class="fa-sharp fa-solid fa-person-running text-[10px]"></i>
-										Cardio
-									</span>
-								}
-							</td>
-							<td class="px-6 py-4 text-zinc-500">{{ entry.duration }} min</td>
-							<td class="px-6 py-4 text-zinc-400">{{ formatDate(entry.date) }}</td>
-						</tr>
+			</div>
+		</div>
+
+		<!-- Mon–Sun rows -->
+		<div class="flex-1 border-t border-zinc-100">
+			@for (day of currentWeekDays; track day.dateStr) {
+			<div class="flex items-start gap-5 px-8 py-4 border-b border-zinc-50 transition-colors"
+				[class]="day.isToday ? 'bg-zinc-950' : 'hover:bg-zinc-50'">
+
+				<!-- Day label -->
+				<div class="w-14 flex-shrink-0 pt-0.5">
+					<p class="text-[10px] font-medium uppercase tracking-wider" [class]="day.isToday ? 'text-zinc-400' : 'text-zinc-400'">{{ day.label }}</p>
+					<p class="text-2xl font-bold leading-tight mt-0.5" [class]="day.isToday ? 'text-white' : (day.isPast ? 'text-zinc-300' : 'text-zinc-800')">{{ day.dayNum }}</p>
+					@if (day.isToday) {
+						<span class="inline-block mt-1 text-[9px] font-medium uppercase tracking-wider text-zinc-500">Today</span>
+					}
+				</div>
+
+				<!-- Activities -->
+				<div class="flex-1 pt-0.5 space-y-1.5">
+					@if (day.workouts.length === 0 && day.cardio.length === 0 && (!day.planned || (day.planned.workouts.length === 0 && day.planned.conditioning.length === 0))) {
+						<p class="text-xs" [class]="day.isToday ? 'text-zinc-600' : 'text-zinc-300'">Rest day</p>
+					}
+
+					@for (record of day.workouts; track record._id) {
+						<div class="flex items-center gap-2">
+							<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700">
+								<i class="fa-sharp fa-solid fa-dumbbell text-[9px]"></i>
+								{{ getWorkoutName(record.workoutId) }}
+							</span>
+							<span class="text-[10px] text-zinc-400">{{ record.duration }} min</span>
+						</div>
+					}
+
+					@for (record of day.cardio; track record._id) {
+						<div class="flex items-center gap-2">
+							<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-green-50 text-green-700">
+								<i class="fa-sharp fa-solid fa-person-running text-[9px]"></i>
+								{{ getCardioName(record.sessionId) }}
+							</span>
+							<span class="text-[10px] text-zinc-400">{{ record.duration }} min</span>
+						</div>
+					}
+
+					<!-- Planned (future days only, nothing logged yet) -->
+					@if (day.workouts.length === 0 && day.cardio.length === 0 && day.planned) {
+						@for (workout of day.planned.workouts; track workout._id) {
+							<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-zinc-100 text-zinc-400 border border-dashed border-zinc-200">
+								<i class="fa-sharp fa-solid fa-dumbbell text-[9px]"></i>
+								{{ workout.name }}
+							</span>
 						}
-					</tbody>
-				</table>
+						@for (session of day.planned.conditioning; track session._id) {
+							<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-zinc-100 text-zinc-400 border border-dashed border-zinc-200">
+								<i class="fa-sharp fa-solid fa-person-running text-[9px]"></i>
+								{{ session.name }}
+							</span>
+						}
+					}
+				</div>
+
+			</div>
 			}
 		</div>
 
-		<div class="bg-zinc-50 rounded-2xl overflow-hidden">
-			<div class="flex items-center justify-between px-6 py-5 border-b border-zinc-100">
-				<h2 class="text-base font-semibold text-zinc-900">Upcoming</h2>
-				<a routerLink="/week-planner" class="text-xs font-medium text-zinc-400 hover:text-zinc-700 transition">View plan</a>
-			</div>
-			<div class="divide-y divide-zinc-100">
-				@for (item of upcomingDays; track item.label) {
-				<div class="px-6 py-4">
-					<p class="text-[10px] font-medium text-zinc-400 uppercase tracking-wider mb-2.5">{{ item.label }}</p>
-					@if (!item.day || (item.day.workouts.length === 0 && item.day.conditioning.length === 0)) {
-						<p class="text-xs text-zinc-300 italic">Rest day</p>
-					} @else {
-						<div class="flex flex-col gap-1.5">
-							@for (workout of item.day.workouts; track workout._id) {
-								<div class="flex items-center justify-between">
-									<span class="text-sm text-zinc-700">{{ workout.name }}</span>
-									<span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 font-medium">Strength</span>
-								</div>
-							}
-							@for (session of item.day.conditioning; track session._id) {
-								<div class="flex items-center justify-between">
-									<span class="text-sm text-zinc-700">{{ session.name }}</span>
-									<span class="text-[10px] px-2 py-0.5 rounded-full bg-green-50 text-green-600 font-medium">Cardio</span>
-								</div>
-							}
-						</div>
-					}
-				</div>
-				}
-			</div>
+		<!-- Week planner link -->
+		<div class="px-8 py-5 border-t border-zinc-100">
+			<a routerLink="/week-planner" class="flex items-center gap-2 text-xs font-medium text-zinc-400 hover:text-zinc-700 transition">
+				<i class="fa-sharp fa-solid fa-calendar-week text-[11px]"></i>
+				Edit week plan
+			</a>
 		</div>
 
 	</div>
+
 </div>
 
 <!-- ─── Meal Picker Drawer ────────────────────────────────────────────────── -->
@@ -337,9 +357,7 @@
 						class="flex items-center justify-between p-4 rounded-xl border border-zinc-100 hover:border-zinc-300 hover:bg-zinc-50 transition cursor-pointer">
 						<div class="min-w-0">
 							<p class="text-sm font-medium text-zinc-800 truncate">{{ meal.name }}</p>
-							<p class="text-xs text-zinc-400 mt-0.5">
-								{{ meal.calories }} kcal · P{{ meal.protein }}g · C{{ meal.carbs }}g · F{{ meal.fat }}g
-							</p>
+							<p class="text-xs text-zinc-400 mt-0.5">{{ meal.calories }} kcal · P{{ meal.protein }}g · C{{ meal.carbs }}g · F{{ meal.fat }}g</p>
 							@if (meal.category) {
 								<span class="inline-block mt-1.5 text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-500 font-medium">{{ meal.category }}</span>
 							}

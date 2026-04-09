@@ -48,6 +48,10 @@ export class DashboardComponent implements OnInit {
 
 	mealSearchQuery = '';
 
+	// Date picker state
+	showDatePicker = false;
+	pickerMonth: Date = new Date();
+
 	// Workout logging state
 	logWorkoutStep: 1 | 2 = 1;
 	logWorkoutSelectedWorkout: Workout | null = null;
@@ -137,6 +141,73 @@ export class DashboardComponent implements OnInit {
 		this.fetchViewDateLog();
 	}
 
+	goToToday(): void {
+		this.viewDate = new Date();
+		this.fetchViewDateLog();
+	}
+
+	// ── Date picker ──────────────────────────────────────────────────────────
+
+	toggleDatePicker(): void {
+		if (!this.showDatePicker) {
+			this.pickerMonth = new Date(this.viewDate);
+		}
+		this.showDatePicker = !this.showDatePicker;
+	}
+
+	prevPickerMonth(): void {
+		const d = new Date(this.pickerMonth);
+		d.setMonth(d.getMonth() - 1);
+		this.pickerMonth = d;
+	}
+
+	nextPickerMonth(): void {
+		const d = new Date(this.pickerMonth);
+		d.setMonth(d.getMonth() + 1);
+		this.pickerMonth = d;
+	}
+
+	get pickerMonthLabel(): string {
+		return format(this.pickerMonth, 'MMMM yyyy');
+	}
+
+	get pickerNextMonthDisabled(): boolean {
+		const today = new Date();
+		return this.pickerMonth.getFullYear() > today.getFullYear() ||
+			(this.pickerMonth.getFullYear() === today.getFullYear() && this.pickerMonth.getMonth() >= today.getMonth());
+	}
+
+	get pickerDays(): (Date | null)[] {
+		const year = this.pickerMonth.getFullYear();
+		const month = this.pickerMonth.getMonth();
+		const firstDay = new Date(year, month, 1);
+		const totalDays = new Date(year, month + 1, 0).getDate();
+		const offset = (firstDay.getDay() + 6) % 7; // Mon=0, Sun=6
+		const cells: (Date | null)[] = Array(offset).fill(null);
+		for (let d = 1; d <= totalDays; d++) {
+			cells.push(new Date(year, month, d));
+		}
+		return cells;
+	}
+
+	selectPickerDate(date: Date): void {
+		this.viewDate = date;
+		this.showDatePicker = false;
+		this.fetchViewDateLog();
+	}
+
+	isPickerToday(date: Date): boolean {
+		return format(date, 'yyyy-MM-dd') === this.todayStr;
+	}
+
+	isPickerSelected(date: Date): boolean {
+		return format(date, 'yyyy-MM-dd') === this.viewDateStr;
+	}
+
+	isFutureDate(date: Date): boolean {
+		return format(date, 'yyyy-MM-dd') > this.todayStr;
+	}
+
 	private fetchViewDateLog(): void {
 		const userId = localStorage.getItem('id') ?? '';
 		this.dailyLogService.getLog(userId, this.viewDateStr).subscribe((log) => {
@@ -193,6 +264,33 @@ export class DashboardComponent implements OnInit {
 		return [...strengthEntries, ...cardioEntries]
 			.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 			.slice(0, 8);
+	}
+
+	// ── Current week (Mon–Sun) ───────────────────────────────────────────────
+
+	get currentWeekDays(): {
+		label: string; dayNum: string; month: string; dayName: string;
+		dateStr: string; isToday: boolean; isPast: boolean;
+		workouts: WorkoutRecord[]; cardio: ConditioningRecord[];
+		planned: DayPlan | undefined;
+	}[] {
+		const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
+		return Array.from({ length: 7 }, (_, i) => {
+			const date = addDays(weekStart, i);
+			const dateStr = format(date, 'yyyy-MM-dd');
+			return {
+				label: format(date, 'EEE'),
+				dayNum: format(date, 'd'),
+				month: format(date, 'MMM'),
+				dayName: format(date, 'EEEE'),
+				dateStr,
+				isToday: dateStr === this.todayStr,
+				isPast: date < new Date(this.todayStr),
+				workouts: this.workoutRecords.filter(r => this.toDateStr(r.date) === dateStr),
+				cardio: this.conditioningRecords.filter(r => this.toDateStr(r.date) === dateStr),
+				planned: this.weekPlan?.getDayPlan(format(date, 'EEEE')),
+			};
+		});
 	}
 
 	// ── Upcoming schedule ────────────────────────────────────────────────────
