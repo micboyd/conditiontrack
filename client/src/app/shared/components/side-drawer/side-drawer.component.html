@@ -29,10 +29,9 @@
 		'translate-x-full': !isOpen && side === 'right',
 		'-translate-x-full': !isOpen && side === 'left',
 		'invisible': !isOpen && !isReady,
-		'shadow-2xl': isOpen
 	}">
 	<!-- Close -->
-	<div class="flex justify-end px-6 pt-6 pb-2 shrink-0 border-b border-zinc-100">
+	<div class="flex justify-end px-6 pt-6 pb-2 shrink-0">
 		<button (click)="close()" class="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center transition cursor-pointer" aria-label="Close menu">
 			<i class="fa-sharp fa-solid fa-xmark text-zinc-600 text-sm"></i>
 		</button>
