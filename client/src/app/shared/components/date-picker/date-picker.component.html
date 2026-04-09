@@ -1,0 +1,78 @@
+<div class="relative">
+
+	<!-- ── Trigger: icon mode (dashboard) ──────────────────────────────────── -->
+	@if (displayMode === 'icon') {
+		<button type="button" (click)="toggle()"
+			class="w-8 h-8 flex items-center justify-center rounded-full border transition cursor-pointer"
+			[class]="isOpen ? 'bg-zinc-900 border-zinc-900 text-white' : 'bg-white border-zinc-200 text-zinc-500 hover:bg-zinc-100'">
+			<i class="fa-sharp fa-solid fa-calendar text-xs"></i>
+		</button>
+	}
+
+	<!-- ── Trigger: field mode (forms) ─────────────────────────────────────── -->
+	@if (displayMode === 'field') {
+		<button type="button" (click)="toggle()"
+			class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl border border-zinc-200 bg-white text-sm transition hover:border-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent cursor-pointer">
+			<span [class]="value ? 'text-zinc-900' : 'text-zinc-400'">{{ displayLabel }}</span>
+			<i class="fa-sharp fa-solid fa-calendar text-zinc-400 text-xs ml-2 flex-shrink-0"></i>
+		</button>
+	}
+
+	@if (isOpen) {
+		<!-- ── Backdrop ─────────────────────────────────────────────────────── -->
+		<div class="fixed inset-0 z-40" (click)="close()"></div>
+
+		<!-- ── Picker panel ─────────────────────────────────────────────────── -->
+		<!-- Mobile: slides up as a bottom sheet                                -->
+		<!-- Desktop (sm+): drops down as an absolute positioned card           -->
+		<div class="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl border-t border-zinc-100 p-5 pb-8
+		            sm:absolute sm:inset-auto sm:bottom-auto sm:top-full sm:right-0 sm:mt-2 sm:w-72 sm:rounded-2xl sm:shadow-xl sm:border sm:border-zinc-100 sm:pb-5">
+
+			<!-- Drag handle (mobile only) -->
+			<div class="flex justify-center mb-4 sm:hidden">
+				<div class="w-10 h-1 bg-zinc-200 rounded-full"></div>
+			</div>
+
+			<!-- Month navigation -->
+			<div class="flex items-center justify-between mb-4">
+				<button type="button" (click)="prevMonth()"
+					class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-zinc-100 text-zinc-500 transition cursor-pointer">
+					<i class="fa-sharp fa-solid fa-chevron-left text-xs"></i>
+				</button>
+				<span class="text-sm font-semibold text-zinc-900">{{ monthLabel }}</span>
+				<button type="button" (click)="nextMonth()" [disabled]="nextMonthDisabled"
+					class="w-8 h-8 flex items-center justify-center rounded-lg transition"
+					[class]="nextMonthDisabled ? 'text-zinc-200 cursor-not-allowed' : 'hover:bg-zinc-100 text-zinc-500 cursor-pointer'">
+					<i class="fa-sharp fa-solid fa-chevron-right text-xs"></i>
+				</button>
+			</div>
+
+			<!-- Day of week headers -->
+			<div class="grid grid-cols-7 mb-1">
+				@for (d of weekDays; track d) {
+					<div class="text-center text-[10px] font-medium text-zinc-400 uppercase py-1">{{ d }}</div>
+				}
+			</div>
+
+			<!-- Day cells -->
+			<div class="grid grid-cols-7 gap-y-1">
+				@for (day of days; track $index) {
+					@if (day === null) {
+						<div></div>
+					} @else {
+						<button type="button" (click)="selectDate(day)" [disabled]="isDisabled(day)"
+							class="h-9 w-9 mx-auto flex items-center justify-center rounded-full text-sm transition"
+							[class]="isDisabled(day)   ? 'text-zinc-200 cursor-not-allowed' :
+									 isSelected(day)   ? 'bg-zinc-900 text-white font-semibold cursor-pointer' :
+									 isDayToday(day)   ? 'bg-zinc-100 text-zinc-900 font-semibold hover:bg-zinc-200 cursor-pointer' :
+									                     'text-zinc-700 hover:bg-zinc-100 cursor-pointer'">
+							{{ day.getDate() }}
+						</button>
+					}
+				}
+			</div>
+
+		</div>
+	}
+
+</div>

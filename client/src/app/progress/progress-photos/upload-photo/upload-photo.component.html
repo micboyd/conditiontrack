@@ -1,0 +1,117 @@
+<div class="p-6">
+    <!-- Title -->
+    <div class="mb-6">
+        <h2 class="text-xl font-bold text-zinc-900">Add Progress Photo</h2>
+        <p class="text-sm text-zinc-400 mt-1">Upload a photo to track your progress</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+
+        <!-- File Upload Zone -->
+        <div>
+            <input
+                type="file"
+                id="photoFileInput"
+                accept="image/*"
+                class="hidden"
+                (change)="onFileSelected($event)" />
+
+            @if (!previewUrl) {
+                <!-- Drop Zone -->
+                <div
+                    (click)="triggerFileInput()"
+                    class="border-2 border-dashed border-zinc-200 rounded-2xl p-10 flex flex-col items-center justify-center cursor-pointer hover:border-zinc-400 hover:bg-zinc-50 transition-all">
+                    <div class="w-14 h-14 rounded-full bg-zinc-100 flex items-center justify-center mb-4">
+                        <i class="fa-sharp fa-solid fa-camera text-2xl text-zinc-400"></i>
+                    </div>
+                    <p class="text-sm font-medium text-zinc-700">Click to select photo</p>
+                    <p class="text-xs text-zinc-400 mt-1">JPG, PNG or JPEG up to 10MB</p>
+                </div>
+            } @else {
+                <!-- Image Preview -->
+                <div
+                    (click)="triggerFileInput()"
+                    class="relative rounded-2xl overflow-hidden aspect-square cursor-pointer group">
+                    <img
+                        [src]="previewUrl"
+                        alt="Preview"
+                        class="w-full h-full object-cover" />
+                    <div class="absolute inset-0 bg-zinc-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <div class="flex flex-col items-center gap-2">
+                            <i class="fa-sharp fa-solid fa-camera text-white text-2xl"></i>
+                            <span class="text-white text-xs font-medium">Change photo</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Date -->
+        <div>
+            <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1.5">
+                Date <span class="text-red-400">*</span>
+            </label>
+            <app-date-picker
+                displayMode="field"
+                [value]="form.get('date')!.value"
+                (valueChange)="form.get('date')!.setValue($event); form.get('date')!.markAsTouched()">
+            </app-date-picker>
+            @if (form.get('date')?.invalid && form.get('date')?.touched) {
+                <p class="text-xs text-red-500 mt-1">Date is required.</p>
+            }
+        </div>
+
+        <!-- Weight -->
+        <div>
+            <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1.5">
+                Weight (optional)
+            </label>
+            <div class="relative">
+                <input
+                    type="number"
+                    formControlName="weight"
+                    placeholder="e.g. 80"
+                    min="0"
+                    step="0.1"
+                    class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent transition pr-10" />
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-zinc-400">kg</span>
+            </div>
+        </div>
+
+        <!-- Notes -->
+        <div>
+            <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1.5">
+                Notes (optional)
+            </label>
+            <textarea
+                formControlName="notes"
+                rows="3"
+                placeholder="How are you feeling? Any observations..."
+                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent transition resize-none">
+            </textarea>
+        </div>
+
+        <!-- Error -->
+        @if (error) {
+            <div class="flex items-start gap-3 p-3 bg-red-50 rounded-xl border border-red-100">
+                <i class="fa-sharp fa-solid fa-circle-exclamation text-red-400 text-sm mt-0.5"></i>
+                <p class="text-sm text-red-600">{{ error }}</p>
+            </div>
+        }
+
+        <!-- Submit -->
+        <button
+            type="submit"
+            [disabled]="uploading"
+            class="w-full flex items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-800 disabled:bg-zinc-300 text-white text-sm font-medium px-5 py-3 rounded-xl transition cursor-pointer disabled:cursor-not-allowed">
+            @if (uploading) {
+                <i class="fa-sharp fa-solid fa-spinner-third fa-spin text-sm"></i>
+                <span>Uploading...</span>
+            } @else {
+                <i class="fa-sharp fa-solid fa-cloud-arrow-up text-sm"></i>
+                <span>Upload Photo</span>
+            }
+        </button>
+
+    </form>
+</div>

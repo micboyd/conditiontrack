@@ -18,7 +18,7 @@
 	<div class="lg:w-1/2 lg:border-r border-zinc-100 flex flex-col bg-zinc-50">
 
 		<!-- Panel header + date nav -->
-		<div class="relative flex items-end justify-between px-10 pt-10 pb-8">
+		<div class="flex items-end justify-between px-10 pt-10 pb-8">
 			<div>
 				<p class="text-base font-medium uppercase tracking-widest text-zinc-400 mb-2">My Day</p>
 				<h2 class="text-3xl font-bold text-zinc-900 tracking-tight">{{ viewDateFormatted }}</h2>
@@ -38,56 +38,68 @@
 					[class]="isToday ? 'bg-zinc-50 border-zinc-100 text-zinc-300 cursor-not-allowed' : 'bg-white border-zinc-200 text-zinc-500 hover:bg-zinc-100 cursor-pointer'">
 					<i class="fa-sharp fa-solid fa-chevron-right text-xs"></i>
 				</button>
-				<button (click)="toggleDatePicker()"
-					class="w-8 h-8 flex items-center justify-center rounded-full border transition cursor-pointer ml-1"
-					[class]="showDatePicker ? 'bg-zinc-900 border-zinc-900 text-white' : 'bg-white border-zinc-200 text-zinc-500 hover:bg-zinc-100'">
-					<i class="fa-sharp fa-solid fa-calendar text-xs"></i>
-				</button>
+				<div class="ml-1">
+					<app-date-picker
+						displayMode="icon"
+						[value]="viewDateStr"
+						[maxDate]="todayStr"
+						(valueChange)="onDateSelected($event)">
+					</app-date-picker>
+				</div>
+			</div>
+		</div>
+
+		<!-- Strength & Cardio Stats -->
+		<div class="mx-10 mb-6 flex gap-4">
+
+			<!-- Strength -->
+			<div class="flex-1 bg-white rounded-2xl shadow-sm px-5 py-4">
+				<div class="flex items-center gap-1.5 mb-3">
+					<i class="fa-sharp fa-solid fa-dumbbell text-blue-400 text-[10px]"></i>
+					<span class="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest">Strength</span>
+				</div>
+				<div class="flex divide-x divide-zinc-100">
+					<div class="pr-3 flex-1">
+						<p class="text-xl font-bold text-zinc-900 leading-none">{{ dayWorkoutSets }}</p>
+						<p class="text-[10px] font-medium text-zinc-400 uppercase tracking-wide mt-1">Sets</p>
+					</div>
+					<div class="px-3 flex-1">
+						<p class="text-xl font-bold text-zinc-900 leading-none">{{ dayWorkoutReps }}</p>
+						<p class="text-[10px] font-medium text-zinc-400 uppercase tracking-wide mt-1">Reps</p>
+					</div>
+					<div class="px-3 flex-1">
+						<p class="text-xl font-bold text-zinc-900 leading-none">{{ dayWorkoutVolume }}<span class="text-[10px] font-normal text-zinc-400 ml-0.5">kg</span></p>
+						<p class="text-[10px] font-medium text-zinc-400 uppercase tracking-wide mt-1">Vol</p>
+					</div>
+					<div class="pl-3 flex-1">
+						<p class="text-xl font-bold text-zinc-900 leading-none">{{ dayWorkoutDuration }}<span class="text-[10px] font-normal text-zinc-400 ml-0.5">m</span></p>
+						<p class="text-[10px] font-medium text-zinc-400 uppercase tracking-wide mt-1">Time</p>
+					</div>
+				</div>
 			</div>
 
-			<!-- Date Picker Dropdown -->
-			@if (showDatePicker) {
-				<div class="fixed inset-0 z-40" (click)="showDatePicker = false"></div>
-				<div class="absolute top-full right-10 z-50 bg-white rounded-2xl shadow-xl border border-zinc-100 p-5 w-72 mt-2">
-
-					<!-- Month navigation -->
-					<div class="flex items-center justify-between mb-4">
-						<button (click)="prevPickerMonth()"
-							class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-zinc-100 text-zinc-500 transition cursor-pointer">
-							<i class="fa-sharp fa-solid fa-chevron-left text-xs"></i>
-						</button>
-						<span class="text-sm font-semibold text-zinc-900">{{ pickerMonthLabel }}</span>
-						<button (click)="nextPickerMonth()" [disabled]="pickerNextMonthDisabled"
-							class="w-7 h-7 flex items-center justify-center rounded-lg transition"
-							[class]="pickerNextMonthDisabled ? 'text-zinc-200 cursor-not-allowed' : 'hover:bg-zinc-100 text-zinc-500 cursor-pointer'">
-							<i class="fa-sharp fa-solid fa-chevron-right text-xs"></i>
-						</button>
-					</div>
-
-					<!-- Day of week headers -->
-					<div class="grid grid-cols-7 mb-1">
-						@for (d of ['Mo','Tu','We','Th','Fr','Sa','Su']; track d) {
-							<div class="text-center text-[10px] font-medium text-zinc-400 uppercase py-1">{{ d }}</div>
-						}
-					</div>
-
-					<!-- Day cells -->
-					<div class="grid grid-cols-7 gap-y-1">
-						@for (day of pickerDays; track $index) {
-							@if (day === null) {
-								<div></div>
-							} @else {
-								<button (click)="selectPickerDate(day)" [disabled]="isFutureDate(day)"
-									class="h-8 w-8 mx-auto flex items-center justify-center rounded-full text-sm transition"
-									[class]="isFutureDate(day) ? 'text-zinc-200 cursor-not-allowed' : isPickerSelected(day) ? 'bg-zinc-900 text-white font-semibold cursor-pointer' : isPickerToday(day) ? 'bg-zinc-100 text-zinc-900 font-semibold hover:bg-zinc-200 cursor-pointer' : 'text-zinc-700 hover:bg-zinc-100 cursor-pointer'">
-									{{ day.getDate() }}
-								</button>
-							}
-						}
-					</div>
-
+			<!-- Cardio -->
+			<div class="flex-1 bg-white rounded-2xl shadow-sm px-5 py-4">
+				<div class="flex items-center gap-1.5 mb-3">
+					<i class="fa-sharp fa-solid fa-person-running text-green-500 text-[10px]"></i>
+					<span class="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest">Cardio</span>
 				</div>
-			}
+				<div class="flex divide-x divide-zinc-100">
+					<div class="pr-3 flex-1">
+						<p class="text-xl font-bold text-zinc-900 leading-none">{{ dayCardioSessions }}</p>
+						<p class="text-[10px] font-medium text-zinc-400 uppercase tracking-wide mt-1">Sessions</p>
+					</div>
+					<div class="px-3 flex-1">
+						<p class="text-xl font-bold text-zinc-900 leading-none">{{ dayCardioDuration }}<span class="text-[10px] font-normal text-zinc-400 ml-0.5">m</span></p>
+						<p class="text-[10px] font-medium text-zinc-400 uppercase tracking-wide mt-1">Time</p>
+					</div>
+					<div class="pl-3 flex-1">
+						<p class="text-xl font-bold text-zinc-900 leading-none">{{ dayCardioCalories }}<span class="text-[10px] font-normal text-zinc-400 ml-0.5">kcal</span></p>
+						<p class="text-[10px] font-medium text-zinc-400 uppercase tracking-wide mt-1">Burned</p>
+					</div>
+				</div>
+			</div>
+
 		</div>
 
 		<!-- Daily totals card -->

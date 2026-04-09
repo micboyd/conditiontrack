@@ -1,4 +1,5 @@
-const cloudinary = require('cloudinary').v2;
+const cloudinaryModule = require('cloudinary');
+const cloudinary = cloudinaryModule.v2;
 const CloudinaryStorage = require('multer-storage-cloudinary');
 
 require('dotenv').config();
@@ -9,8 +10,10 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// Pass the full cloudinary module (not .v2) so multer-storage-cloudinary
+// can access .v2 internally as it expects.
 const storage = CloudinaryStorage({
-  cloudinary,
+  cloudinary: cloudinaryModule,
   folder: 'conditiontrack',
   allowedFormats: ['jpg', 'png', 'jpeg'],
   transformation: [{ width: 1000, height: 1000, crop: 'limit' }],

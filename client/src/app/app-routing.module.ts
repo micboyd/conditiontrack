@@ -21,6 +21,8 @@ import { StyleguideComponent } from './styleguide/styleguide.component';
 import { WorkoutRecordsComponent } from './strength/workout-records/workout-records.component';
 import { WeekPlannerComponent } from './week-planner/week-planner.component';
 import { WorkoutLibraryComponent } from './strength/workout-library/workout-library.component';
+import { ProgressComponent } from './progress/progress.component';
+import { ProgressPhotosComponent } from './progress/progress-photos/progress-photos.component';
 
 const routes: Routes = [
 	// Login remains at top level
@@ -122,6 +124,15 @@ const routes: Routes = [
 				path: 'week-planner',
 				component: WeekPlannerComponent,
 				canActivate: [AuthGuard],
+			},
+			{
+				path: 'progress',
+				component: ProgressComponent,
+				canActivate: [AuthGuard],
+				children: [
+					{ path: '', redirectTo: 'photos', pathMatch: 'full' },
+					{ path: 'photos', component: ProgressPhotosComponent, canActivate: [AuthGuard] },
+				],
 			},
 		],
 	},

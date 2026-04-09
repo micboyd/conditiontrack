@@ -11,6 +11,7 @@ import { MainLayoutComponent } from './shared/components/main-layout/main-layout
 import { NgModule } from '@angular/core';
 import { NotesComponent } from './notes/notes.component';
 import { NutritionModule } from './nutrition/nutrition.module';
+import { ProgressModule } from './progress/progress.module';
 import { ProfileComponent } from './profile/profile.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from './shared/shared.module';
@@ -41,7 +42,8 @@ import { provideHttpClient } from '@angular/common/http';
 		ConditioningModule,
 		NutritionModule,
 		GlobalSettingsModule,
-        WeekPlannerModule
+        WeekPlannerModule,
+        ProgressModule
 	],
 	providers: [provideHttpClient(), WorkoutService],
 	bootstrap: [AppComponent],

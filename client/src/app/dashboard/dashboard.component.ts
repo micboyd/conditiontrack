@@ -48,9 +48,6 @@ export class DashboardComponent implements OnInit {
 
 	mealSearchQuery = '';
 
-	// Date picker state
-	showDatePicker = false;
-	pickerMonth: Date = new Date();
 
 	// Workout logging state
 	logWorkoutStep: 1 | 2 = 1;
@@ -146,66 +143,9 @@ export class DashboardComponent implements OnInit {
 		this.fetchViewDateLog();
 	}
 
-	// ── Date picker ──────────────────────────────────────────────────────────
-
-	toggleDatePicker(): void {
-		if (!this.showDatePicker) {
-			this.pickerMonth = new Date(this.viewDate);
-		}
-		this.showDatePicker = !this.showDatePicker;
-	}
-
-	prevPickerMonth(): void {
-		const d = new Date(this.pickerMonth);
-		d.setMonth(d.getMonth() - 1);
-		this.pickerMonth = d;
-	}
-
-	nextPickerMonth(): void {
-		const d = new Date(this.pickerMonth);
-		d.setMonth(d.getMonth() + 1);
-		this.pickerMonth = d;
-	}
-
-	get pickerMonthLabel(): string {
-		return format(this.pickerMonth, 'MMMM yyyy');
-	}
-
-	get pickerNextMonthDisabled(): boolean {
-		const today = new Date();
-		return this.pickerMonth.getFullYear() > today.getFullYear() ||
-			(this.pickerMonth.getFullYear() === today.getFullYear() && this.pickerMonth.getMonth() >= today.getMonth());
-	}
-
-	get pickerDays(): (Date | null)[] {
-		const year = this.pickerMonth.getFullYear();
-		const month = this.pickerMonth.getMonth();
-		const firstDay = new Date(year, month, 1);
-		const totalDays = new Date(year, month + 1, 0).getDate();
-		const offset = (firstDay.getDay() + 6) % 7; // Mon=0, Sun=6
-		const cells: (Date | null)[] = Array(offset).fill(null);
-		for (let d = 1; d <= totalDays; d++) {
-			cells.push(new Date(year, month, d));
-		}
-		return cells;
-	}
-
-	selectPickerDate(date: Date): void {
-		this.viewDate = date;
-		this.showDatePicker = false;
+	onDateSelected(dateStr: string): void {
+		this.viewDate = parseISO(dateStr);
 		this.fetchViewDateLog();
-	}
-
-	isPickerToday(date: Date): boolean {
-		return format(date, 'yyyy-MM-dd') === this.todayStr;
-	}
-
-	isPickerSelected(date: Date): boolean {
-		return format(date, 'yyyy-MM-dd') === this.viewDateStr;
-	}
-
-	isFutureDate(date: Date): boolean {
-		return format(date, 'yyyy-MM-dd') > this.todayStr;
 	}
 
 	private fetchViewDateLog(): void {
@@ -356,6 +296,39 @@ export class DashboardComponent implements OnInit {
 
 	get viewDayCardio(): ConditioningRecord[] {
 		return this.conditioningRecords.filter((r) => this.toDateStr(r.date) === this.viewDateStr);
+	}
+
+	get dayWorkoutSets(): number {
+		return this.viewDayWorkouts.reduce((sum, r) =>
+			sum + r.exercises.reduce((s, e) => s + e.sets.length, 0), 0);
+	}
+
+	get dayWorkoutReps(): number {
+		return this.viewDayWorkouts.reduce((sum, r) =>
+			sum + r.exercises.reduce((s, e) =>
+				s + e.sets.reduce((rs, set) => rs + (set.reps || 0), 0), 0), 0);
+	}
+
+	get dayWorkoutVolume(): number {
+		return this.viewDayWorkouts.reduce((sum, r) =>
+			sum + r.exercises.reduce((s, e) =>
+				s + e.sets.reduce((rs, set) => rs + ((set.reps || 0) * (set.weight || 0)), 0), 0), 0);
+	}
+
+	get dayWorkoutDuration(): number {
+		return this.viewDayWorkouts.reduce((sum, r) => sum + (r.duration || 0), 0);
+	}
+
+	get dayCardioSessions(): number {
+		return this.viewDayCardio.length;
+	}
+
+	get dayCardioDuration(): number {
+		return this.viewDayCardio.reduce((sum, r) => sum + (r.duration || 0), 0);
+	}
+
+	get dayCardioCalories(): number {
+		return this.viewDayCardio.reduce((sum, r) => sum + (r.caloriesBurned || 0), 0);
 	}
 
 	get totalCaloriesEaten(): number {
