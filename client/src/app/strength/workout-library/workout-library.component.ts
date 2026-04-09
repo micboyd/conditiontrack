@@ -46,7 +46,10 @@ export class WorkoutLibraryComponent implements OnInit {
 	}
 
 	closeDrawer(): void {
-		this.getAllWorkouts();
 		this.drawer.close();
+	}
+
+	onDrawerClosed(): void {
+		this.getAllWorkouts();
 	}
 }

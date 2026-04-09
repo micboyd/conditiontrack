@@ -87,6 +87,9 @@ export class EditRecordComponent {
 
 	onSubmit(): void {
 		if (!this.recordForm) return;
+		this.recordForm.markAllAsTouched();
+		if (this.recordForm.invalid) return;
+
 		this.formLoading = true;
 
 		if (this.selectedRecord) {

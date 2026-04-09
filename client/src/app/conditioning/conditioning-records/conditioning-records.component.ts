@@ -53,8 +53,11 @@ export class ConditioningRecordsComponent implements OnInit {
 	}
 
 	closeDrawer(): void {
-		this.getAllRecords();
 		this.drawer.close();
+	}
+
+	onDrawerClosed(): void {
+		this.getAllRecords();
 	}
 
 	getSessionNameById(sessionId: string): string {

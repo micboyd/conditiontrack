@@ -39,6 +39,9 @@ export class EditSessionComponent implements OnInit {
 	}
 
 	onSubmit(): void {
+		this.sessionForm.markAllAsTouched();
+		if (this.sessionForm.invalid) return;
+
 		this.formLoading = true;
 		if (this.selectedSession) {
 			this.conditioningLibraryService

@@ -1,50 +1,50 @@
-<app-side-drawer (closeEvent)="closeDrawer()">
+<app-side-drawer (closeEvent)="onDrawerClosed()">
 	<app-edit-workout
 		[selectedWorkout]="selectedWorkout"
 		(closeEditModeEvent)="closeDrawer()">
 	</app-edit-workout>
 </app-side-drawer>
 
-<div class="bg-white rounded-xl border border-gray-100">
-	<div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-		<h2 class="text-sm font-semibold text-gray-900">Workout Library</h2>
-		<button (click)="openDrawer()"
-			class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition-colors cursor-pointer">
-			<i class="fa-sharp fa-solid fa-plus text-xs"></i>
-			Add Workout
-		</button>
-	</div>
+<div class="flex items-center justify-between mb-7">
+	<h2 class="text-xl font-semibold text-zinc-900">Workout Library</h2>
+	<button (click)="openDrawer()"
+		class="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium px-5 py-2.5 rounded-full transition cursor-pointer">
+		<i class="fa-sharp fa-solid fa-plus text-xs"></i>
+		Add Workout
+	</button>
+</div>
 
-	@if (workoutsLoading) {
-		<div class="px-6 py-8">
-			<app-loading-indicator [loading]="true"></app-loading-indicator>
-		</div>
-	} @else if (allWorkouts.length === 0) {
-		<div class="px-6 py-10 text-center text-sm text-gray-400">
-			No workouts yet. Create your first workout template.
-		</div>
-	} @else {
+@if (workoutsLoading) {
+	<div class="py-8">
+		<app-loading-indicator [loading]="true"></app-loading-indicator>
+	</div>
+} @else if (allWorkouts.length === 0) {
+	<div class="bg-white rounded-2xl px-6 py-16 text-center text-sm text-zinc-400">
+		No workouts yet. Create your first workout template.
+	</div>
+} @else {
+	<div class="bg-white rounded-2xl overflow-hidden shadow-sm">
 		<table class="w-full text-sm">
 			<thead>
-				<tr class="text-xs text-gray-400 uppercase tracking-wider">
-					<th class="px-6 py-3 text-left font-medium">Name</th>
-					<th class="px-6 py-3 text-left font-medium">Description</th>
-					<th class="px-6 py-3 text-left font-medium">Exercises</th>
-					<th class="px-6 py-3 text-right font-medium"></th>
+				<tr class="bg-zinc-50 border-b border-zinc-100">
+					<th class="px-6 py-3.5 text-left text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Name</th>
+					<th class="px-6 py-3.5 text-left text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Description</th>
+					<th class="px-6 py-3.5 text-left text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Exercises</th>
+					<th class="px-6 py-3.5 text-right text-[11px] font-medium text-zinc-400 uppercase tracking-wider"></th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody class="divide-y divide-zinc-50">
 				@for (workout of allWorkouts; track workout._id) {
-				<tr class="border-t border-gray-50 hover:bg-gray-50 transition-colors">
-					<td class="px-6 py-3.5 text-gray-800 font-medium whitespace-nowrap">{{ workout.name }}</td>
-					<td class="px-6 py-3.5 text-gray-400 max-w-xs truncate">{{ workout.description || '—' }}</td>
-					<td class="px-6 py-3.5 text-gray-500">{{ workout.exercises.length }}</td>
-					<td class="px-6 py-3.5 text-right">
-						<div class="flex items-center justify-end gap-3 text-gray-400">
-							<button (click)="openDrawer(workout)" class="hover:text-gray-700 transition-colors cursor-pointer">
+				<tr class="hover:bg-zinc-50 transition-colors">
+					<td class="px-6 py-4 text-zinc-900 font-semibold whitespace-nowrap">{{ workout.name }}</td>
+					<td class="px-6 py-4 text-zinc-400 max-w-xs truncate">{{ workout.description || '—' }}</td>
+					<td class="px-6 py-4 text-zinc-400">{{ workout.exercises.length }}</td>
+					<td class="px-6 py-4 text-right">
+						<div class="flex items-center justify-end gap-3 text-zinc-300">
+							<button (click)="openDrawer(workout)" class="hover:text-zinc-700 transition cursor-pointer">
 								<i class="fa-sharp fa-solid fa-pen-to-square text-sm"></i>
 							</button>
-							<button (click)="deleteWorkout(workout)" class="hover:text-red-500 transition-colors cursor-pointer">
+							<button (click)="deleteWorkout(workout)" class="hover:text-red-500 transition cursor-pointer">
 								<i class="fa-sharp fa-solid fa-trash text-sm"></i>
 							</button>
 						</div>
@@ -53,5 +53,5 @@
 				}
 			</tbody>
 		</table>
-	}
-</div>
+	</div>
+}

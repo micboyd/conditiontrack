@@ -56,8 +56,11 @@ export class WorkoutRecordsComponent implements OnInit {
 	}
 
 	closeDrawer(): void {
-		this.getAllWorkoutRecords();
 		this.drawer.close();
+	}
+
+	onDrawerClosed(): void {
+		this.getAllWorkoutRecords();
 	}
 
 	getWorkoutName(workoutId: string): string {

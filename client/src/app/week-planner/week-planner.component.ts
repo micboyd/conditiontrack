@@ -18,6 +18,8 @@ export class WeekPlannerComponent implements OnInit {
 	@ViewChild(SideDrawerComponent) drawer: SideDrawerComponent;
 
 	resourcesLoading: boolean = false;
+	saving: boolean = false;
+	saved: boolean = false;
 
 	private _selectedDay: DayPlan | null = null;
 
@@ -95,6 +97,16 @@ export class WeekPlannerComponent implements OnInit {
 		});
 	}
 
+	private autoSave() {
+		this.saving = true;
+		this.saved = false;
+		this.weekPlannerService.updateWeekPlan(this.weekPlan._id, this._weekPlan.payload()).subscribe(() => {
+			this.saving = false;
+			this.saved = true;
+			setTimeout(() => this.saved = false, 2000);
+		});
+	}
+
 	editDay(day: DayPlan) {
 		this._selectedDay = day;
 		this.drawer.open();
@@ -103,19 +115,23 @@ export class WeekPlannerComponent implements OnInit {
 	addWorkoutToDay(day: string, workout: Workout) {
 		this._weekPlan.addWorkout(day, workout);
 		this.drawer.close();
+		this.autoSave();
 	}
 
 	addConditioningToDay(day: string, session: ConditioningSession) {
 		this._weekPlan.addConditioning(day, session);
 		this.drawer.close();
+		this.autoSave();
 	}
 
 	removeWorkout(day: string, workout: Workout) {
 		this._weekPlan.removeWorkout(day, workout);
+		this.autoSave();
 	}
 
 	removeConditioning(day: string, session: ConditioningSession) {
 		this._weekPlan.removeConditioning(day, session);
+		this.autoSave();
 	}
 }
 

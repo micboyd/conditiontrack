@@ -1,69 +1,91 @@
-<div class="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
-	<div class="w-full max-w-md space-y-8">
-		<!-- Header -->
-		<div class="text-center">
-			<h1 class="text-2xl font-semibold text-gray-900 tracking-tight">Sign in to your account</h1>
-			<p class="mt-2 text-sm text-gray-500">Welcome back! Please enter your credentials.</p>
+<div class="min-h-screen flex">
+
+	<!-- Left: Dark brand panel -->
+	<div class="hidden lg:flex lg:w-1/2 bg-zinc-900 flex-col justify-between p-12">
+		<div class="flex items-center gap-3">
+			<div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+				<i class="fa-sharp fa-solid fa-bolt text-zinc-900 text-sm"></i>
+			</div>
+			<span class="font-semibold text-white text-lg tracking-tight">ConditionTrack</span>
 		</div>
-
-		<!-- Auth Form -->
-		<form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="bg-white p-6 rounded-2xl shadow-sm space-y-6">
-			<!-- Email -->
-			<div>
-				<label for="email" class="block text-sm text-gray-700 mb-1">Email address</label>
-				<input
-					id="email"
-					type="email"
-					placeholder="you@example.com"
-					formControlName="username"
-					[ngClass]="{
-						'border-red-600': isInvalid('username'),
-						'border-gray-300': !isInvalid('username')
-					}"
-					class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300" />
-				@if (isInvalid('username')) {
-				<p class="text-sm text-red-600">Please enter a valid email address.</p>
-				}
-			</div>
-
-			<!-- Password -->
-			<div>
-				<label for="password" class="block text-sm text-gray-700 mb-1">Password</label>
-				<input
-					id="password"
-					type="password"
-					placeholder="••••••••"
-					formControlName="password"
-					[ngClass]="{
-						'border-red-600': isInvalid('password'),
-						'border-gray-300': !isInvalid('password')
-					}"
-					class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300" />
-				@if (isInvalid('password')) {
-				<p class="text-sm text-red-600">Password is required.</p>
-				}
-			</div>
-
-			@if (loginErrorMessage) {
-			<div>
-				<p class="text-sm text-red-600">{{ loginErrorMessage }}</p>
-			</div>
-			}
-
-			<!-- Submit Button -->
-			<button
-				type="submit"
-				class="w-full bg-blue-600 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition">
-				@if (loginLoading) {
-				<app-loading-indicator [spinner]="true" [loading]="loginLoading"></app-loading-indicator>
-				} @else { Login }
-			</button>
-
-			<!-- Footer Link -->
-			<p class="text-center text-sm text-gray-500">
-				Don't have an account?
-				<a href="#" class="text-blue-600 hover:underline">Sign up</a>
-			</p>
-		</form>
+		<div>
+			<h1 class="text-5xl font-bold text-white leading-tight mb-5">
+				Track your<br/>condition.<br/>Shape your<br/>future.
+			</h1>
+			<p class="text-zinc-400 text-base leading-relaxed">Your complete fitness tracking platform for strength, cardio, and nutrition.</p>
+		</div>
+		<p class="text-zinc-700 text-sm">© 2025 ConditionTrack</p>
 	</div>
+
+	<!-- Right: Form panel -->
+	<div class="flex-1 flex items-center justify-center bg-white px-6 py-12">
+		<div class="w-full max-w-sm">
+
+			<!-- Mobile logo -->
+			<div class="lg:hidden flex items-center gap-2 mb-10">
+				<div class="w-7 h-7 bg-zinc-900 rounded-md flex items-center justify-center flex-shrink-0">
+					<i class="fa-sharp fa-solid fa-bolt text-white text-xs"></i>
+				</div>
+				<span class="font-semibold text-zinc-900 text-base">ConditionTrack</span>
+			</div>
+
+			<h2 class="text-3xl font-bold text-zinc-900 mb-1">Welcome back</h2>
+			<p class="text-zinc-400 text-sm mb-8">Sign in to your account to continue.</p>
+
+			<form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5">
+
+				<div>
+					<label for="email" class="block text-[11px] font-medium text-zinc-400 uppercase tracking-widest mb-2">Email</label>
+					<input
+						id="email"
+						type="email"
+						placeholder="you@example.com"
+						formControlName="username"
+						[ngClass]="{
+							'border-red-400 focus:ring-red-400': isInvalid('username'),
+							'border-zinc-200 focus:ring-zinc-900': !isInvalid('username')
+						}"
+						class="w-full px-4 py-3.5 border rounded-xl text-sm text-zinc-900 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition" />
+					@if (isInvalid('username')) {
+						<p class="text-xs text-red-500 mt-1.5">Please enter a valid email address.</p>
+					}
+				</div>
+
+				<div>
+					<label for="password" class="block text-[11px] font-medium text-zinc-400 uppercase tracking-widest mb-2">Password</label>
+					<input
+						id="password"
+						type="password"
+						placeholder="••••••••"
+						formControlName="password"
+						[ngClass]="{
+							'border-red-400 focus:ring-red-400': isInvalid('password'),
+							'border-zinc-200 focus:ring-zinc-900': !isInvalid('password')
+						}"
+						class="w-full px-4 py-3.5 border rounded-xl text-sm text-zinc-900 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition" />
+					@if (isInvalid('password')) {
+						<p class="text-xs text-red-500 mt-1.5">Password is required.</p>
+					}
+				</div>
+
+				@if (loginErrorMessage) {
+					<div class="bg-red-50 rounded-xl px-4 py-3">
+						<p class="text-sm text-red-600">{{ loginErrorMessage }}</p>
+					</div>
+				}
+
+				<button
+					type="submit"
+					class="w-full bg-zinc-900 text-white py-4 rounded-xl text-sm font-medium hover:bg-zinc-800 transition mt-2 cursor-pointer">
+					@if (loginLoading) {
+						<app-loading-indicator [spinner]="true" [loading]="loginLoading"></app-loading-indicator>
+					} @else {
+						Sign in
+					}
+				</button>
+
+			</form>
+		</div>
+	</div>
+
 </div>

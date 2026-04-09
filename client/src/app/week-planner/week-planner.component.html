@@ -1,64 +1,70 @@
-<div class="p-8">
-
-	<!-- Header -->
-	<div class="flex items-start justify-between mb-6">
-		<div>
-			<h1 class="text-xl font-semibold text-gray-900">Week Planner</h1>
-			<p class="text-sm text-gray-400 mt-0.5">Plan your workouts and cardio sessions for the week</p>
-		</div>
-		<button (click)="updateWeekPlan()"
-			class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors cursor-pointer">
-			<i class="fa-sharp fa-solid fa-floppy-disk text-xs"></i>
-			Save Plan
-		</button>
+<!-- Light page header -->
+<div class="bg-white border-b border-zinc-100 px-8 lg:px-12 py-8 flex items-center justify-between gap-6">
+	<div>
+		<h1 class="text-3xl font-bold text-zinc-900 mb-1">Week Planner</h1>
+		<p class="text-sm text-zinc-400">Changes save automatically</p>
 	</div>
+	<div class="flex-shrink-0 h-6 flex items-center">
+		@if (saving) {
+			<span class="flex items-center gap-1.5 text-xs text-zinc-400">
+				<i class="fa-sharp fa-solid fa-spinner fa-spin text-[10px]"></i>
+				Saving...
+			</span>
+		} @else if (saved) {
+			<span class="flex items-center gap-1.5 text-xs text-emerald-500">
+				<i class="fa-sharp fa-solid fa-check text-[10px]"></i>
+				Saved
+			</span>
+		}
+	</div>
+</div>
+
+<!-- Content -->
+<div class="bg-zinc-50 px-8 lg:px-12 py-8 min-h-screen">
 
 	@if (resourcesLoading) {
 		<app-loading-indicator [loading]="true"></app-loading-indicator>
 	} @else {
 
-	<!-- Day Grid -->
 	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
 		@for (day of weekPlan?.days; track day.dayName) {
-		<div class="bg-white rounded-xl border border-gray-100 flex flex-col">
+		<div class="bg-white rounded-2xl overflow-hidden shadow-sm flex flex-col">
 
-			<!-- Day header -->
-			<div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-				<h2 class="text-sm font-semibold text-gray-900">{{ day.dayName }}</h2>
+			<div class="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
+				<h2 class="text-sm font-semibold text-zinc-900">{{ day.dayName }}</h2>
 				<button (click)="editDay(day)"
-					class="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 cursor-pointer transition-colors">
+					class="flex items-center gap-1 text-xs font-medium text-zinc-400 hover:text-zinc-700 cursor-pointer transition bg-zinc-50 hover:bg-zinc-100 px-2.5 py-1 rounded-full">
 					<i class="fa-sharp fa-solid fa-plus text-[10px]"></i>
 					Add
 				</button>
 			</div>
 
-			<!-- Sessions -->
-			<div class="flex-1 px-4 py-3 space-y-2 min-h-[80px]">
+			<div class="flex-1 px-4 py-4 space-y-2 min-h-[88px]">
 				@if (day.workouts.length === 0 && day.conditioning.length === 0) {
-					<p class="text-xs text-gray-300 italic">Rest day</p>
+					<p class="text-xs text-zinc-300 italic">Rest day</p>
 				}
 
 				@for (workout of day.workouts; track workout._id) {
-				<div class="flex items-center justify-between gap-2 py-1.5 px-3 bg-blue-50 rounded-lg">
+				<div class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
 					<div class="min-w-0">
-						<p class="text-xs font-medium text-blue-800 truncate">{{ workout.name }}</p>
-						<p class="text-[10px] text-blue-500 mt-0.5">Strength</p>
+						<p class="text-xs font-medium text-blue-900 truncate">{{ workout.name }}</p>
+						<p class="text-[10px] text-blue-400 mt-0.5 uppercase tracking-wide">Strength</p>
 					</div>
 					<button (click)="removeWorkout(day.dayName, workout)"
-						class="text-blue-300 hover:text-red-400 transition-colors cursor-pointer flex-shrink-0">
+						class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0">
 						<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
 					</button>
 				</div>
 				}
 
 				@for (session of day.conditioning; track session._id) {
-				<div class="flex items-center justify-between gap-2 py-1.5 px-3 bg-green-50 rounded-lg">
+				<div class="flex items-center justify-between gap-2 py-2 px-3 bg-green-50 rounded-xl">
 					<div class="min-w-0">
-						<p class="text-xs font-medium text-green-800 truncate">{{ session.name }}</p>
-						<p class="text-[10px] text-green-500 mt-0.5">Cardio</p>
+						<p class="text-xs font-medium text-green-900 truncate">{{ session.name }}</p>
+						<p class="text-[10px] text-green-400 mt-0.5 uppercase tracking-wide">Cardio</p>
 					</div>
 					<button (click)="removeConditioning(day.dayName, session)"
-						class="text-green-300 hover:text-red-400 transition-colors cursor-pointer flex-shrink-0">
+						class="text-green-300 hover:text-red-400 transition cursor-pointer flex-shrink-0">
 						<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
 					</button>
 				</div>
@@ -69,48 +75,41 @@
 		}
 	</div>
 
-	<!-- Side Drawer: session picker -->
 	<app-side-drawer side="right">
-		<div class="p-6">
-			<h2 class="text-base font-semibold text-gray-900 mb-1">{{ selectedDay?.dayName }}</h2>
-			<p class="text-sm text-gray-400 mb-5">Select a session to add</p>
+		<div class="p-6 flex flex-col h-full">
+			<h2 class="text-xl font-semibold text-zinc-900 mb-1">{{ selectedDay?.dayName }}</h2>
+			<p class="text-sm text-zinc-400 mb-6">Select a session to add</p>
 
-			<!-- Strength -->
 			@if (allWorkouts.length > 0) {
-			<div class="mb-6">
-				<p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Strength</p>
+			<div class="mb-7">
+				<p class="text-[11px] font-medium uppercase tracking-widest text-zinc-400 mb-3">Strength</p>
 				<div class="space-y-2">
 					@for (workout of allWorkouts; track workout._id) {
 					<div (click)="addWorkoutToDay(selectedDay?.dayName, workout)"
-						class="flex items-center justify-between px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 cursor-pointer transition-colors">
+						class="flex items-center justify-between px-4 py-4 bg-zinc-50 rounded-xl hover:bg-zinc-100 cursor-pointer transition">
 						<div>
-							<p class="text-sm font-medium text-gray-800">{{ workout.name }}</p>
-							<p class="text-xs text-gray-400 mt-0.5">{{ workout.exercises.length }} exercises</p>
+							<p class="text-sm font-medium text-zinc-800">{{ workout.name }}</p>
+							<p class="text-xs text-zinc-400 mt-0.5">{{ workout.exercises.length }} exercises</p>
 						</div>
-						<span class="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium flex-shrink-0">
-							Add
-						</span>
+						<span class="text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-medium flex-shrink-0">Add</span>
 					</div>
 					}
 				</div>
 			</div>
 			}
 
-			<!-- Cardio -->
 			@if (allConditioningSessions.length > 0) {
 			<div>
-				<p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Cardio</p>
+				<p class="text-[11px] font-medium uppercase tracking-widest text-zinc-400 mb-3">Cardio</p>
 				<div class="space-y-2">
 					@for (session of allConditioningSessions; track session._id) {
 					<div (click)="addConditioningToDay(selectedDay?.dayName, session)"
-						class="flex items-center justify-between px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 cursor-pointer transition-colors">
+						class="flex items-center justify-between px-4 py-4 bg-zinc-50 rounded-xl hover:bg-zinc-100 cursor-pointer transition">
 						<div>
-							<p class="text-sm font-medium text-gray-800">{{ session.name }}</p>
-							<p class="text-xs text-gray-400 mt-0.5">{{ session.category }} · {{ session.duration }} min</p>
+							<p class="text-sm font-medium text-zinc-800">{{ session.name }}</p>
+							<p class="text-xs text-zinc-400 mt-0.5">{{ session.category }} · {{ session.duration }} min</p>
 						</div>
-						<span class="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium flex-shrink-0">
-							Add
-						</span>
+						<span class="text-xs px-2.5 py-1 rounded-full bg-green-50 text-green-700 font-medium flex-shrink-0">Add</span>
 					</div>
 					}
 				</div>
@@ -118,7 +117,7 @@
 			}
 
 			@if (allWorkouts.length === 0 && allConditioningSessions.length === 0) {
-				<p class="text-sm text-gray-400 text-center py-8">
+				<p class="text-sm text-zinc-400 text-center py-10">
 					No sessions in your library yet.<br/>Add workouts and cardio sessions first.
 				</p>
 			}

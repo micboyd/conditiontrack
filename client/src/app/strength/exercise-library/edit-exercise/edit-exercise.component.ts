@@ -32,6 +32,9 @@ export class EditExerciseComponent {
 	}
 
 	onSubmit(): void {
+		this.exerciseForm.markAllAsTouched();
+		if (this.exerciseForm.invalid) return;
+
 		this.formLoading = true;
 
 		if (this.selectedExercise) {

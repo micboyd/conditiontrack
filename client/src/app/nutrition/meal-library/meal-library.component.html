@@ -1,74 +1,74 @@
-<app-side-drawer (closeEvent)="closeDrawer()">
+<app-side-drawer (closeEvent)="onDrawerClosed()">
 	<app-edit-meal
 		[selectedMeal]="selectedMeal"
 		(closeEditModeEvent)="closeDrawer()">
 	</app-edit-meal>
 </app-side-drawer>
 
-<div class="bg-white rounded-xl border border-gray-100">
-	<div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-		<h2 class="text-sm font-semibold text-gray-900">Meal Library</h2>
-		<button (click)="openDrawer(null)"
-			class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition-colors cursor-pointer">
-			<i class="fa-sharp fa-solid fa-plus text-xs"></i>
-			Add Meal
-		</button>
-	</div>
+<div class="flex items-center justify-between mb-7">
+	<h2 class="text-xl font-semibold text-zinc-900">Meal Library</h2>
+	<button (click)="openDrawer(null)"
+		class="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium px-5 py-2.5 rounded-full transition cursor-pointer">
+		<i class="fa-sharp fa-solid fa-plus text-xs"></i>
+		Add Meal
+	</button>
+</div>
 
-	@if (loading) {
-		<div class="px-6 py-8">
-			<app-loading-indicator [loading]="true"></app-loading-indicator>
-		</div>
-	} @else if (allMeals.length === 0) {
-		<div class="px-6 py-10 text-center text-sm text-gray-400">
-			No meals yet. Add your first meal to start tracking nutrition.
-		</div>
-	} @else {
+@if (loading) {
+	<div class="py-8">
+		<app-loading-indicator [loading]="true"></app-loading-indicator>
+	</div>
+} @else if (allMeals.length === 0) {
+	<div class="bg-white rounded-2xl px-6 py-16 text-center text-sm text-zinc-400">
+		No meals yet. Add your first meal to start tracking nutrition.
+	</div>
+} @else {
+	<div class="bg-white rounded-2xl overflow-hidden shadow-sm">
 		<table class="w-full text-sm">
 			<thead>
-				<tr class="text-xs text-gray-400 uppercase tracking-wider">
-					<th class="px-6 py-3 text-left font-medium">Name</th>
-					<th class="px-6 py-3 text-left font-medium">Category</th>
-					<th class="px-6 py-3 text-left font-medium">Calories</th>
-					<th class="px-6 py-3 text-left font-medium">Protein</th>
-					<th class="px-6 py-3 text-left font-medium">Carbs</th>
-					<th class="px-6 py-3 text-left font-medium">Fat</th>
-					<th class="px-6 py-3 text-right font-medium"></th>
+				<tr class="bg-zinc-50 border-b border-zinc-100">
+					<th class="px-6 py-3.5 text-left text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Name</th>
+					<th class="px-6 py-3.5 text-left text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Category</th>
+					<th class="px-6 py-3.5 text-left text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Calories</th>
+					<th class="px-6 py-3.5 text-left text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Protein</th>
+					<th class="px-6 py-3.5 text-left text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Carbs</th>
+					<th class="px-6 py-3.5 text-left text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Fat</th>
+					<th class="px-6 py-3.5 text-right text-[11px] font-medium text-zinc-400 uppercase tracking-wider"></th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody class="divide-y divide-zinc-50">
 				@for (meal of allMeals; track meal._id) {
-				<tr class="border-t border-gray-50 hover:bg-gray-50 transition-colors">
-					<td class="px-6 py-3.5 font-medium text-gray-800">{{ meal.name }}</td>
-					<td class="px-6 py-3.5">
+				<tr class="hover:bg-zinc-50 transition-colors">
+					<td class="px-6 py-4 font-semibold text-zinc-900">{{ meal.name }}</td>
+					<td class="px-6 py-4">
 						@switch (meal.category) {
 							@case ('Breakfast') {
-								<span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700">Breakfast</span>
+								<span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700">Breakfast</span>
 							}
 							@case ('Lunch') {
-								<span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">Lunch</span>
+								<span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">Lunch</span>
 							}
 							@case ('Dinner') {
-								<span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700">Dinner</span>
+								<span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700">Dinner</span>
 							}
 							@case ('Snack') {
-								<span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">Snack</span>
+								<span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700">Snack</span>
 							}
 							@default {
-								<span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">{{ meal.category }}</span>
+								<span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-zinc-100 text-zinc-600">{{ meal.category }}</span>
 							}
 						}
 					</td>
-					<td class="px-6 py-3.5 text-gray-700 font-medium">{{ meal.calories }} kcal</td>
-					<td class="px-6 py-3.5 text-gray-500">{{ meal.protein }}g</td>
-					<td class="px-6 py-3.5 text-gray-500">{{ meal.carbs }}g</td>
-					<td class="px-6 py-3.5 text-gray-500">{{ meal.fat }}g</td>
-					<td class="px-6 py-3.5 text-right">
-						<div class="flex items-center justify-end gap-3 text-gray-400">
-							<button (click)="openDrawer(meal)" class="hover:text-gray-700 transition-colors cursor-pointer">
+					<td class="px-6 py-4 text-zinc-700 font-medium">{{ meal.calories }} kcal</td>
+					<td class="px-6 py-4 text-zinc-400">{{ meal.protein }}g</td>
+					<td class="px-6 py-4 text-zinc-400">{{ meal.carbs }}g</td>
+					<td class="px-6 py-4 text-zinc-400">{{ meal.fat }}g</td>
+					<td class="px-6 py-4 text-right">
+						<div class="flex items-center justify-end gap-3 text-zinc-300">
+							<button (click)="openDrawer(meal)" class="hover:text-zinc-700 transition cursor-pointer">
 								<i class="fa-sharp fa-solid fa-pen-to-square text-sm"></i>
 							</button>
-							<button (click)="deleteMeal(meal)" class="hover:text-red-500 transition-colors cursor-pointer">
+							<button (click)="deleteMeal(meal)" class="hover:text-red-500 transition cursor-pointer">
 								<i class="fa-sharp fa-solid fa-trash text-sm"></i>
 							</button>
 						</div>
@@ -77,5 +77,5 @@
 				}
 			</tbody>
 		</table>
-	}
-</div>
+	</div>
+}

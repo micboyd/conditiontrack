@@ -1,54 +1,54 @@
-<app-side-drawer (closeEvent)="closeDrawer()">
+<app-side-drawer (closeEvent)="onDrawerClosed()">
 	<app-edit-workout-record
 		[selectedWorkoutRecord]="selectedWorkoutRecord"
 		(closeEditModeEvent)="closeDrawer()">
 	</app-edit-workout-record>
 </app-side-drawer>
 
-<div class="bg-white rounded-xl border border-gray-100">
-	<div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-		<h2 class="text-sm font-semibold text-gray-900">Workout Records</h2>
-		<button (click)="openDrawer()"
-			class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition-colors cursor-pointer">
-			<i class="fa-sharp fa-solid fa-plus text-xs"></i>
-			Log Workout
-		</button>
-	</div>
+<div class="flex items-center justify-between mb-7">
+	<h2 class="text-xl font-semibold text-zinc-900">Workout Records</h2>
+	<button (click)="openDrawer()"
+		class="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium px-5 py-2.5 rounded-full transition cursor-pointer">
+		<i class="fa-sharp fa-solid fa-plus text-xs"></i>
+		Log Workout
+	</button>
+</div>
 
-	@if (loading) {
-		<div class="px-6 py-8">
-			<app-loading-indicator [loading]="true"></app-loading-indicator>
-		</div>
-	} @else if (allWorkoutRecords.length === 0) {
-		<div class="px-6 py-10 text-center text-sm text-gray-400">
-			No records yet. Log your first workout to get started.
-		</div>
-	} @else {
+@if (loading) {
+	<div class="py-8">
+		<app-loading-indicator [loading]="true"></app-loading-indicator>
+	</div>
+} @else if (allWorkoutRecords.length === 0) {
+	<div class="bg-white rounded-2xl px-6 py-16 text-center text-sm text-zinc-400">
+		No records yet. Log your first workout to get started.
+	</div>
+} @else {
+	<div class="bg-white rounded-2xl overflow-hidden shadow-sm">
 		<table class="w-full text-sm">
 			<thead>
-				<tr class="text-xs text-gray-400 uppercase tracking-wider">
-					<th class="px-6 py-3 text-left font-medium">Date</th>
-					<th class="px-6 py-3 text-left font-medium">Workout</th>
-					<th class="px-6 py-3 text-left font-medium">Exercises</th>
-					<th class="px-6 py-3 text-left font-medium">Duration</th>
-					<th class="px-6 py-3 text-left font-medium">Notes</th>
-					<th class="px-6 py-3 text-right font-medium"></th>
+				<tr class="bg-zinc-50 border-b border-zinc-100">
+					<th class="px-6 py-3.5 text-left text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Date</th>
+					<th class="px-6 py-3.5 text-left text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Workout</th>
+					<th class="px-6 py-3.5 text-left text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Exercises</th>
+					<th class="px-6 py-3.5 text-left text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Duration</th>
+					<th class="px-6 py-3.5 text-left text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Notes</th>
+					<th class="px-6 py-3.5 text-right text-[11px] font-medium text-zinc-400 uppercase tracking-wider"></th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody class="divide-y divide-zinc-50">
 				@for (record of allWorkoutRecords; track record._id) {
-				<tr class="border-t border-gray-50 hover:bg-gray-50 transition-colors">
-					<td class="px-6 py-3.5 text-gray-700 font-medium whitespace-nowrap">{{ formatDate(record.date) }}</td>
-					<td class="px-6 py-3.5 text-gray-800 font-medium">{{ getWorkoutName(record.workoutId) }}</td>
-					<td class="px-6 py-3.5 text-gray-500">{{ record.exercises.length }}</td>
-					<td class="px-6 py-3.5 text-gray-500 whitespace-nowrap">{{ record.duration }} min</td>
-					<td class="px-6 py-3.5 text-gray-400 max-w-xs truncate">{{ record.notes || '—' }}</td>
-					<td class="px-6 py-3.5 text-right">
-						<div class="flex items-center justify-end gap-3 text-gray-400">
-							<button (click)="openDrawer(record)" class="hover:text-gray-700 transition-colors cursor-pointer">
+				<tr class="hover:bg-zinc-50 transition-colors">
+					<td class="px-6 py-4 text-zinc-700 font-medium whitespace-nowrap">{{ formatDate(record.date) }}</td>
+					<td class="px-6 py-4 text-zinc-900 font-semibold">{{ getWorkoutName(record.workoutId) }}</td>
+					<td class="px-6 py-4 text-zinc-400">{{ record.exercises.length }}</td>
+					<td class="px-6 py-4 text-zinc-400 whitespace-nowrap">{{ record.duration }} min</td>
+					<td class="px-6 py-4 text-zinc-400 max-w-xs truncate">{{ record.notes || '—' }}</td>
+					<td class="px-6 py-4 text-right">
+						<div class="flex items-center justify-end gap-3 text-zinc-300">
+							<button (click)="openDrawer(record)" class="hover:text-zinc-700 transition cursor-pointer">
 								<i class="fa-sharp fa-solid fa-pen-to-square text-sm"></i>
 							</button>
-							<button (click)="deleteWorkoutRecord(record)" class="hover:text-red-500 transition-colors cursor-pointer">
+							<button (click)="deleteWorkoutRecord(record)" class="hover:text-red-500 transition cursor-pointer">
 								<i class="fa-sharp fa-solid fa-trash text-sm"></i>
 							</button>
 						</div>
@@ -57,5 +57,5 @@
 				}
 			</tbody>
 		</table>
-	}
-</div>
+	</div>
+}

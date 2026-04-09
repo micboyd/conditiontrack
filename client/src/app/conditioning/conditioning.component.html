@@ -1,20 +1,22 @@
-<div class="p-8">
-
-	<!-- Header -->
-	<div class="mb-6">
-		<h1 class="text-xl font-semibold text-gray-900">Cardio</h1>
-		<p class="text-sm text-gray-400 mt-0.5">Manage your cardio session library</p>
-	</div>
-
-	<!-- Tabs -->
-	<div class="flex gap-1 border-b border-gray-200 mb-6">
+<!-- Light page header with tabs -->
+<div class="bg-white border-b border-zinc-100 px-8 lg:px-12 pt-8">
+	<h1 class="text-3xl font-bold text-zinc-900 mb-1">Cardio</h1>
+	<p class="text-sm text-zinc-400 mb-6">Manage your cardio sessions and conditioning records</p>
+	<div class="flex gap-0">
+		<a routerLink="/conditioning/conditioning-records"
+			routerLinkActive="border-b-2 border-zinc-900 text-zinc-900 font-semibold"
+			class="px-4 py-3 text-sm text-zinc-400 hover:text-zinc-700 transition -mb-px font-medium">
+			Records
+		</a>
 		<a routerLink="/conditioning/conditioning-library"
-			routerLinkActive="border-b-2 border-blue-600 text-gray-900 font-medium"
-			class="px-4 py-2.5 text-sm text-gray-500 hover:text-gray-700 transition-colors -mb-px">
+			routerLinkActive="border-b-2 border-zinc-900 text-zinc-900 font-semibold"
+			class="px-4 py-3 text-sm text-zinc-400 hover:text-zinc-700 transition -mb-px font-medium">
 			Session Library
 		</a>
 	</div>
+</div>
 
+<!-- Content -->
+<div class="bg-zinc-50 px-8 lg:px-12 py-8 min-h-screen">
 	<router-outlet></router-outlet>
-
 </div>

@@ -46,7 +46,10 @@ export class ConditioningLibraryComponent implements OnInit {
 	}
 
 	closeDrawer(): void {
-		this.getAllConditioningSessions();
 		this.drawer.close();
+	}
+
+	onDrawerClosed(): void {
+		this.getAllConditioningSessions();
 	}
 }

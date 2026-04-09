@@ -32,8 +32,11 @@ export class MealLibraryComponent implements OnInit {
 	}
 
 	closeDrawer(): void {
-		this.getAllMeals();
 		this.drawer.close();
+	}
+
+	onDrawerClosed(): void {
+		this.getAllMeals();
 	}
 
 	getAllMeals(): void {

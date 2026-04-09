@@ -387,6 +387,18 @@ export class DashboardComponent implements OnInit {
 		});
 	}
 
+	removeWorkoutRecord(record: WorkoutRecord): void {
+		this.workoutRecordService.deleteWorkoutRecord(record._id).subscribe(() => {
+			this.workoutRecords = this.workoutRecords.filter(r => r._id !== record._id);
+		});
+	}
+
+	removeCardioRecord(record: ConditioningRecord): void {
+		this.conditioningRecordService.deleteConditioningRecord(record._id).subscribe(() => {
+			this.conditioningRecords = this.conditioningRecords.filter(r => r._id !== record._id);
+		});
+	}
+
 	// ── Helpers ──────────────────────────────────────────────────────────────
 
 	getWorkoutName(workoutId: string): string {

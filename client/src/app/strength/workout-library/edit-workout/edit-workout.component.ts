@@ -83,6 +83,9 @@ export class EditWorkoutComponent implements OnInit {
 	}
 
 	onSubmit(): void {
+		this.workoutForm.markAllAsTouched();
+		if (this.workoutForm.invalid) return;
+
 		this.formLoading = true;
 
 		const payload = {
