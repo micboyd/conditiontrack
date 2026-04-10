@@ -1,22 +1,22 @@
 <!-- Light page header with tabs -->
-<div class="bg-white border-b border-zinc-100 px-8 lg:px-12 pt-8">
-	<h1 class="text-3xl font-bold text-zinc-900 mb-1">Cardio</h1>
+<div class="bg-white border-b border-zinc-100 px-4 sm:px-8 lg:px-12 pt-6 sm:pt-8">
+	<h1 class="text-2xl sm:text-3xl font-bold text-zinc-900 mb-1">Cardio</h1>
 	<p class="text-sm text-zinc-400 mb-6">Manage your cardio sessions and conditioning records</p>
-	<div class="flex gap-0">
+	<div class="flex gap-0 overflow-x-auto">
 		<a routerLink="/conditioning/conditioning-records"
 			routerLinkActive="border-b-2 border-zinc-900 text-zinc-900 font-semibold"
-			class="px-4 py-3 text-sm text-zinc-400 hover:text-zinc-700 transition -mb-px font-medium">
+			class="px-4 py-3 text-sm text-zinc-400 hover:text-zinc-700 transition -mb-px font-medium whitespace-nowrap">
 			Records
 		</a>
 		<a routerLink="/conditioning/conditioning-library"
 			routerLinkActive="border-b-2 border-zinc-900 text-zinc-900 font-semibold"
-			class="px-4 py-3 text-sm text-zinc-400 hover:text-zinc-700 transition -mb-px font-medium">
+			class="px-4 py-3 text-sm text-zinc-400 hover:text-zinc-700 transition -mb-px font-medium whitespace-nowrap">
 			Session Library
 		</a>
 	</div>
 </div>
 
 <!-- Content -->
-<div class="bg-zinc-50 px-8 lg:px-12 py-8 min-h-screen">
+<div class="bg-zinc-50 px-4 sm:px-8 lg:px-12 py-5 sm:py-8 min-h-screen">
 	<router-outlet></router-outlet>
 </div>

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { UserProfile, UserService } from '../../services/user.service';
 
 @Component({
@@ -9,8 +11,9 @@ import { UserProfile, UserService } from '../../services/user.service';
 export class MenuComponent implements OnInit {
 	user: UserProfile | null = null;
 	initials = '';
+	menuOpen = false;
 
-	constructor(private userService: UserService) {}
+	constructor(private userService: UserService, private router: Router) {}
 
 	ngOnInit(): void {
 		const id = localStorage.getItem('id');
@@ -22,5 +25,15 @@ export class MenuComponent implements OnInit {
 				},
 			});
 		}
+
+		this.router.events
+			.pipe(filter(event => event instanceof NavigationEnd))
+			.subscribe(() => {
+				this.menuOpen = false;
+			});
+	}
+
+	toggleMenu(): void {
+		this.menuOpen = !this.menuOpen;
 	}
 }

@@ -45,7 +45,7 @@
 							'border-red-400 focus:ring-red-400': isInvalid('username'),
 							'border-zinc-200 focus:ring-zinc-900': !isInvalid('username')
 						}"
-						class="w-full px-4 py-3.5 border rounded-xl text-sm text-zinc-900 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition" />
+						class="w-full px-4 py-3.5 border rounded-xl text-base sm:text-sm text-zinc-900 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition" />
 					@if (isInvalid('username')) {
 						<p class="text-xs text-red-500 mt-1.5">Please enter a valid email address.</p>
 					}
@@ -62,7 +62,7 @@
 							'border-red-400 focus:ring-red-400': isInvalid('password'),
 							'border-zinc-200 focus:ring-zinc-900': !isInvalid('password')
 						}"
-						class="w-full px-4 py-3.5 border rounded-xl text-sm text-zinc-900 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition" />
+						class="w-full px-4 py-3.5 border rounded-xl text-base sm:text-sm text-zinc-900 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition" />
 					@if (isInvalid('password')) {
 						<p class="text-xs text-red-500 mt-1.5">Password is required.</p>
 					}

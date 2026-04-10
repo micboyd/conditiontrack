@@ -8,8 +8,8 @@
 		<span class="font-semibold text-white text-sm tracking-tight">ConditionTrack</span>
 	</a>
 
-	<!-- Nav links -->
-	<div class="flex items-center gap-0.5 flex-1">
+	<!-- Desktop Nav links -->
+	<div class="hidden lg:flex items-center gap-0.5 flex-1">
 		<a routerLink="/dashboard" routerLinkActive="text-white bg-white/10"
 			class="px-3 py-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-white/5 text-sm transition">
 			Dashboard
@@ -36,18 +36,88 @@
 		</a>
 	</div>
 
-	<!-- User -->
-	<div class="flex items-center gap-3 flex-shrink-0">
+	<!-- Desktop User -->
+	<div class="hidden lg:flex items-center gap-3 flex-shrink-0">
 		<div class="flex items-center gap-2">
 			<div class="w-7 h-7 rounded-full bg-zinc-700 flex items-center justify-center overflow-hidden flex-shrink-0">
 				<img *ngIf="user?.profileImage" [src]="user!.profileImage" alt="Profile" class="w-full h-full object-cover" />
 				<span *ngIf="!user?.profileImage" class="text-white text-xs">{{ initials }}</span>
 			</div>
-			<span class="text-sm text-zinc-300 hidden sm:block">{{ user?.firstname }}</span>
+			<span class="text-sm text-zinc-300">{{ user?.firstname }}</span>
 		</div>
 		<a routerLink="/login" class="text-zinc-500 hover:text-white transition" title="Sign out">
 			<i class="fa-sharp fa-solid fa-arrow-right-from-bracket text-sm"></i>
 		</a>
 	</div>
 
+	<!-- Mobile: spacer + hamburger -->
+	<div class="flex-1 lg:hidden"></div>
+	<button (click)="toggleMenu()" class="lg:hidden flex items-center justify-center w-9 h-9 text-zinc-400 hover:text-white transition cursor-pointer" aria-label="Toggle menu">
+		<i class="fa-sharp fa-solid fa-bars text-base"></i>
+	</button>
+
 </nav>
+
+<!-- Mobile full-screen overlay menu -->
+@if (menuOpen) {
+<div class="fixed inset-0 bg-zinc-900 z-40 flex flex-col pt-16 px-6 lg:hidden">
+
+	<!-- Close button -->
+	<button (click)="toggleMenu()" class="absolute top-3.5 right-6 w-9 h-9 flex items-center justify-center text-zinc-400 hover:text-white transition cursor-pointer" aria-label="Close menu">
+		<i class="fa-sharp fa-solid fa-xmark text-lg"></i>
+	</button>
+
+	<!-- Nav links stacked -->
+	<nav class="flex flex-col gap-1 mb-8">
+		<a routerLink="/dashboard" routerLinkActive="text-white bg-white/10"
+			(click)="toggleMenu()"
+			class="px-4 py-4 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 text-lg font-medium transition whitespace-nowrap">
+			Dashboard
+		</a>
+		<a routerLink="/strength/workout-records" routerLinkActive="text-white bg-white/10"
+			(click)="toggleMenu()"
+			class="px-4 py-4 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 text-lg font-medium transition whitespace-nowrap">
+			Strength
+		</a>
+		<a routerLink="/conditioning/conditioning-records" routerLinkActive="text-white bg-white/10"
+			(click)="toggleMenu()"
+			class="px-4 py-4 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 text-lg font-medium transition whitespace-nowrap">
+			Cardio
+		</a>
+		<a routerLink="/nutrition/meal-library" routerLinkActive="text-white bg-white/10"
+			(click)="toggleMenu()"
+			class="px-4 py-4 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 text-lg font-medium transition whitespace-nowrap">
+			Nutrition
+		</a>
+		<a routerLink="/week-planner" routerLinkActive="text-white bg-white/10"
+			(click)="toggleMenu()"
+			class="px-4 py-4 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 text-lg font-medium transition whitespace-nowrap">
+			Week Planner
+		</a>
+		<a routerLink="/progress/photos" routerLinkActive="text-white bg-white/10"
+			(click)="toggleMenu()"
+			class="px-4 py-4 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 text-lg font-medium transition whitespace-nowrap">
+			Progress
+		</a>
+	</nav>
+
+	<!-- Divider -->
+	<div class="border-t border-zinc-800 mb-6"></div>
+
+	<!-- User info + sign out -->
+	<div class="flex items-center justify-between">
+		<div class="flex items-center gap-3">
+			<div class="w-9 h-9 rounded-full bg-zinc-700 flex items-center justify-center overflow-hidden flex-shrink-0">
+				<img *ngIf="user?.profileImage" [src]="user!.profileImage" alt="Profile" class="w-full h-full object-cover" />
+				<span *ngIf="!user?.profileImage" class="text-white text-sm">{{ initials }}</span>
+			</div>
+			<span class="text-base text-zinc-300 font-medium">{{ user?.firstname }} {{ user?.lastname }}</span>
+		</div>
+		<a routerLink="/login" (click)="toggleMenu()" class="flex items-center gap-2 text-zinc-500 hover:text-white transition py-2 px-3" title="Sign out">
+			<i class="fa-sharp fa-solid fa-arrow-right-from-bracket text-sm"></i>
+			<span class="text-sm">Sign out</span>
+		</a>
+	</div>
+
+</div>
+}

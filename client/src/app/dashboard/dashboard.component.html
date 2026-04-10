@@ -5,8 +5,8 @@
 } @else {
 
 <!-- ─── Header ────────────────────────────────────────────────────────────── -->
-<div class="bg-white border-b border-zinc-100 px-10 lg:px-14 py-10">
-	<h1 class="text-4xl font-bold text-zinc-900 tracking-tight">
+<div class="bg-white border-b border-zinc-100 px-6 py-6 lg:px-10 lg:py-10">
+	<h1 class="text-2xl lg:text-4xl font-bold text-zinc-900 tracking-tight">
 		Welcome back{{ user ? ', ' + user.firstname : '' }}.
 	</h1>
 </div>
@@ -18,10 +18,10 @@
 	<div class="lg:w-1/2 lg:border-r border-zinc-100 flex flex-col bg-zinc-50">
 
 		<!-- Panel header + date nav -->
-		<div class="flex items-end justify-between px-10 pt-10 pb-8">
+		<div class="flex items-end justify-between px-6 pt-6 pb-5 lg:px-10 lg:pt-10 lg:pb-8">
 			<div>
 				<p class="text-base font-medium uppercase tracking-widest text-zinc-400 mb-2">My Day</p>
-				<h2 class="text-3xl font-bold text-zinc-900 tracking-tight">{{ viewDateFormatted }}</h2>
+				<h2 class="text-xl lg:text-3xl font-bold text-zinc-900 tracking-tight">{{ viewDateFormatted }}</h2>
 			</div>
 			<div class="flex items-center gap-1.5 pb-1">
 				<button (click)="prevDay()"
@@ -50,7 +50,7 @@
 		</div>
 
 		<!-- Strength & Cardio Stats -->
-		<div class="mx-10 mb-6 flex gap-4">
+		<div class="mx-6 mb-5 lg:mx-10 lg:mb-6 flex flex-col sm:flex-row gap-4">
 
 			<!-- Strength -->
 			<div class="flex-1 bg-white rounded-2xl shadow-sm px-5 py-4">
@@ -103,7 +103,7 @@
 		</div>
 
 		<!-- Daily totals card -->
-		<div class="mx-10 mb-6 bg-zinc-900 rounded-2xl px-8 py-7">
+		<div class="mx-6 mb-5 lg:mx-10 lg:mb-6 bg-zinc-900 rounded-2xl px-6 py-5 lg:px-8 lg:py-7">
 			<p class="text-xs font-medium uppercase tracking-widest text-zinc-500 mb-5">Daily Totals</p>
 			<div class="grid grid-cols-2 gap-y-5 gap-x-4 mb-5">
 				<div>
@@ -134,7 +134,7 @@
 		</div>
 
 		<!-- Activity sections -->
-		<div class="px-10 pb-10 space-y-5 flex-1">
+		<div class="px-6 pb-6 lg:px-10 lg:pb-10 space-y-5 flex-1">
 
 			<!-- Meals -->
 			<div class="bg-white rounded-2xl overflow-hidden shadow-sm">
@@ -247,9 +247,9 @@
 	<div class="lg:w-1/2 bg-white flex flex-col">
 
 		<!-- Panel header + weekly summary -->
-		<div class="px-10 pt-10 pb-8">
+		<div class="px-6 pt-6 pb-5 lg:px-10 lg:pt-10 lg:pb-8">
 			<p class="text-base font-medium uppercase tracking-widest text-zinc-400 mb-2">My Week</p>
-			<h2 class="text-3xl font-bold text-zinc-900 tracking-tight mb-6">{{ currentWeekDays[0].label }} {{ currentWeekDays[0].dayNum }} – {{ currentWeekDays[6].label }} {{ currentWeekDays[6].dayNum }} {{ currentWeekDays[6].month }}</h2>
+			<h2 class="text-xl lg:text-3xl font-bold text-zinc-900 tracking-tight mb-6">{{ currentWeekDays[0].label }} {{ currentWeekDays[0].dayNum }} – {{ currentWeekDays[6].label }} {{ currentWeekDays[6].dayNum }} {{ currentWeekDays[6].month }}</h2>
 
 			<!-- Weekly stat chips -->
 			<div class="grid grid-cols-3 gap-3 mb-8">
@@ -308,13 +308,13 @@
 		<!-- Mon–Sun rows -->
 		<div class="flex-1 border-t border-zinc-100">
 			@for (day of currentWeekDays; track day.dateStr) {
-			<div class="flex items-start gap-5 px-8 py-4 border-b border-zinc-50 transition-colors"
+			<div class="flex items-start gap-3 lg:gap-5 px-4 py-3 lg:px-8 lg:py-4 border-b border-zinc-50 transition-colors"
 				[class]="day.isToday ? 'bg-zinc-950' : 'hover:bg-zinc-50'">
 
 				<!-- Day label -->
 				<div class="w-14 flex-shrink-0 pt-0.5">
 					<p class="text-[10px] font-medium uppercase tracking-wider" [class]="day.isToday ? 'text-zinc-400' : 'text-zinc-400'">{{ day.label }}</p>
-					<p class="text-2xl font-bold leading-tight mt-0.5" [class]="day.isToday ? 'text-white' : (day.isPast ? 'text-zinc-300' : 'text-zinc-800')">{{ day.dayNum }}</p>
+					<p class="text-xl lg:text-2xl font-bold leading-tight mt-0.5" [class]="day.isToday ? 'text-white' : (day.isPast ? 'text-zinc-300' : 'text-zinc-800')">{{ day.dayNum }}</p>
 					@if (day.isToday) {
 						<span class="inline-block mt-1 text-[9px] font-medium uppercase tracking-wider text-zinc-500">Today</span>
 					}
@@ -368,7 +368,7 @@
 		</div>
 
 		<!-- Week planner link -->
-		<div class="px-8 py-5 border-t border-zinc-100">
+		<div class="px-4 py-4 lg:px-8 lg:py-5 border-t border-zinc-100">
 			<a routerLink="/week-planner" class="flex items-center gap-2 text-xs font-medium text-zinc-400 hover:text-zinc-700 transition">
 				<i class="fa-sharp fa-solid fa-calendar-week text-[11px]"></i>
 				Edit week plan
@@ -390,7 +390,7 @@
 			<i class="fa-sharp fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
 			<input type="text" placeholder="Search meals..."
 				[(ngModel)]="mealSearchQuery"
-				class="w-full pl-9 pr-4 py-2.5 text-sm border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent" />
+				class="w-full pl-9 pr-4 py-2.5 text-base sm:text-sm border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent" />
 		</div>
 
 		<div class="flex-1 overflow-y-auto">
@@ -464,19 +464,19 @@
 						<div>
 							<label class="block text-[11px] font-medium text-zinc-400 uppercase tracking-widest mb-2">Date</label>
 							<input type="date" formControlName="date"
-								class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent" />
+								class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-base sm:text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent" />
 						</div>
 						<div>
 							<label class="block text-[11px] font-medium text-zinc-400 uppercase tracking-widest mb-2">Duration (min)</label>
 							<input type="number" formControlName="duration" placeholder="45"
-								class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent" />
+								class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-base sm:text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent" />
 						</div>
 					</div>
 
 					<div>
 						<label class="block text-[11px] font-medium text-zinc-400 uppercase tracking-widest mb-2">Notes</label>
 						<textarea formControlName="notes" placeholder="How did the session feel?" rows="2"
-							class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent resize-none"></textarea>
+							class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent resize-none"></textarea>
 					</div>
 
 					<div formArrayName="exercises" class="space-y-4">
@@ -491,9 +491,9 @@
 									<div [formGroupName]="j" class="flex items-center gap-2">
 										<span class="text-xs text-zinc-400 w-5 flex-shrink-0 font-medium">{{ j + 1 }}</span>
 										<input formControlName="reps" placeholder="Reps" type="number"
-											class="flex-1 px-3 py-2 border border-zinc-200 rounded-lg text-sm text-zinc-800 focus:outline-none focus:ring-1 focus:ring-zinc-900" />
+											class="flex-1 px-3 py-2 border border-zinc-200 rounded-lg text-base sm:text-sm text-zinc-800 focus:outline-none focus:ring-1 focus:ring-zinc-900" />
 										<input formControlName="weight" placeholder="kg" type="number"
-											class="flex-1 px-3 py-2 border border-zinc-200 rounded-lg text-sm text-zinc-800 focus:outline-none focus:ring-1 focus:ring-zinc-900" />
+											class="flex-1 px-3 py-2 border border-zinc-200 rounded-lg text-base sm:text-sm text-zinc-800 focus:outline-none focus:ring-1 focus:ring-zinc-900" />
 										<button type="button" (click)="removeWorkoutLogSet(i, j)"
 											class="text-zinc-300 hover:text-red-400 transition cursor-pointer flex-shrink-0">
 											<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
@@ -585,25 +585,25 @@
 						<div>
 							<label class="block text-[11px] font-medium text-zinc-400 uppercase tracking-widest mb-2">Date</label>
 							<input type="date" formControlName="date"
-								class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent" />
+								class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-base sm:text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent" />
 						</div>
 						<div>
 							<label class="block text-[11px] font-medium text-zinc-400 uppercase tracking-widest mb-2">Duration (min)</label>
 							<input type="number" formControlName="duration" placeholder="30"
-								class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent" />
+								class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-base sm:text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent" />
 						</div>
 					</div>
 
 					<div>
 						<label class="block text-[11px] font-medium text-zinc-400 uppercase tracking-widest mb-2">Calories Burned</label>
 						<input type="number" formControlName="caloriesBurned" placeholder="0"
-							class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent" />
+							class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-base sm:text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent" />
 					</div>
 
 					<div>
 						<label class="block text-[11px] font-medium text-zinc-400 uppercase tracking-widest mb-2">Notes</label>
 						<textarea formControlName="notes" placeholder="How did it go?" rows="2"
-							class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent resize-none"></textarea>
+							class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent resize-none"></textarea>
 					</div>
 
 				</div>

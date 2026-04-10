@@ -11,7 +11,7 @@
 				Meal Name <span class="text-red-400">*</span>
 			</label>
 			<input type="text" formControlName="name" placeholder="e.g. Grilled Chicken Salad"
-				class="w-full px-3 py-2 border rounded-lg text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
+				class="w-full px-3 py-2 border rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
 				[ngClass]="isInvalid('name')
 					? 'border-red-400 focus:ring-red-300'
 					: 'border-zinc-200 focus:ring-zinc-900'" />
@@ -49,7 +49,7 @@
 				Calories (kcal) <span class="text-red-400">*</span>
 			</label>
 			<input type="number" formControlName="calories" placeholder="e.g. 350" min="0"
-				class="w-full px-3 py-2 border rounded-lg text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
+				class="w-full px-3 py-2 border rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
 				[ngClass]="isInvalid('calories')
 					? 'border-red-400 focus:ring-red-300'
 					: 'border-zinc-200 focus:ring-zinc-900'" />
@@ -76,7 +76,7 @@
 			<div class="grid grid-cols-3 gap-3">
 				<div>
 					<input type="number" formControlName="protein" placeholder="Protein" min="0"
-						class="w-full px-3 py-2 border rounded-lg text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
+						class="w-full px-3 py-2 border rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
 						[ngClass]="isInvalid('protein')
 							? 'border-red-400 focus:ring-red-300'
 							: 'border-zinc-200 focus:ring-zinc-900'" />
@@ -90,7 +90,7 @@
 				</div>
 				<div>
 					<input type="number" formControlName="carbs" placeholder="Carbs" min="0"
-						class="w-full px-3 py-2 border rounded-lg text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
+						class="w-full px-3 py-2 border rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
 						[ngClass]="isInvalid('carbs')
 							? 'border-red-400 focus:ring-red-300'
 							: 'border-zinc-200 focus:ring-zinc-900'" />
@@ -104,7 +104,7 @@
 				</div>
 				<div>
 					<input type="number" formControlName="fat" placeholder="Fat" min="0"
-						class="w-full px-3 py-2 border rounded-lg text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
+						class="w-full px-3 py-2 border rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
 						[ngClass]="isInvalid('fat')
 							? 'border-red-400 focus:ring-red-300'
 							: 'border-zinc-200 focus:ring-zinc-900'" />
@@ -123,7 +123,7 @@
 		<div>
 			<label class="block text-xs font-medium text-zinc-500 mb-1.5">Description</label>
 			<textarea formControlName="description" placeholder="e.g. A healthy meal with lean protein and greens" rows="3"
-				class="w-full px-3 py-2 border border-zinc-200 rounded-lg text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent resize-none"></textarea>
+				class="w-full px-3 py-2 border border-zinc-200 rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent resize-none"></textarea>
 		</div>
 
 		<!-- Actions -->
