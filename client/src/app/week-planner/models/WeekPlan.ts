@@ -1,23 +1,40 @@
 import { ConditioningSession } from '../../conditioning/models/ConditioningSession';
 import { Workout } from '../../strength/models/Workout';
 
-export interface DayPlan {
-    _id: string;
-	dayName: string;
+export type TimeBlockKey = 'morning' | 'afternoon' | 'evening';
+
+export interface TimeBlock {
 	workouts: Workout[];
 	conditioning: ConditioningSession[];
+}
+
+export interface DayPlan {
+	_id: string;
+	dayName: string;
+	// Overarching (all-day)
+	workouts: Workout[];
+	conditioning: ConditioningSession[];
+	// Time blocks
+	morning: TimeBlock;
+	afternoon: TimeBlock;
+	evening: TimeBlock;
 }
 
 export interface DayPlanDTO {
 	dayName: string;
 	workouts: string[];
 	conditioning: string[];
+	morning: { workouts: string[]; conditioning: string[] };
+	afternoon: { workouts: string[]; conditioning: string[] };
+	evening: { workouts: string[]; conditioning: string[] };
 }
 
 export interface WeekPlanDTO {
 	userId: string;
 	days: DayPlanDTO[];
 }
+
+const emptyBlock = (): TimeBlock => ({ workouts: [], conditioning: [] });
 
 export class WeekPlan {
 	userId: string;
@@ -31,57 +48,94 @@ export class WeekPlan {
 		const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 		this.days = weekDays.map(day => {
-			// Try to find an existing day in input, else init fresh
 			const existingDay = weekPlan?.days?.find(d => d.dayName === day);
 			return {
-                _id: existingDay?._id || '',
-				dayName: day,
-				workouts: existingDay?.workouts ?? [],
+				_id:          existingDay?._id || '',
+				dayName:      day,
+				workouts:     existingDay?.workouts    ?? [],
 				conditioning: existingDay?.conditioning ?? [],
+				morning:      existingDay?.morning   ?? emptyBlock(),
+				afternoon:    existingDay?.afternoon ?? emptyBlock(),
+				evening:      existingDay?.evening   ?? emptyBlock(),
 			} as DayPlan;
 		});
 	}
 
+	// ── Overarching helpers ───────────────────────────────────────────────────
+
 	addWorkout(day: string, workout: Workout) {
-		const dayPlan = this.days.find(d => d.dayName === day);
-		if (dayPlan) {
-			dayPlan.workouts.push(workout);
-		}
+		const d = this.days.find(p => p.dayName === day);
+		if (d) d.workouts.push(workout);
 	}
 
 	addConditioning(day: string, session: ConditioningSession) {
-		const dayPlan = this.days.find(d => d.dayName === day);
-		if (dayPlan) {
-			dayPlan.conditioning.push(session);
-		}
+		const d = this.days.find(p => p.dayName === day);
+		if (d) d.conditioning.push(session);
 	}
 
 	removeWorkout(day: string, workout: Workout) {
-		const dayPlan = this.days.find(d => d.dayName === day);
-		if (dayPlan) {
-			dayPlan.workouts = dayPlan.workouts.filter(w => w._id !== workout._id);
-		}
+		const d = this.days.find(p => p.dayName === day);
+		if (d) d.workouts = d.workouts.filter(w => w._id !== workout._id);
 	}
 
 	removeConditioning(day: string, session: ConditioningSession) {
-		const dayPlan = this.days.find(d => d.dayName === day);
-		if (dayPlan) {
-			dayPlan.conditioning = dayPlan.conditioning.filter(c => c._id !== session._id);
-		}
+		const d = this.days.find(p => p.dayName === day);
+		if (d) d.conditioning = d.conditioning.filter(c => c._id !== session._id);
 	}
+
+	// ── Time-block helpers ────────────────────────────────────────────────────
+
+	addWorkoutToBlock(day: string, block: TimeBlockKey, workout: Workout) {
+		const d = this.days.find(p => p.dayName === day);
+		if (d) d[block].workouts.push(workout);
+	}
+
+	addConditioningToBlock(day: string, block: TimeBlockKey, session: ConditioningSession) {
+		const d = this.days.find(p => p.dayName === day);
+		if (d) d[block].conditioning.push(session);
+	}
+
+	removeWorkoutFromBlock(day: string, block: TimeBlockKey, workout: Workout) {
+		const d = this.days.find(p => p.dayName === day);
+		if (d) d[block].workouts = d[block].workouts.filter(w => w._id !== workout._id);
+	}
+
+	removeConditioningFromBlock(day: string, block: TimeBlockKey, session: ConditioningSession) {
+		const d = this.days.find(p => p.dayName === day);
+		if (d) d[block].conditioning = d[block].conditioning.filter(c => c._id !== session._id);
+	}
+
+	// ── Convenience ───────────────────────────────────────────────────────────
 
 	getDayPlan(day: string): DayPlan | undefined {
 		return this.days.find(d => d.dayName === day);
+	}
+
+	/** Returns all planned workouts for a day (overarching + all blocks) */
+	getAllWorkouts(day: string): Workout[] {
+		const d = this.getDayPlan(day);
+		if (!d) return [];
+		return [...d.workouts, ...d.morning.workouts, ...d.afternoon.workouts, ...d.evening.workouts];
+	}
+
+	/** Returns all planned conditioning for a day (overarching + all blocks) */
+	getAllConditioning(day: string): ConditioningSession[] {
+		const d = this.getDayPlan(day);
+		if (!d) return [];
+		return [...d.conditioning, ...d.morning.conditioning, ...d.afternoon.conditioning, ...d.evening.conditioning];
 	}
 
 	payload(): WeekPlanDTO {
 		return {
 			userId: this.userId,
 			days: this.days.map(d => ({
-                id: d._id,
-				dayName: d.dayName,
-				workouts: d.workouts.map(w => w._id),
+				_id:          d._id,
+				dayName:      d.dayName,
+				workouts:     d.workouts.map(w => w._id),
 				conditioning: d.conditioning.map(c => c._id),
+				morning:   { workouts: d.morning.workouts.map(w => w._id),   conditioning: d.morning.conditioning.map(c => c._id) },
+				afternoon: { workouts: d.afternoon.workouts.map(w => w._id), conditioning: d.afternoon.conditioning.map(c => c._id) },
+				evening:   { workouts: d.evening.workouts.map(w => w._id),   conditioning: d.evening.conditioning.map(c => c._id) },
 			})),
 		};
 	}

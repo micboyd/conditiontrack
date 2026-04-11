@@ -1,0 +1,205 @@
+<div class="p-6">
+	<h2 class="text-base font-semibold text-zinc-900 mb-1">
+		{{ selectedGoal ? 'Edit Goal' : 'Add Goal' }}
+	</h2>
+	<p class="text-sm text-zinc-400 mb-6">Set a target and track your progress</p>
+
+	<form [formGroup]="goalForm" (ngSubmit)="onSubmit()" class="space-y-5">
+
+		<!-- Title -->
+		<div>
+			<label class="block text-xs font-medium text-zinc-500 mb-1.5">
+				Goal title <span class="text-red-400">*</span>
+			</label>
+			<input type="text" formControlName="title" placeholder="e.g. Bench press 100kg"
+				class="w-full px-3 py-2 border rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
+				[ngClass]="isInvalid('title') ? 'border-red-400 focus:ring-red-300' : 'border-zinc-200 focus:ring-zinc-900'" />
+			@if (isInvalid('title')) {
+				<p class="flex items-center gap-1 text-xs text-red-500 mt-1.5">
+					<i class="fa-sharp fa-solid fa-circle-exclamation text-[10px]"></i>
+					Title is required
+				</p>
+			}
+		</div>
+
+		<!-- Category -->
+		<div>
+			<label class="block text-xs font-medium text-zinc-500 mb-1.5">
+				Category <span class="text-red-400">*</span>
+			</label>
+			<app-button-toggle
+				[options]="categories"
+				[selected]="[goalForm.get('category')?.value]"
+				[singleSelect]="true"
+				colorClass="zinc"
+				(selectionChange)="onCategoryChange($event)">
+			</app-button-toggle>
+		</div>
+
+		<!-- Tracking type -->
+		<div>
+			<label class="block text-xs font-medium text-zinc-500 mb-1.5">
+				Tracking type <span class="text-red-400">*</span>
+			</label>
+			<app-button-toggle
+				[options]="['manual', 'auto']"
+				[selected]="[goalForm.get('trackingType')?.value]"
+				[singleSelect]="true"
+				colorClass="zinc"
+				(selectionChange)="onTrackingTypeChange($event)">
+			</app-button-toggle>
+			<p class="text-xs text-zinc-400 mt-1.5">
+				@if (selectedTracking === 'auto') {
+					Progress is computed automatically from your logged data.
+				} @else {
+					You manually update your progress on this goal.
+				}
+			</p>
+		</div>
+
+		<!-- Direction -->
+		<div>
+			<label class="block text-xs font-medium text-zinc-500 mb-1.5">
+				Value direction <span class="text-red-400">*</span>
+			</label>
+			<app-button-toggle
+				[options]="['increase', 'decrease']"
+				[selected]="[goalForm.get('direction')?.value]"
+				[singleSelect]="true"
+				colorClass="zinc"
+				(selectionChange)="onDirectionChange($event)">
+			</app-button-toggle>
+			<p class="text-xs text-zinc-400 mt-1.5">
+				@if (goalForm.get('direction')?.value === 'decrease') {
+					Progress increases as the value goes <strong>down</strong> (e.g. losing weight).
+				} @else {
+					Progress increases as the value goes <strong>up</strong> (e.g. lifting more).
+				}
+			</p>
+		</div>
+
+		<!-- Auto: metric selector -->
+		@if (selectedTracking === 'auto') {
+			<div>
+				<label class="block text-xs font-medium text-zinc-500 mb-1.5">
+					What to track <span class="text-red-400">*</span>
+				</label>
+				<div class="space-y-2">
+					@for (m of availableMetrics; track m.value) {
+						<div (click)="onMetricChange(m.value)"
+							class="flex items-center gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-colors"
+							[ngClass]="selectedMetric === m.value
+								? 'border-zinc-900 bg-zinc-900 text-white'
+								: 'border-zinc-200 bg-zinc-50 text-zinc-700 hover:border-zinc-300'">
+							<span class="text-sm font-medium">{{ m.label }}</span>
+						</div>
+					}
+				</div>
+			</div>
+
+			<!-- Period selector -->
+			@if (needsPeriod) {
+				<div>
+					<label class="block text-xs font-medium text-zinc-500 mb-1.5">
+						Time period <span class="text-red-400">*</span>
+					</label>
+					<app-button-toggle
+						[options]="periods"
+						[selected]="goalForm.get('period')?.value ? [goalForm.get('period')?.value] : []"
+						[singleSelect]="true"
+						colorClass="zinc"
+						(selectionChange)="onPeriodChange($event)">
+					</app-button-toggle>
+				</div>
+			}
+
+			<!-- Exercise name -->
+			@if (needsExerciseName) {
+				<div>
+					<label class="block text-xs font-medium text-zinc-500 mb-1.5">
+						Exercise name <span class="text-red-400">*</span>
+					</label>
+					<input type="text" formControlName="exerciseName" placeholder="e.g. Bench Press"
+						class="w-full px-3 py-2 border border-zinc-200 rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent" />
+					<p class="text-xs text-zinc-400 mt-1">Must match the exercise name in your workout records (case-insensitive).</p>
+				</div>
+			}
+		}
+
+		<!-- Manual: current value -->
+		@if (selectedTracking === 'manual') {
+			<div>
+				<label class="block text-xs font-medium text-zinc-500 mb-1.5">Current value</label>
+				<input type="number" formControlName="currentValue" placeholder="0"
+					class="w-full px-3 py-2 border border-zinc-200 rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent" />
+			</div>
+		}
+
+		<!-- Target + unit -->
+		<div class="grid grid-cols-2 gap-4">
+			<div>
+				<label class="block text-xs font-medium text-zinc-500 mb-1.5">
+					Target <span class="text-red-400">*</span>
+				</label>
+				<input type="number" formControlName="targetValue" placeholder="e.g. 100"
+					class="w-full px-3 py-2 border rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
+					[ngClass]="isInvalid('targetValue') ? 'border-red-400 focus:ring-red-300' : 'border-zinc-200 focus:ring-zinc-900'" />
+				@if (isInvalid('targetValue')) {
+					<p class="flex items-center gap-1 text-xs text-red-500 mt-1.5">
+						<i class="fa-sharp fa-solid fa-circle-exclamation text-[10px]"></i>
+						Required
+					</p>
+				}
+			</div>
+			<div>
+				<label class="block text-xs font-medium text-zinc-500 mb-1.5">
+					Unit <span class="text-red-400">*</span>
+				</label>
+				<input type="text" formControlName="unit" placeholder="kg, sessions, min…"
+					class="w-full px-3 py-2 border rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
+					[ngClass]="isInvalid('unit') ? 'border-red-400 focus:ring-red-300' : 'border-zinc-200 focus:ring-zinc-900'" />
+				@if (isInvalid('unit')) {
+					<p class="flex items-center gap-1 text-xs text-red-500 mt-1.5">
+						<i class="fa-sharp fa-solid fa-circle-exclamation text-[10px]"></i>
+						Required
+					</p>
+				}
+			</div>
+		</div>
+
+		<!-- Target date (optional) -->
+		<div>
+			<label class="block text-xs font-medium text-zinc-500 mb-1.5">Target date (optional)</label>
+			<app-date-picker
+				displayMode="field"
+				[value]="goalForm.get('targetDate')?.value"
+				(valueChange)="goalForm.get('targetDate')?.setValue($event)">
+			</app-date-picker>
+		</div>
+
+		<!-- Notes -->
+		<div>
+			<label class="block text-xs font-medium text-zinc-500 mb-1.5">Notes</label>
+			<textarea formControlName="notes" placeholder="Any context or motivation..." rows="3"
+				class="w-full px-3 py-2 border border-zinc-200 rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent resize-none"></textarea>
+		</div>
+
+		<!-- Actions -->
+		<div class="flex gap-3 pt-2">
+			<button type="submit"
+				[disabled]="goalForm.invalid || formLoading"
+				class="flex-1 bg-zinc-900 hover:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-3.5 rounded-lg transition-colors cursor-pointer">
+				@if (formLoading) {
+					<app-loading-indicator [spinner]="true" [loading]="true"></app-loading-indicator>
+				} @else {
+					{{ selectedGoal ? 'Save Changes' : 'Create Goal' }}
+				}
+			</button>
+			<button type="button" (click)="onCancel()"
+				class="px-4 py-3.5 text-sm font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-lg transition-colors cursor-pointer">
+				Cancel
+			</button>
+		</div>
+
+	</form>
+</div>

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { DayPlan, WeekPlan } from './models/WeekPlan';
+import { DayPlan, TimeBlockKey, WeekPlan } from './models/WeekPlan';
 
 import { ConditioningLibraryService } from '../conditioning/conditioning-library/conditioning-library.service';
 import { ConditioningSession } from '../conditioning/models/ConditioningSession';
@@ -9,6 +9,8 @@ import { Workout } from '../strength/models/Workout';
 import { WorkoutService } from '../strength/workout-library/workout.service';
 import { forkJoin } from 'rxjs';
 
+export type BlockSelection = 'overarching' | TimeBlockKey;
+
 @Component({
 	selector: 'app-week-planner',
 	templateUrl: './week-planner.component.html',
@@ -17,15 +19,22 @@ import { forkJoin } from 'rxjs';
 export class WeekPlannerComponent implements OnInit {
 	@ViewChild(SideDrawerComponent) drawer: SideDrawerComponent;
 
-	resourcesLoading: boolean = false;
-	saving: boolean = false;
-	saved: boolean = false;
+	resourcesLoading = false;
+	saving = false;
+	saved = false;
 
 	private _selectedDay: DayPlan | null = null;
-
+	private _selectedBlock: BlockSelection = 'overarching';
 	private _weekPlan: WeekPlan;
 	private _allWorkouts: Workout[] = [];
 	private _allConditioningSessions: ConditioningSession[] = [];
+
+	readonly blocks: { key: BlockSelection; label: string; icon: string }[] = [
+		{ key: 'overarching', label: 'All Day',   icon: 'fa-calendar-day' },
+		{ key: 'morning',     label: 'Morning',   icon: 'fa-sun' },
+		{ key: 'afternoon',   label: 'Afternoon', icon: 'fa-cloud-sun' },
+		{ key: 'evening',     label: 'Evening',   icon: 'fa-moon' },
+	];
 
 	constructor(
 		private weekPlannerService: WeekPlannerService,
@@ -33,37 +42,28 @@ export class WeekPlannerComponent implements OnInit {
 		private conditioningLibraryService: ConditioningLibraryService,
 	) {}
 
-	get weekPlan(): WeekPlan {
-		return this._weekPlan;
-	}
+	get weekPlan(): WeekPlan { return this._weekPlan; }
+	get selectedDay(): DayPlan | null { return this._selectedDay; }
+	get selectedBlock(): BlockSelection { return this._selectedBlock; }
+	get allWorkouts(): Workout[] { return this._allWorkouts; }
+	get allConditioningSessions(): ConditioningSession[] { return this._allConditioningSessions; }
 
-	get selectedDay(): DayPlan | null {
-		return this._selectedDay;
-	}
-
-	get allWorkouts(): Workout[] {
-		return this._allWorkouts;
-	}
-
-	get allConditioningSessions(): ConditioningSession[] {
-		return this._allConditioningSessions;
+	get drawerTitle(): string {
+		if (!this._selectedDay) return '';
+		const block = this.blocks.find(b => b.key === this._selectedBlock);
+		return `${this._selectedDay.dayName} — ${block?.label ?? ''}`;
 	}
 
 	ngOnInit() {
-		const conditioning$ = this.conditioningLibraryService.getAllConditioningSessions();
-		const workouts$ = this.workoutService.getAllWorkouts();
-
 		this.resourcesLoading = true;
-
 		forkJoin({
-			conditioningSessions: conditioning$,
-			workouts: workouts$,
+			conditioningSessions: this.conditioningLibraryService.getAllConditioningSessions(),
+			workouts: this.workoutService.getAllWorkouts(),
 		}).subscribe({
 			next: ({ conditioningSessions, workouts }) => {
 				this._allConditioningSessions = conditioningSessions;
 				this._allWorkouts = workouts;
 				this.resourcesLoading = false;
-
 				this.getWeekPlan();
 			},
 		});
@@ -71,28 +71,15 @@ export class WeekPlannerComponent implements OnInit {
 
 	getWeekPlan() {
 		this.weekPlannerService.getAllWeekPlans().subscribe(weekPlan => {
-			if (!weekPlan) {
-				this.createWeekPlan();
-			} else {
-				this._weekPlan = new WeekPlan(weekPlan);
-			}
+			this._weekPlan = weekPlan ? new WeekPlan(weekPlan) : new WeekPlan();
+			if (!weekPlan) this.createWeekPlan();
 		});
 	}
 
 	createWeekPlan() {
 		this.resourcesLoading = true;
-
-		this._weekPlan = new WeekPlan();
-
 		this.weekPlannerService.createWeekPlan(this._weekPlan.payload()).subscribe(weekPlan => {
 			this._weekPlan = new WeekPlan(weekPlan);
-			this.resourcesLoading = false;
-		});
-	}
-
-	updateWeekPlan() {
-		this.resourcesLoading = true;
-		this.weekPlannerService.updateWeekPlan(this.weekPlan._id, this._weekPlan.payload()).subscribe(() => {
 			this.resourcesLoading = false;
 		});
 	}
@@ -107,19 +94,23 @@ export class WeekPlannerComponent implements OnInit {
 		});
 	}
 
-	editDay(day: DayPlan) {
+	openDrawer(day: DayPlan, block: BlockSelection) {
 		this._selectedDay = day;
+		this._selectedBlock = block;
 		this.drawer.open();
 	}
 
-	addWorkoutToDay(day: string, workout: Workout) {
-		this._weekPlan.addWorkout(day, workout);
-		this.drawer.close();
-		this.autoSave();
-	}
+	addItem(workout?: Workout, session?: ConditioningSession) {
+		const day = this._selectedDay?.dayName;
+		if (!day) return;
 
-	addConditioningToDay(day: string, session: ConditioningSession) {
-		this._weekPlan.addConditioning(day, session);
+		if (this._selectedBlock === 'overarching') {
+			if (workout) this._weekPlan.addWorkout(day, workout);
+			if (session) this._weekPlan.addConditioning(day, session);
+		} else {
+			if (workout) this._weekPlan.addWorkoutToBlock(day, this._selectedBlock, workout);
+			if (session) this._weekPlan.addConditioningToBlock(day, this._selectedBlock, session);
+		}
 		this.drawer.close();
 		this.autoSave();
 	}
@@ -133,5 +124,27 @@ export class WeekPlannerComponent implements OnInit {
 		this._weekPlan.removeConditioning(day, session);
 		this.autoSave();
 	}
-}
 
+	removeWorkoutFromBlock(day: string, block: TimeBlockKey, workout: Workout) {
+		this._weekPlan.removeWorkoutFromBlock(day, block, workout);
+		this.autoSave();
+	}
+
+	removeConditioningFromBlock(day: string, block: TimeBlockKey, session: ConditioningSession) {
+		this._weekPlan.removeConditioningFromBlock(day, block, session);
+		this.autoSave();
+	}
+
+	hasAnyContent(day: DayPlan): boolean {
+		return (
+			day.workouts.length > 0 ||
+			day.conditioning.length > 0 ||
+			day.morning.workouts.length > 0 ||
+			day.morning.conditioning.length > 0 ||
+			day.afternoon.workouts.length > 0 ||
+			day.afternoon.conditioning.length > 0 ||
+			day.evening.workouts.length > 0 ||
+			day.evening.conditioning.length > 0
+		);
+	}
+}

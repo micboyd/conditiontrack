@@ -1,5 +1,6 @@
-<nav class="fixed top-0 left-0 right-0 h-20 bg-white border-b border-zinc-200 z-30">
-<div class="max-w-7xl mx-auto h-full flex items-center px-4 sm:px-8 lg:px-12 gap-6">
+<nav class="fixed top-0 left-0 right-0 h-20 bg-white border-b border-zinc-200 z-30 flex items-center">
+<app-container [noPadding]="true">
+<div class="flex items-center gap-6">
 
 	<!-- Logo -->
 	<a routerLink="/dashboard" class="flex items-center gap-2.5 flex-shrink-0">
@@ -12,28 +13,36 @@
 	<!-- Desktop Nav links (right-aligned) -->
 	<div class="hidden lg:flex items-center gap-1 flex-1 justify-end">
 		<a routerLink="/dashboard" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition">
+			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
 			Dashboard
 		</a>
 		<a routerLink="/strength/workout-records" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition">
+			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
 			Strength
 		</a>
 		<a routerLink="/conditioning/conditioning-records" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition">
+			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
 			Cardio
 		</a>
 		<a routerLink="/nutrition/meal-library" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition">
+			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
 			Nutrition
 		</a>
 		<a routerLink="/week-planner" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition">
+			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
 			Week Planner
 		</a>
 		<a routerLink="/progress/photos" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition">
+			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
 			Progress
+		</a>
+		<a routerLink="/goals" routerLinkActive="bg-zinc-900 !text-white"
+			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
+			Goals
+		</a>
+		<a routerLink="/training-blocks" routerLinkActive="bg-zinc-900 !text-white"
+			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
+			Training Blocks
 		</a>
 	</div>
 
@@ -44,6 +53,7 @@
 	</button>
 
 </div>
+</app-container>
 </nav>
 
 <!-- Mobile full-screen overlay menu -->
@@ -86,6 +96,16 @@
 			(click)="toggleMenu()"
 			class="px-4 py-4 rounded-xl text-white hover:bg-white/10 text-lg font-medium transition">
 			Progress
+		</a>
+		<a routerLink="/goals" routerLinkActive="bg-white text-zinc-900"
+			(click)="toggleMenu()"
+			class="px-4 py-4 rounded-xl text-white hover:bg-white/10 text-lg font-medium transition">
+			Goals
+		</a>
+		<a routerLink="/training-blocks" routerLinkActive="bg-white text-zinc-900"
+			(click)="toggleMenu()"
+			class="px-4 py-4 rounded-xl text-white hover:bg-white/10 text-lg font-medium transition">
+			Training Blocks
 		</a>
 	</nav>
 

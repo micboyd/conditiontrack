@@ -1,6 +1,6 @@
 <!-- Light page header with tabs -->
 <div class="bg-white border-b border-zinc-100">
-	<div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 pt-6 sm:pt-8">
+	<app-container [noPadding]="true"><div class="pt-6 sm:pt-8">
 		<h1 class="text-2xl sm:text-3xl font-bold text-zinc-900 mb-1">Cardio</h1>
 		<p class="text-sm text-zinc-400 mb-6">Manage your cardio sessions and conditioning records</p>
 		<div class="flex gap-0 overflow-x-auto pb-px">
@@ -15,12 +15,12 @@
 				Session Library
 			</a>
 		</div>
-	</div>
+	</div></app-container>
 </div>
 
 <!-- Content -->
 <div class="bg-zinc-50 min-h-screen">
-	<div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-5 sm:py-8">
+	<app-container [noPadding]="true"><div class="py-5 sm:py-8">
 		<router-outlet></router-outlet>
-	</div>
+	</div></app-container>
 </div>

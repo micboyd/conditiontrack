@@ -4,7 +4,16 @@ const WeekPlan = require('../../models/week-planner/Week'); // adjust path if ne
 
 const router = express.Router();
 
-const POPULATE_PATHS = [{ path: 'days.workouts' }, { path: 'days.conditioning' }];
+const POPULATE_PATHS = [
+	{ path: 'days.workouts' },
+	{ path: 'days.conditioning' },
+	{ path: 'days.morning.workouts' },
+	{ path: 'days.morning.conditioning' },
+	{ path: 'days.afternoon.workouts' },
+	{ path: 'days.afternoon.conditioning' },
+	{ path: 'days.evening.workouts' },
+	{ path: 'days.evening.conditioning' },
+];
 
 // Create a new WeekPlan (return populated)
 router.post('/', async (req, res) => {

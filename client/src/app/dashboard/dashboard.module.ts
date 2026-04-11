@@ -9,6 +9,7 @@ import { MealLibraryService } from '../nutrition/meal-library/meal-library.servi
 import { NgModule } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
 import { WeekPlannerService } from '../week-planner/week-planner.service';
+import { GoalsService } from '../goals/goals.service';
 import { WorkoutRecordService } from '../strength/workout-records/workout-records.service';
 import { WorkoutService } from '../strength/workout-library/workout.service';
 
@@ -23,6 +24,7 @@ import { WorkoutService } from '../strength/workout-library/workout.service';
 		WeekPlannerService,
 		MealLibraryService,
 		DailyLogService,
+		GoalsService,
 	],
 })
 export class DashboardModule {}

@@ -6,6 +6,8 @@ import { filter } from 'rxjs/operators';
 import { ConditioningRecordService } from '../../../conditioning/conditioning-records/conditioning-records.service';
 import { DailyLogService } from '../../services/daily-log.service';
 import { MealLibraryService } from '../../../nutrition/meal-library/meal-library.service';
+import { TrainingBlock } from '../../../training-blocks/models/TrainingBlock';
+import { TrainingBlocksService } from '../../../training-blocks/training-blocks.service';
 import { UserProfile, UserService } from '../../services/user.service';
 import { WorkoutRecordService } from '../../../strength/workout-records/workout-records.service';
 
@@ -16,6 +18,7 @@ import { WorkoutRecordService } from '../../../strength/workout-records/workout-
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
 	user: UserProfile | null = null;
+	activeBlock: TrainingBlock | null = null;
 
 	currentMonth = '';
 	currentDate = '';
@@ -32,6 +35,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 		private conditioningRecordService: ConditioningRecordService,
 		private dailyLogService: DailyLogService,
 		private mealLibraryService: MealLibraryService,
+		private trainingBlocksService: TrainingBlocksService,
 		private router: Router,
 	) {}
 
@@ -51,6 +55,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 				next: (user) => (this.user = user),
 			});
 			this.loadMonthlyStats(id, now);
+			this.loadActiveBlock();
 		}
 
 		this.routerSub = this.router.events
@@ -63,6 +68,14 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 
 	ngOnDestroy(): void {
 		this.routerSub?.unsubscribe();
+	}
+
+	private loadActiveBlock(): void {
+		this.trainingBlocksService.getAllBlocks().subscribe({
+			next: (blocks) => {
+				this.activeBlock = blocks.map(b => new TrainingBlock(b)).find(b => b.isActive) ?? null;
+			},
+		});
 	}
 
 	private loadMonthlyStats(userId: string, now: Date): void {

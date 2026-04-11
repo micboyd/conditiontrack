@@ -102,7 +102,7 @@
         <!-- Submit -->
         <button
             type="submit"
-            [disabled]="uploading"
+            [disabled]="uploading || form.invalid"
             class="w-full flex items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-800 disabled:bg-zinc-300 text-white text-sm font-medium px-5 py-3.5 rounded-xl transition cursor-pointer disabled:cursor-not-allowed">
             @if (uploading) {
                 <i class="fa-sharp fa-solid fa-spinner-third fa-spin text-sm"></i>

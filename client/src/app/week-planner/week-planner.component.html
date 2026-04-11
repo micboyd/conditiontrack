@@ -1,29 +1,29 @@
-<!-- Light page header -->
+<!-- Page header -->
 <div class="bg-white border-b border-zinc-100">
-<div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-6 sm:py-8 flex items-center justify-between gap-6">
+<app-container [noPadding]="true"><div class="py-6 sm:py-8 flex items-center justify-between gap-6">
 	<div>
 		<h1 class="text-2xl sm:text-3xl font-bold text-zinc-900 mb-1">Week Planner</h1>
 		<p class="text-sm text-zinc-400">Changes save automatically</p>
 	</div>
 	<div class="flex-shrink-0 h-6 flex items-center">
 		@if (saving) {
-			<span class="flex items-center gap-1.5 text-xs text-zinc-400">
-				<i class="fa-sharp fa-solid fa-spinner fa-spin text-[10px]"></i>
+			<span class="flex items-center gap-1.5 text-sm text-zinc-400">
+				<i class="fa-sharp fa-solid fa-spinner fa-spin text-xs"></i>
 				Saving...
 			</span>
 		} @else if (saved) {
-			<span class="flex items-center gap-1.5 text-xs text-emerald-500">
-				<i class="fa-sharp fa-solid fa-check text-[10px]"></i>
+			<span class="flex items-center gap-1.5 text-sm text-emerald-500">
+				<i class="fa-sharp fa-solid fa-check text-xs"></i>
 				Saved
 			</span>
 		}
 	</div>
-</div>
+</div></app-container>
 </div>
 
 <!-- Content -->
 <div class="bg-zinc-50 min-h-screen">
-<div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-5 sm:py-8">
+<app-container [noPadding]="true"><div class="py-5 sm:py-8">
 
 	@if (resourcesLoading) {
 		<app-loading-indicator [loading]="true"></app-loading-indicator>
@@ -33,62 +33,186 @@
 		@for (day of weekPlan?.days; track day.dayName) {
 		<div class="bg-white rounded-2xl overflow-hidden shadow-sm flex flex-col">
 
-			<div class="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
-				<h2 class="text-sm font-semibold text-zinc-900">{{ day.dayName }}</h2>
-				<button (click)="editDay(day)"
-					class="flex items-center gap-1 text-xs font-medium text-zinc-400 hover:text-zinc-700 cursor-pointer transition bg-zinc-50 hover:bg-zinc-100 px-3 py-2 rounded-full min-h-[44px]">
-					<i class="fa-sharp fa-solid fa-plus text-[10px]"></i>
-					Add
-				</button>
+			<!-- Day header -->
+			<div class="px-5 py-4 border-b border-zinc-100">
+				<h2 class="text-base font-semibold text-zinc-900">{{ day.dayName }}</h2>
 			</div>
 
-			<div class="flex-1 px-4 py-4 space-y-2 min-h-[88px]">
-				@if (day.workouts.length === 0 && day.conditioning.length === 0) {
-					<p class="text-xs text-zinc-300 italic">Rest day</p>
-				}
+			@if (!hasAnyContent(day)) {
+				<p class="px-5 py-4 text-sm text-zinc-300 italic">Rest day — add sessions below</p>
+			}
 
-				@for (workout of day.workouts; track workout._id) {
-				<div class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
-					<div class="min-w-0">
-						<p class="text-xs font-medium text-blue-900 truncate">{{ workout.name }}</p>
-						<p class="text-[10px] text-blue-400 mt-0.5 uppercase tracking-wide">Strength</p>
-					</div>
-					<button (click)="removeWorkout(day.dayName, workout)"
-						class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-2 -mr-1">
-						<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
+			<!-- ── All Day (overarching) ────────────────────────── -->
+			<div class="px-4 py-3 border-b border-zinc-50">
+				<div class="flex items-center justify-between mb-2">
+					<span class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-zinc-400">
+						<i class="fa-sharp fa-solid fa-calendar-day text-xs"></i>
+						All Day
+					</span>
+					<button (click)="openDrawer(day, 'overarching')"
+						class="flex items-center gap-1 text-xs font-medium text-zinc-400 hover:text-zinc-700 cursor-pointer transition hover:bg-zinc-100 px-3 py-1.5 rounded-full min-h-[36px]">
+						<i class="fa-sharp fa-solid fa-plus text-xs"></i>
+						Add
 					</button>
 				</div>
-				}
-
-				@for (session of day.conditioning; track session._id) {
-				<div class="flex items-center justify-between gap-2 py-2 px-3 bg-green-50 rounded-xl">
-					<div class="min-w-0">
-						<p class="text-xs font-medium text-green-900 truncate">{{ session.name }}</p>
-						<p class="text-[10px] text-green-400 mt-0.5 uppercase tracking-wide">Cardio</p>
+				<div class="space-y-1.5">
+					@for (workout of day.workouts; track workout._id) {
+					<div class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
+						<div class="min-w-0">
+							<p class="text-sm font-medium text-blue-900 truncate">{{ workout.name }}</p>
+							<p class="text-xs text-blue-400 uppercase tracking-wide">Strength</p>
+						</div>
+						<button (click)="removeWorkout(day.dayName, workout)"
+							class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
+							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
+						</button>
 					</div>
-					<button (click)="removeConditioning(day.dayName, session)"
-						class="text-green-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-2 -mr-1">
-						<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
+					}
+					@for (session of day.conditioning; track session._id) {
+					<div class="flex items-center justify-between gap-2 py-2 px-3 bg-green-50 rounded-xl">
+						<div class="min-w-0">
+							<p class="text-sm font-medium text-green-900 truncate">{{ session.name }}</p>
+							<p class="text-xs text-green-400 uppercase tracking-wide">Cardio</p>
+						</div>
+						<button (click)="removeConditioning(day.dayName, session)"
+							class="text-green-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
+							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
+						</button>
+					</div>
+					}
+				</div>
+			</div>
+
+			<!-- ── Morning ──────────────────────────────────────── -->
+			<div class="px-4 py-3 border-b border-zinc-50">
+				<div class="flex items-center justify-between mb-2">
+					<span class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-amber-500">
+						<i class="fa-sharp fa-solid fa-sun text-xs"></i>
+						Morning
+					</span>
+					<button (click)="openDrawer(day, 'morning')"
+						class="flex items-center gap-1 text-xs font-medium text-zinc-400 hover:text-zinc-700 cursor-pointer transition hover:bg-zinc-100 px-3 py-1.5 rounded-full min-h-[36px]">
+						<i class="fa-sharp fa-solid fa-plus text-xs"></i>
+						Add
 					</button>
 				</div>
-				}
+				<div class="space-y-1.5">
+					@for (workout of day.morning.workouts; track workout._id) {
+					<div class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
+						<p class="text-sm font-medium text-blue-900 truncate">{{ workout.name }}</p>
+						<button (click)="removeWorkoutFromBlock(day.dayName, 'morning', workout)"
+							class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
+							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
+						</button>
+					</div>
+					}
+					@for (session of day.morning.conditioning; track session._id) {
+					<div class="flex items-center justify-between gap-2 py-2 px-3 bg-green-50 rounded-xl">
+						<p class="text-sm font-medium text-green-900 truncate">{{ session.name }}</p>
+						<button (click)="removeConditioningFromBlock(day.dayName, 'morning', session)"
+							class="text-green-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
+							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
+						</button>
+					</div>
+					}
+					@if (day.morning.workouts.length === 0 && day.morning.conditioning.length === 0) {
+						<p class="text-xs text-zinc-300 italic">Empty</p>
+					}
+				</div>
+			</div>
+
+			<!-- ── Afternoon ─────────────────────────────────────── -->
+			<div class="px-4 py-3 border-b border-zinc-50">
+				<div class="flex items-center justify-between mb-2">
+					<span class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-blue-400">
+						<i class="fa-sharp fa-solid fa-cloud-sun text-xs"></i>
+						Afternoon
+					</span>
+					<button (click)="openDrawer(day, 'afternoon')"
+						class="flex items-center gap-1 text-xs font-medium text-zinc-400 hover:text-zinc-700 cursor-pointer transition hover:bg-zinc-100 px-3 py-1.5 rounded-full min-h-[36px]">
+						<i class="fa-sharp fa-solid fa-plus text-xs"></i>
+						Add
+					</button>
+				</div>
+				<div class="space-y-1.5">
+					@for (workout of day.afternoon.workouts; track workout._id) {
+					<div class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
+						<p class="text-sm font-medium text-blue-900 truncate">{{ workout.name }}</p>
+						<button (click)="removeWorkoutFromBlock(day.dayName, 'afternoon', workout)"
+							class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
+							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
+						</button>
+					</div>
+					}
+					@for (session of day.afternoon.conditioning; track session._id) {
+					<div class="flex items-center justify-between gap-2 py-2 px-3 bg-green-50 rounded-xl">
+						<p class="text-sm font-medium text-green-900 truncate">{{ session.name }}</p>
+						<button (click)="removeConditioningFromBlock(day.dayName, 'afternoon', session)"
+							class="text-green-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
+							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
+						</button>
+					</div>
+					}
+					@if (day.afternoon.workouts.length === 0 && day.afternoon.conditioning.length === 0) {
+						<p class="text-xs text-zinc-300 italic">Empty</p>
+					}
+				</div>
+			</div>
+
+			<!-- ── Evening ───────────────────────────────────────── -->
+			<div class="px-4 py-3">
+				<div class="flex items-center justify-between mb-2">
+					<span class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-400">
+						<i class="fa-sharp fa-solid fa-moon text-xs"></i>
+						Evening
+					</span>
+					<button (click)="openDrawer(day, 'evening')"
+						class="flex items-center gap-1 text-xs font-medium text-zinc-400 hover:text-zinc-700 cursor-pointer transition hover:bg-zinc-100 px-3 py-1.5 rounded-full min-h-[36px]">
+						<i class="fa-sharp fa-solid fa-plus text-xs"></i>
+						Add
+					</button>
+				</div>
+				<div class="space-y-1.5">
+					@for (workout of day.evening.workouts; track workout._id) {
+					<div class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
+						<p class="text-sm font-medium text-blue-900 truncate">{{ workout.name }}</p>
+						<button (click)="removeWorkoutFromBlock(day.dayName, 'evening', workout)"
+							class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
+							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
+						</button>
+					</div>
+					}
+					@for (session of day.evening.conditioning; track session._id) {
+					<div class="flex items-center justify-between gap-2 py-2 px-3 bg-green-50 rounded-xl">
+						<p class="text-sm font-medium text-green-900 truncate">{{ session.name }}</p>
+						<button (click)="removeConditioningFromBlock(day.dayName, 'evening', session)"
+							class="text-green-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
+							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
+						</button>
+					</div>
+					}
+					@if (day.evening.workouts.length === 0 && day.evening.conditioning.length === 0) {
+						<p class="text-xs text-zinc-300 italic">Empty</p>
+					}
+				</div>
 			</div>
 
 		</div>
 		}
 	</div>
 
+	<!-- Side drawer -->
 	<app-side-drawer side="right">
 		<div class="p-6 flex flex-col h-full">
-			<h2 class="text-xl font-semibold text-zinc-900 mb-1">{{ selectedDay?.dayName }}</h2>
+			<h2 class="text-xl font-semibold text-zinc-900 mb-1">{{ drawerTitle }}</h2>
 			<p class="text-sm text-zinc-400 mb-6">Select a session to add</p>
 
 			@if (allWorkouts.length > 0) {
 			<div class="mb-7">
-				<p class="text-[11px] font-medium uppercase tracking-widest text-zinc-400 mb-3">Strength</p>
+				<p class="text-xs font-medium uppercase tracking-widest text-zinc-400 mb-3">Strength</p>
 				<div class="space-y-2">
 					@for (workout of allWorkouts; track workout._id) {
-					<div (click)="addWorkoutToDay(selectedDay?.dayName, workout)"
+					<div (click)="addItem(workout)"
 						class="flex items-center justify-between px-4 py-4 bg-zinc-50 rounded-xl hover:bg-zinc-100 cursor-pointer transition">
 						<div>
 							<p class="text-sm font-medium text-zinc-800">{{ workout.name }}</p>
@@ -103,10 +227,10 @@
 
 			@if (allConditioningSessions.length > 0) {
 			<div>
-				<p class="text-[11px] font-medium uppercase tracking-widest text-zinc-400 mb-3">Cardio</p>
+				<p class="text-xs font-medium uppercase tracking-widest text-zinc-400 mb-3">Cardio</p>
 				<div class="space-y-2">
 					@for (session of allConditioningSessions; track session._id) {
-					<div (click)="addConditioningToDay(selectedDay?.dayName, session)"
+					<div (click)="addItem(undefined, session)"
 						class="flex items-center justify-between px-4 py-4 bg-zinc-50 rounded-xl hover:bg-zinc-100 cursor-pointer transition">
 						<div>
 							<p class="text-sm font-medium text-zinc-800">{{ session.name }}</p>
@@ -128,5 +252,5 @@
 	</app-side-drawer>
 
 	}
-</div>
+</div></app-container>
 </div>

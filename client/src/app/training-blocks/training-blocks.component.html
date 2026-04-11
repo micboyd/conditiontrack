@@ -1,0 +1,113 @@
+<!-- Page header -->
+<div class="bg-white border-b border-zinc-100">
+<app-container [noPadding]="true"><div class="py-6 sm:py-8 flex items-center justify-between gap-6">
+	<div>
+		<h1 class="text-2xl sm:text-3xl font-bold text-zinc-900 mb-1">Training Blocks</h1>
+		<p class="text-sm text-zinc-400">Organise your training into named phases</p>
+	</div>
+	<button (click)="openDrawer(null)"
+		class="flex items-center gap-2 px-4 py-2.5 bg-zinc-900 text-white text-sm font-medium rounded-xl hover:bg-zinc-700 transition cursor-pointer flex-shrink-0">
+		<i class="fa-sharp fa-solid fa-plus text-xs"></i>
+		Add Block
+	</button>
+</div></app-container>
+</div>
+
+<!-- Content -->
+<div class="bg-zinc-50 min-h-screen">
+<app-container [noPadding]="true"><div class="py-5 sm:py-8">
+
+	@if (loading) {
+		<app-loading-indicator [loading]="true"></app-loading-indicator>
+	} @else if (blocks.length === 0) {
+
+		<!-- Empty state -->
+		<div class="flex flex-col items-center justify-center py-24 text-center">
+			<div class="w-14 h-14 rounded-2xl bg-zinc-200 flex items-center justify-center mb-4">
+				<i class="fa-sharp fa-solid fa-calendar-range text-zinc-500 text-xl"></i>
+			</div>
+			<h2 class="text-lg font-semibold text-zinc-800 mb-1">No training blocks yet</h2>
+			<p class="text-sm text-zinc-400 mb-6">Add a block to organise your training into named phases.</p>
+			<button (click)="openDrawer(null)"
+				class="px-5 py-2.5 bg-zinc-900 text-white text-sm font-medium rounded-xl hover:bg-zinc-700 transition cursor-pointer">
+				Add your first block
+			</button>
+		</div>
+
+	} @else {
+
+		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+			@for (block of blocks; track block._id) {
+
+			<!-- Active block gets dark card -->
+			<div class="rounded-2xl overflow-hidden shadow-sm flex flex-col"
+				[ngClass]="block.isActive ? 'bg-zinc-900' : 'bg-white'">
+
+				<!-- Card header -->
+				<div class="px-5 pt-5 pb-4 flex items-start justify-between gap-3">
+					<div class="min-w-0">
+						<p class="text-base font-semibold truncate" [ngClass]="block.isActive ? 'text-white' : 'text-zinc-900'">
+							{{ block.name }}
+						</p>
+						<p class="text-sm mt-0.5" [ngClass]="block.isActive ? 'text-zinc-400' : 'text-zinc-400'">
+							{{ block.dateRangeLabel }}
+						</p>
+					</div>
+					<!-- Status badge -->
+					<span class="text-xs font-medium px-2.5 py-1 rounded-full flex-shrink-0"
+						[ngClass]="{
+							'bg-white text-zinc-900': block.status === 'active',
+							'bg-blue-50 text-blue-700': block.status === 'upcoming',
+							'bg-zinc-100 text-zinc-500': block.status === 'completed' && !block.isActive
+						}">
+						{{ statusLabel(block) }}
+					</span>
+				</div>
+
+				<!-- Notes -->
+				@if (block.notes) {
+					<p class="px-5 pb-4 text-sm" [ngClass]="block.isActive ? 'text-zinc-400' : 'text-zinc-500'">
+						{{ block.notes }}
+					</p>
+				}
+
+				<!-- Actions -->
+				<div class="mt-auto px-5 py-3 flex items-center gap-2 border-t"
+					[ngClass]="block.isActive ? 'border-zinc-800' : 'border-zinc-100'">
+					<button (click)="openDrawer(block)"
+						class="flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg transition cursor-pointer"
+						[ngClass]="block.isActive
+							? 'text-zinc-300 hover:bg-white/10'
+							: 'text-zinc-500 hover:bg-zinc-100'">
+						<i class="fa-sharp fa-solid fa-pencil text-xs"></i>
+						Edit
+					</button>
+					<button (click)="deleteBlock(block)"
+						[disabled]="deletingId === block._id"
+						class="flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg transition cursor-pointer disabled:opacity-40"
+						[ngClass]="block.isActive
+							? 'text-zinc-400 hover:text-red-400 hover:bg-white/10'
+							: 'text-zinc-400 hover:text-red-500 hover:bg-red-50'">
+						<i class="fa-sharp fa-solid fa-trash text-xs"></i>
+						{{ deletingId === block._id ? 'Deleting...' : 'Delete' }}
+					</button>
+				</div>
+
+			</div>
+			}
+		</div>
+
+	}
+
+	<!-- Side drawer -->
+	<app-side-drawer side="right">
+		<app-edit-training-block
+			[selectedBlock]="selectedBlock"
+			[allBlocks]="blocks"
+			(saved)="onSaved()"
+			(cancelled)="onCancelled()">
+		</app-edit-training-block>
+	</app-side-drawer>
+
+</div></app-container>
+</div>

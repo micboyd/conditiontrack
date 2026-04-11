@@ -20,6 +20,8 @@ import { WorkoutRecord } from '../strength/models/WorkoutRecord';
 import { WorkoutRecordService } from '../strength/workout-records/workout-records.service';
 import { WorkoutService } from '../strength/workout-library/workout.service';
 import { forkJoin } from 'rxjs';
+import { Goal } from '../goals/models/Goal';
+import { GoalsService } from '../goals/goals.service';
 
 export interface ActivityEntry {
 	date: string;
@@ -69,6 +71,9 @@ export class DashboardComponent implements OnInit {
 	private weekPlan: WeekPlan | null = null;
 	private allMeals: Meal[] = [];
 
+	activeGoals: Goal[] = [];
+	goalAutoValues = new Map<string, number>();
+
 	constructor(
 		private fb: FormBuilder,
 		private userService: UserService,
@@ -79,6 +84,7 @@ export class DashboardComponent implements OnInit {
 		private weekPlannerService: WeekPlannerService,
 		private mealLibraryService: MealLibraryService,
 		private dailyLogService: DailyLogService,
+		private goalsService: GoalsService,
 	) {}
 
 	ngOnInit(): void {
@@ -92,6 +98,7 @@ export class DashboardComponent implements OnInit {
 			weekPlan: this.weekPlannerService.getAllWeekPlans(),
 			mealLibrary: this.mealLibraryService.getAllMeals(),
 			dailyLog: this.dailyLogService.getLog(id, this.todayStr),
+			goals: this.goalsService.getAllGoals(),
 		}).subscribe({
 			next: (data) => {
 				this.user = data.user;
@@ -102,12 +109,35 @@ export class DashboardComponent implements OnInit {
 				this.weekPlan = new WeekPlan(data.weekPlan);
 				this.allMeals = data.mealLibrary;
 				this.viewDateLog = data.dailyLog;
+				this.activeGoals = data.goals.map(g => new Goal(g));
 				this.loading = false;
+				this.goalsService.resolveAutoValues(this.activeGoals).subscribe(map => {
+					this.goalAutoValues = map;
+				});
 			},
 			error: () => {
 				this.loading = false;
 			},
 		});
+	}
+
+	// ── Goals helpers ────────────────────────────────────────────────────────
+
+	getGoalCurrent(goal: Goal): number {
+		return goal.trackingType === 'auto'
+			? (this.goalAutoValues.get(goal._id) ?? goal.currentValue)
+			: goal.currentValue;
+	}
+
+	getGoalProgress(goal: Goal): number {
+		const current = this.getGoalCurrent(goal);
+		if (goal.direction === 'decrease') {
+			const range = goal.startValue - goal.targetValue;
+			if (range <= 0) return 0;
+			return Math.min(100, Math.max(0, Math.round(((goal.startValue - current) / range) * 100)));
+		}
+		if (goal.targetValue <= 0) return 0;
+		return Math.min(100, Math.round((current / goal.targetValue) * 100));
 	}
 
 	// ── Day navigation ───────────────────────────────────────────────────────
@@ -272,6 +302,16 @@ export class DashboardComponent implements OnInit {
 				day: this.weekPlan?.getDayPlan(dayName),
 			};
 		});
+	}
+
+	// ── Week plan helpers ────────────────────────────────────────────────────
+
+	allPlannedWorkouts(planned: DayPlan | undefined): Workout[] {
+		return this.weekPlan?.getAllWorkouts(planned?.dayName ?? '') ?? [];
+	}
+
+	allPlannedConditioning(planned: DayPlan | undefined): ConditioningSession[] {
+		return this.weekPlan?.getAllConditioning(planned?.dayName ?? '') ?? [];
 	}
 
 	// ── My Day ───────────────────────────────────────────────────────────────

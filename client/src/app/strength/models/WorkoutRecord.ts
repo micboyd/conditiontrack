@@ -52,7 +52,7 @@ export class WorkoutRecord {
 	static toFormGroup(record: WorkoutRecord, fb: FormBuilder): FormGroup {
 		return fb.group({
 			_id: [record._id],
-			notes: [record.notes, [Validators.required]],
+			notes: [record.notes],
 			duration: [record.duration, [Validators.required]],
 			userId: [record.userId, [Validators.required]],
 			workoutId: [record.workoutId, [Validators.required]],

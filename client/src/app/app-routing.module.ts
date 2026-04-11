@@ -23,6 +23,7 @@ import { WeekPlannerComponent } from './week-planner/week-planner.component';
 import { WorkoutLibraryComponent } from './strength/workout-library/workout-library.component';
 import { ProgressComponent } from './progress/progress.component';
 import { ProgressPhotosComponent } from './progress/progress-photos/progress-photos.component';
+import { TrainingBlocksComponent } from './training-blocks/training-blocks.component';
 
 const routes: Routes = [
 	// Login remains at top level
@@ -123,6 +124,11 @@ const routes: Routes = [
             			{
 				path: 'week-planner',
 				component: WeekPlannerComponent,
+				canActivate: [AuthGuard],
+			},
+			{
+				path: 'training-blocks',
+				component: TrainingBlocksComponent,
 				canActivate: [AuthGuard],
 			},
 			{

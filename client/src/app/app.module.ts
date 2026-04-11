@@ -6,7 +6,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ConditioningModule } from './conditioning/conditioning.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { GlobalSettingsModule } from './global-settings/global-settings.module';
-import { GoalsComponent } from './goals/goals.component';
+import { GoalsModule } from './goals/goals.module';
 import { MainLayoutComponent } from './shared/components/main-layout/main-layout.component';
 import { NgModule } from '@angular/core';
 import { NotesComponent } from './notes/notes.component';
@@ -18,6 +18,8 @@ import { SharedModule } from './shared/shared.module';
 import { StrengthModule } from './strength/strength.module';
 import { StyleguideComponent } from './styleguide/styleguide.component';
 import { WeekPlannerModule } from './week-planner/week-planner.module';
+import { TrainingBlocksModule } from './training-blocks/training-blocks.module';
+import { TrainingBlocksService } from './training-blocks/training-blocks.service';
 import { ConditioningRecordService } from './conditioning/conditioning-records/conditioning-records.service';
 import { DailyLogService } from './shared/services/daily-log.service';
 import { MealLibraryService } from './nutrition/meal-library/meal-library.service';
@@ -31,7 +33,6 @@ import { provideHttpClient } from '@angular/common/http';
         StyleguideComponent,
         MainLayoutComponent,
         ProfileComponent,
-        GoalsComponent,
         NotesComponent,
         BodyCompositionComponent
     ],
@@ -47,9 +48,11 @@ import { provideHttpClient } from '@angular/common/http';
 		NutritionModule,
 		GlobalSettingsModule,
         WeekPlannerModule,
-        ProgressModule
+        ProgressModule,
+        GoalsModule,
+        TrainingBlocksModule
 	],
-	providers: [provideHttpClient(), WorkoutService, WorkoutRecordService, ConditioningRecordService, MealLibraryService, DailyLogService],
+	providers: [provideHttpClient(), WorkoutService, WorkoutRecordService, ConditioningRecordService, MealLibraryService, DailyLogService, TrainingBlocksService],
 	bootstrap: [AppComponent],
 })
 export class AppModule {}

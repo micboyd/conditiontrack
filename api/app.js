@@ -19,6 +19,9 @@ const weekPlannerRoutes = require('./routes/week-planner/week');
 
 const progressPhotoRoutes = require('./routes/progress/progressPhoto');
 
+const goalRoutes = require('./routes/goals/goal');
+const trainingBlockRoutes = require('./routes/training-blocks/trainingBlock');
+
 const cors = require('cors');
 
 require('dotenv').config();
@@ -41,6 +44,8 @@ app.use('/api/conditioning/conditioning-session', conditionSessionRoutes);
 app.use('/api/conditioning/conditioning-record', conditionRecordRoutes);
 app.use('/api/week-planner/week', weekPlannerRoutes);
 app.use('/api/progress/photos', progressPhotoRoutes);
+app.use('/api/goals/goal', goalRoutes);
+app.use('/api/training-blocks/training-block', trainingBlockRoutes);
 
 mongoose
 	.connect(process.env.MONGO_URI, {

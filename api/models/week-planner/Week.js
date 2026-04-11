@@ -1,43 +1,43 @@
 const mongoose = require('mongoose');
 
-const dayPlanSchema = new mongoose.Schema(
+const timeBlockSchema = new mongoose.Schema(
 	{
-		dayName: {
-			type: String,
-			enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-			required: true,
-		},
-		workouts: [
-			{
-				type: mongoose.Schema.Types.ObjectId,
-				ref: 'Workout',
-			},
-		],
-		conditioning: [
-			{
-				type: mongoose.Schema.Types.ObjectId,
-				ref: 'ConditioningSession',
-			},
-		],
-	}
+		workouts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Workout' }],
+		conditioning: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ConditioningSession' }],
+	},
+	{ _id: false },
 );
+
+const emptyBlock = () => ({ workouts: [], conditioning: [] });
+
+const dayPlanSchema = new mongoose.Schema({
+	dayName: {
+		type: String,
+		enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+		required: true,
+	},
+	// Overarching (all-day) items — original behaviour
+	workouts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Workout' }],
+	conditioning: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ConditioningSession' }],
+	// Time blocks
+	morning:   { type: timeBlockSchema, default: emptyBlock },
+	afternoon: { type: timeBlockSchema, default: emptyBlock },
+	evening:   { type: timeBlockSchema, default: emptyBlock },
+});
 
 const weekPlanSchema = new mongoose.Schema(
 	{
-		userId: {
-			type: String,
-			required: true,
-		},
+		userId: { type: String, required: true },
 		days: {
 			type: [dayPlanSchema],
 			default: () => [
-				{ dayName: 'Monday', workouts: [], conditioning: [] },
-				{ dayName: 'Tuesday', workouts: [], conditioning: [] },
-				{ dayName: 'Wednesday', workouts: [], conditioning: [] },
-				{ dayName: 'Thursday', workouts: [], conditioning: [] },
-				{ dayName: 'Friday', workouts: [], conditioning: [] },
-				{ dayName: 'Saturday', workouts: [], conditioning: [] },
-				{ dayName: 'Sunday', workouts: [], conditioning: [] },
+				{ dayName: 'Monday',    workouts: [], conditioning: [], morning: emptyBlock(), afternoon: emptyBlock(), evening: emptyBlock() },
+				{ dayName: 'Tuesday',   workouts: [], conditioning: [], morning: emptyBlock(), afternoon: emptyBlock(), evening: emptyBlock() },
+				{ dayName: 'Wednesday', workouts: [], conditioning: [], morning: emptyBlock(), afternoon: emptyBlock(), evening: emptyBlock() },
+				{ dayName: 'Thursday',  workouts: [], conditioning: [], morning: emptyBlock(), afternoon: emptyBlock(), evening: emptyBlock() },
+				{ dayName: 'Friday',    workouts: [], conditioning: [], morning: emptyBlock(), afternoon: emptyBlock(), evening: emptyBlock() },
+				{ dayName: 'Saturday',  workouts: [], conditioning: [], morning: emptyBlock(), afternoon: emptyBlock(), evening: emptyBlock() },
+				{ dayName: 'Sunday',    workouts: [], conditioning: [], morning: emptyBlock(), afternoon: emptyBlock(), evening: emptyBlock() },
 			],
 		},
 	},

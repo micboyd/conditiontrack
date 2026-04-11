@@ -11,6 +11,10 @@ export class DatePickerComponent implements OnChanges {
 	@Input() value: string = '';
 	/** Upper limit date as yyyy-MM-dd string. Empty = no limit. */
 	@Input() maxDate: string = '';
+	/** Lower limit date as yyyy-MM-dd string. Empty = no limit. */
+	@Input() minDate: string = '';
+	/** Ranges to disable (e.g. existing training blocks). end = null means open-ended. */
+	@Input() disabledRanges: { start: string; end: string | null }[] = [];
 	/** 'icon' = small calendar button (dashboard). 'field' = full-width form input. */
 	@Input() displayMode: 'icon' | 'field' = 'field';
 	/** Placeholder text shown in field mode when no date selected */
@@ -37,6 +41,16 @@ export class DatePickerComponent implements OnChanges {
 
 	get monthLabel(): string {
 		return format(this.pickerMonth, 'MMMM yyyy');
+	}
+
+	get prevMonthDisabled(): boolean {
+		if (!this.minDate) return false;
+		const min = parseISO(this.minDate);
+		return (
+			this.pickerMonth.getFullYear() < min.getFullYear() ||
+			(this.pickerMonth.getFullYear() === min.getFullYear() &&
+				this.pickerMonth.getMonth() <= min.getMonth())
+		);
 	}
 
 	get nextMonthDisabled(): boolean {
@@ -102,8 +116,16 @@ export class DatePickerComponent implements OnChanges {
 		return format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
 	}
 
+	isInBlockRange(date: Date): boolean {
+		if (!this.disabledRanges.length) return false;
+		const d = format(date, 'yyyy-MM-dd');
+		return this.disabledRanges.some(r => d >= r.start && d <= (r.end || '9999-12-31'));
+	}
+
 	isDisabled(date: Date): boolean {
-		if (!this.maxDate) return false;
-		return format(date, 'yyyy-MM-dd') > this.maxDate;
+		const d = format(date, 'yyyy-MM-dd');
+		if (this.maxDate && d > this.maxDate) return true;
+		if (this.minDate && d < this.minDate) return true;
+		return this.isInBlockRange(date);
 	}
 }
