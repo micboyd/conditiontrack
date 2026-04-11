@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { format, parseISO } from 'date-fns';
 
 @Component({
@@ -27,9 +27,10 @@ export class DatePickerComponent implements OnChanges {
 
 	readonly weekDays = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 
-	ngOnChanges(): void {
-		// Keep picker month in sync if value changes externally
-		if (this.value) {
+	ngOnChanges(changes: SimpleChanges): void {
+		// Only reset the visible month when the selected value itself changes,
+		// not when disabledRanges / minDate / maxDate update during change detection.
+		if (changes['value'] && this.value) {
 			try { this.pickerMonth = parseISO(this.value); } catch { /* ignore */ }
 		}
 	}
