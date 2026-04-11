@@ -1,102 +1,90 @@
-<nav class="fixed top-0 left-0 right-0 h-14 bg-zinc-900 z-30 flex items-center px-6 gap-6">
+<nav class="fixed top-0 left-0 right-0 h-20 bg-white border-b border-zinc-200 z-30">
+<div class="max-w-7xl mx-auto h-full flex items-center px-4 sm:px-8 lg:px-12 gap-6">
 
 	<!-- Logo -->
-	<a routerLink="/dashboard" class="flex items-center gap-2.5 flex-shrink-0 mr-2">
-		<div class="w-6 h-6 bg-white rounded flex items-center justify-center flex-shrink-0">
-			<i class="fa-sharp fa-solid fa-bolt text-zinc-900 text-[11px]"></i>
+	<a routerLink="/dashboard" class="flex items-center gap-2.5 flex-shrink-0">
+		<div class="w-7 h-7 bg-zinc-900 rounded flex items-center justify-center flex-shrink-0">
+			<i class="fa-sharp fa-solid fa-bolt text-white text-xs"></i>
 		</div>
-		<span class="font-semibold text-white text-sm tracking-tight">ConditionTrack</span>
+		<span class="font-semibold text-zinc-900 tracking-tight">ConditionTrack</span>
 	</a>
 
-	<!-- Desktop Nav links -->
-	<div class="hidden lg:flex items-center gap-0.5 flex-1">
-		<a routerLink="/dashboard" routerLinkActive="text-white bg-white/10"
-			class="px-3 py-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-white/5 text-sm transition">
+	<!-- Desktop Nav links (right-aligned) -->
+	<div class="hidden lg:flex items-center gap-1 flex-1 justify-end">
+		<a routerLink="/dashboard" routerLinkActive="bg-zinc-900 !text-white"
+			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition">
 			Dashboard
 		</a>
-		<a routerLink="/strength/workout-records" routerLinkActive="text-white bg-white/10"
-			class="px-3 py-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-white/5 text-sm transition">
+		<a routerLink="/strength/workout-records" routerLinkActive="bg-zinc-900 !text-white"
+			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition">
 			Strength
 		</a>
-		<a routerLink="/conditioning/conditioning-records" routerLinkActive="text-white bg-white/10"
-			class="px-3 py-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-white/5 text-sm transition">
+		<a routerLink="/conditioning/conditioning-records" routerLinkActive="bg-zinc-900 !text-white"
+			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition">
 			Cardio
 		</a>
-		<a routerLink="/nutrition/meal-library" routerLinkActive="text-white bg-white/10"
-			class="px-3 py-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-white/5 text-sm transition">
+		<a routerLink="/nutrition/meal-library" routerLinkActive="bg-zinc-900 !text-white"
+			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition">
 			Nutrition
 		</a>
-		<a routerLink="/week-planner" routerLinkActive="text-white bg-white/10"
-			class="px-3 py-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-white/5 text-sm transition">
+		<a routerLink="/week-planner" routerLinkActive="bg-zinc-900 !text-white"
+			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition">
 			Week Planner
 		</a>
-		<a routerLink="/progress/photos" routerLinkActive="text-white bg-white/10"
-			class="px-3 py-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-white/5 text-sm transition">
+		<a routerLink="/progress/photos" routerLinkActive="bg-zinc-900 !text-white"
+			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition">
 			Progress
-		</a>
-	</div>
-
-	<!-- Desktop User -->
-	<div class="hidden lg:flex items-center gap-3 flex-shrink-0">
-		<div class="flex items-center gap-2">
-			<div class="w-7 h-7 rounded-full bg-zinc-700 flex items-center justify-center overflow-hidden flex-shrink-0">
-				<img *ngIf="user?.profileImage" [src]="user!.profileImage" alt="Profile" class="w-full h-full object-cover" />
-				<span *ngIf="!user?.profileImage" class="text-white text-xs">{{ initials }}</span>
-			</div>
-			<span class="text-sm text-zinc-300">{{ user?.firstname }}</span>
-		</div>
-		<a routerLink="/login" class="text-zinc-500 hover:text-white transition" title="Sign out">
-			<i class="fa-sharp fa-solid fa-arrow-right-from-bracket text-sm"></i>
 		</a>
 	</div>
 
 	<!-- Mobile: spacer + hamburger -->
 	<div class="flex-1 lg:hidden"></div>
-	<button (click)="toggleMenu()" class="lg:hidden flex items-center justify-center w-9 h-9 text-zinc-400 hover:text-white transition cursor-pointer" aria-label="Toggle menu">
+	<button (click)="toggleMenu()" class="lg:hidden flex items-center justify-center w-10 h-10 text-zinc-700 hover:bg-zinc-100 rounded-lg transition cursor-pointer" aria-label="Toggle menu">
 		<i class="fa-sharp fa-solid fa-bars text-base"></i>
 	</button>
 
+</div>
 </nav>
 
 <!-- Mobile full-screen overlay menu -->
 @if (menuOpen) {
-<div class="fixed inset-0 bg-zinc-900 z-40 flex flex-col pt-16 px-6 lg:hidden">
+<div class="fixed inset-0 bg-zinc-900 z-40 flex flex-col pt-20 px-6 lg:hidden">
 
 	<!-- Close button -->
-	<button (click)="toggleMenu()" class="absolute top-3.5 right-6 w-9 h-9 flex items-center justify-center text-zinc-400 hover:text-white transition cursor-pointer" aria-label="Close menu">
+	<button (click)="toggleMenu()" class="absolute top-4 right-6 w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-lg transition cursor-pointer" aria-label="Close menu">
 		<i class="fa-sharp fa-solid fa-xmark text-lg"></i>
 	</button>
 
 	<!-- Nav links stacked -->
 	<nav class="flex flex-col gap-1 mb-8">
-		<a routerLink="/dashboard" routerLinkActive="text-white bg-white/10"
+		<a routerLink="/dashboard" routerLinkActive="bg-white text-zinc-900"
 			(click)="toggleMenu()"
-			class="px-4 py-4 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 text-lg font-medium transition whitespace-nowrap">
+			class="px-4 py-4 rounded-xl text-white hover:bg-white/10 text-lg font-medium transition">
 			Dashboard
 		</a>
-		<a routerLink="/strength/workout-records" routerLinkActive="text-white bg-white/10"
+		<a routerLink="/strength/workout-records" routerLinkActive="bg-white text-zinc-900"
 			(click)="toggleMenu()"
-			class="px-4 py-4 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 text-lg font-medium transition whitespace-nowrap">
+			class="px-4 py-4 rounded-xl text-white hover:bg-white/10 text-lg font-medium transition">
 			Strength
 		</a>
-		<a routerLink="/conditioning/conditioning-records" routerLinkActive="text-white bg-white/10"
+		<a routerLink="/conditioning/conditioning-records" routerLinkActive="bg-white text-zinc-900"
 			(click)="toggleMenu()"
-			class="px-4 py-4 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 text-lg font-medium transition whitespace-nowrap">
+			class="px-4 py-4 rounded-xl text-white hover:bg-white/10 text-lg font-medium transition">
 			Cardio
 		</a>
-		<a routerLink="/nutrition/meal-library" routerLinkActive="text-white bg-white/10"
+		<a routerLink="/nutrition/meal-library" routerLinkActive="bg-white text-zinc-900"
 			(click)="toggleMenu()"
-			class="px-4 py-4 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 text-lg font-medium transition whitespace-nowrap">
+			class="px-4 py-4 rounded-xl text-white hover:bg-white/10 text-lg font-medium transition">
 			Nutrition
 		</a>
-		<a routerLink="/week-planner" routerLinkActive="text-white bg-white/10"
+		<a routerLink="/week-planner" routerLinkActive="bg-white text-zinc-900"
 			(click)="toggleMenu()"
-			class="px-4 py-4 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 text-lg font-medium transition whitespace-nowrap">
+			class="px-4 py-4 rounded-xl text-white hover:bg-white/10 text-lg font-medium transition">
 			Week Planner
 		</a>
-		<a routerLink="/progress/photos" routerLinkActive="text-white bg-white/10"
+		<a routerLink="/progress/photos" routerLinkActive="bg-white text-zinc-900"
 			(click)="toggleMenu()"
-			class="px-4 py-4 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 text-lg font-medium transition whitespace-nowrap">
+			class="px-4 py-4 rounded-xl text-white hover:bg-white/10 text-lg font-medium transition">
 			Progress
 		</a>
 	</nav>
@@ -107,15 +95,15 @@
 	<!-- User info + sign out -->
 	<div class="flex items-center justify-between">
 		<div class="flex items-center gap-3">
-			<div class="w-9 h-9 rounded-full bg-zinc-700 flex items-center justify-center overflow-hidden flex-shrink-0">
+			<div class="w-10 h-10 rounded-full bg-zinc-700 flex items-center justify-center overflow-hidden flex-shrink-0">
 				<img *ngIf="user?.profileImage" [src]="user!.profileImage" alt="Profile" class="w-full h-full object-cover" />
-				<span *ngIf="!user?.profileImage" class="text-white text-sm">{{ initials }}</span>
+				<span *ngIf="!user?.profileImage" class="text-white text-sm font-medium">{{ initials }}</span>
 			</div>
-			<span class="text-base text-zinc-300 font-medium">{{ user?.firstname }} {{ user?.lastname }}</span>
+			<span class="text-white font-medium">{{ user?.firstname }} {{ user?.lastname }}</span>
 		</div>
-		<a routerLink="/login" (click)="toggleMenu()" class="flex items-center gap-2 text-zinc-500 hover:text-white transition py-2 px-3" title="Sign out">
-			<i class="fa-sharp fa-solid fa-arrow-right-from-bracket text-sm"></i>
-			<span class="text-sm">Sign out</span>
+		<a routerLink="/login" (click)="toggleMenu()" class="flex items-center gap-2 text-zinc-400 hover:text-white transition py-2 px-3" title="Sign out">
+			<i class="fa-sharp fa-solid fa-arrow-right-from-bracket"></i>
+			<span class="text-sm font-medium">Sign out</span>
 		</a>
 	</div>
 

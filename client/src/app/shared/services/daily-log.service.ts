@@ -14,6 +14,10 @@ export class DailyLogService {
 		return this.http.get<DailyLog | null>(`${this.base}/${userId}/${date}`);
 	}
 
+	getMonthlyLogs(userId: string, year: number, month: number): Observable<DailyLog[]> {
+		return this.http.get<DailyLog[]>(`${this.base}/${userId}/month/${year}/${month}`);
+	}
+
 	createLog(log: Partial<DailyLog>): Observable<DailyLog> {
 		return this.http.post<DailyLog>(this.base, log);
 	}

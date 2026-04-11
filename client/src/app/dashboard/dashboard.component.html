@@ -4,14 +4,8 @@
 	</div>
 } @else {
 
-<!-- ─── Header ────────────────────────────────────────────────────────────── -->
-<div class="bg-white border-b border-zinc-100 px-6 py-6 lg:px-10 lg:py-10">
-	<h1 class="text-2xl lg:text-4xl font-bold text-zinc-900 tracking-tight">
-		Welcome back{{ user ? ', ' + user.firstname : '' }}.
-	</h1>
-</div>
-
 <!-- ─── Two-panel body ───────────────────────────────────────────────────── -->
+<div class="max-w-7xl mx-auto">
 <div class="flex flex-col lg:flex-row" style="min-height: calc(100vh - 112px)">
 
 	<!-- ══ LEFT PANEL — My Day ══════════════════════════════════════════════ -->
@@ -25,16 +19,16 @@
 			</div>
 			<div class="flex items-center gap-1.5 pb-1">
 				<button (click)="prevDay()"
-					class="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-zinc-200 text-zinc-500 hover:bg-zinc-100 transition cursor-pointer">
+					class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-zinc-200 text-zinc-500 hover:bg-zinc-100 transition cursor-pointer">
 					<i class="fa-sharp fa-solid fa-chevron-left text-xs"></i>
 				</button>
 				<button (click)="goToToday()" [disabled]="isToday"
-					class="px-3 h-8 rounded-full text-xs font-medium border transition"
+					class="px-3 h-10 rounded-full text-xs font-medium border transition"
 					[class]="isToday ? 'border-zinc-100 bg-zinc-50 text-zinc-300 cursor-not-allowed' : 'border-zinc-200 bg-white text-zinc-500 hover:bg-zinc-100 cursor-pointer'">
 					Today
 				</button>
 				<button (click)="nextDay()" [disabled]="isToday"
-					class="w-8 h-8 flex items-center justify-center rounded-full border transition"
+					class="w-10 h-10 flex items-center justify-center rounded-full border transition"
 					[class]="isToday ? 'bg-zinc-50 border-zinc-100 text-zinc-300 cursor-not-allowed' : 'bg-white border-zinc-200 text-zinc-500 hover:bg-zinc-100 cursor-pointer'">
 					<i class="fa-sharp fa-solid fa-chevron-right text-xs"></i>
 				</button>
@@ -146,7 +140,7 @@
 						<span class="text-sm font-semibold text-zinc-900">Meals</span>
 					</div>
 					<button (click)="openMealPicker()"
-						class="flex items-center gap-1 text-xs font-medium text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 px-3 py-1.5 rounded-full transition cursor-pointer">
+						class="flex items-center gap-1 text-xs font-medium text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 px-3 py-2 rounded-full transition cursor-pointer min-h-[44px]">
 						<i class="fa-sharp fa-solid fa-plus text-[9px]"></i>
 						Add
 					</button>
@@ -161,7 +155,7 @@
 								<p class="text-sm font-medium text-zinc-800 truncate">{{ meal.name }}</p>
 								<p class="text-xs text-zinc-400 mt-0.5">{{ meal.calories }} kcal · P{{ meal.protein }}g · C{{ meal.carbs }}g · F{{ meal.fat }}g</p>
 							</div>
-							<button (click)="removeMealFromDay(meal._id)" class="text-zinc-300 hover:text-red-400 transition cursor-pointer ml-3 flex-shrink-0">
+							<button (click)="removeMealFromDay(meal._id)" class="text-zinc-300 hover:text-red-400 transition cursor-pointer ml-3 flex-shrink-0 p-2 -mr-2">
 								<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
 							</button>
 						</li>
@@ -180,7 +174,7 @@
 						<span class="text-sm font-semibold text-zinc-900">Workouts</span>
 					</div>
 					<button (click)="openLogWorkout()"
-						class="flex items-center gap-1 text-xs font-medium text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 px-3 py-1.5 rounded-full transition cursor-pointer">
+						class="flex items-center gap-1 text-xs font-medium text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 px-3 py-2 rounded-full transition cursor-pointer min-h-[44px]">
 						<i class="fa-sharp fa-solid fa-plus text-[9px]"></i>
 						Log
 					</button>
@@ -195,7 +189,7 @@
 								<p class="text-sm font-medium text-zinc-800 truncate">{{ getWorkoutName(record.workoutId) }}</p>
 								<p class="text-xs text-zinc-400 mt-0.5">{{ record.duration }} min</p>
 							</div>
-							<button (click)="removeWorkoutRecord(record)" class="text-zinc-300 hover:text-red-400 transition cursor-pointer ml-3 flex-shrink-0">
+							<button (click)="removeWorkoutRecord(record)" class="text-zinc-300 hover:text-red-400 transition cursor-pointer ml-3 flex-shrink-0 p-2 -mr-2">
 								<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
 							</button>
 						</li>
@@ -214,7 +208,7 @@
 						<span class="text-sm font-semibold text-zinc-900">Cardio</span>
 					</div>
 					<button (click)="openLogCardio()"
-						class="flex items-center gap-1 text-xs font-medium text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 px-3 py-1.5 rounded-full transition cursor-pointer">
+						class="flex items-center gap-1 text-xs font-medium text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 px-3 py-2 rounded-full transition cursor-pointer min-h-[44px]">
 						<i class="fa-sharp fa-solid fa-plus text-[9px]"></i>
 						Log
 					</button>
@@ -231,7 +225,7 @@
 									{{ record.duration }} min@if (record.caloriesBurned) { · {{ record.caloriesBurned }} kcal burned }
 								</p>
 							</div>
-							<button (click)="removeCardioRecord(record)" class="text-zinc-300 hover:text-red-400 transition cursor-pointer ml-3 flex-shrink-0">
+							<button (click)="removeCardioRecord(record)" class="text-zinc-300 hover:text-red-400 transition cursor-pointer ml-3 flex-shrink-0 p-2 -mr-2">
 								<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
 							</button>
 						</li>
@@ -378,6 +372,7 @@
 	</div>
 
 </div>
+</div>
 
 <!-- ─── Meal Picker Drawer ────────────────────────────────────────────────── -->
 <app-side-drawer #mealPickerDrawer side="right">
@@ -450,7 +445,7 @@
 
 			<div class="flex items-center gap-3 mb-6">
 				<button type="button" (click)="logWorkoutStep = 1"
-					class="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 hover:bg-zinc-200 transition cursor-pointer">
+					class="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 hover:bg-zinc-200 transition cursor-pointer">
 					<i class="fa-sharp fa-solid fa-chevron-left text-xs"></i>
 				</button>
 				<h3 class="text-xl font-semibold text-zinc-900">{{ logWorkoutSelectedWorkout?.name }}</h3>
@@ -499,14 +494,14 @@
 										<input formControlName="weight" placeholder="kg" type="number"
 											class="flex-1 px-3 py-2 border border-zinc-200 rounded-lg text-base sm:text-sm text-zinc-800 focus:outline-none focus:ring-1 focus:ring-zinc-900" />
 										<button type="button" (click)="removeWorkoutLogSet(i, j)"
-											class="text-zinc-300 hover:text-red-400 transition cursor-pointer flex-shrink-0">
+											class="text-zinc-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-2">
 											<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
 										</button>
 									</div>
 									}
 								</div>
 								<button type="button" (click)="addWorkoutLogSet(i)"
-									class="text-xs font-medium text-zinc-500 hover:text-zinc-800 cursor-pointer mt-1">
+									class="text-xs font-medium text-zinc-500 hover:text-zinc-800 cursor-pointer mt-1 min-h-[44px] flex items-center px-1">
 									<i class="fa-sharp fa-solid fa-plus mr-1"></i>Add Set
 								</button>
 							</div>
@@ -526,7 +521,7 @@
 
 				<div class="flex gap-3 pt-4 mt-2 border-t border-zinc-100">
 					<button type="submit"
-						class="flex-1 bg-zinc-900 hover:bg-zinc-800 disabled:opacity-40 text-white text-sm font-medium px-4 py-3 rounded-xl transition cursor-pointer">
+						class="flex-1 bg-zinc-900 hover:bg-zinc-800 disabled:opacity-40 text-white text-sm font-medium px-4 py-3.5 rounded-xl transition cursor-pointer">
 						@if (workoutLogLoading) {
 							<app-loading-indicator [spinner]="true" [loading]="true"></app-loading-indicator>
 						} @else {
@@ -534,7 +529,7 @@
 						}
 					</button>
 					<button type="button" (click)="logWorkoutDrawer.close()"
-						class="px-4 py-3 text-sm font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-xl transition cursor-pointer">
+						class="px-4 py-3.5 text-sm font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-xl transition cursor-pointer">
 						Cancel
 					</button>
 				</div>
@@ -575,7 +570,7 @@
 
 			<div class="flex items-center gap-3 mb-6">
 				<button type="button" (click)="logCardioStep = 1"
-					class="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 hover:bg-zinc-200 transition cursor-pointer">
+					class="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 hover:bg-zinc-200 transition cursor-pointer">
 					<i class="fa-sharp fa-solid fa-chevron-left text-xs"></i>
 				</button>
 				<h3 class="text-xl font-semibold text-zinc-900">{{ logCardioSelectedSession?.name }}</h3>
@@ -618,7 +613,7 @@
 
 				<div class="flex gap-3 pt-4 mt-2 border-t border-zinc-100">
 					<button type="submit"
-						class="flex-1 bg-zinc-900 hover:bg-zinc-800 disabled:opacity-40 text-white text-sm font-medium px-4 py-3 rounded-xl transition cursor-pointer">
+						class="flex-1 bg-zinc-900 hover:bg-zinc-800 disabled:opacity-40 text-white text-sm font-medium px-4 py-3.5 rounded-xl transition cursor-pointer">
 						@if (cardioLogLoading) {
 							<app-loading-indicator [spinner]="true" [loading]="true"></app-loading-indicator>
 						} @else {
@@ -626,7 +621,7 @@
 						}
 					</button>
 					<button type="button" (click)="logCardioDrawer.close()"
-						class="px-4 py-3 text-sm font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-xl transition cursor-pointer">
+						class="px-4 py-3.5 text-sm font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-xl transition cursor-pointer">
 						Cancel
 					</button>
 				</div>

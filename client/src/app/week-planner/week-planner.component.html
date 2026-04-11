@@ -1,5 +1,6 @@
 <!-- Light page header -->
-<div class="bg-white border-b border-zinc-100 px-4 sm:px-8 lg:px-12 py-6 sm:py-8 flex items-center justify-between gap-6">
+<div class="bg-white border-b border-zinc-100">
+<div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-6 sm:py-8 flex items-center justify-between gap-6">
 	<div>
 		<h1 class="text-2xl sm:text-3xl font-bold text-zinc-900 mb-1">Week Planner</h1>
 		<p class="text-sm text-zinc-400">Changes save automatically</p>
@@ -18,9 +19,11 @@
 		}
 	</div>
 </div>
+</div>
 
 <!-- Content -->
-<div class="bg-zinc-50 px-4 sm:px-8 lg:px-12 py-5 sm:py-8 min-h-screen">
+<div class="bg-zinc-50 min-h-screen">
+<div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-5 sm:py-8">
 
 	@if (resourcesLoading) {
 		<app-loading-indicator [loading]="true"></app-loading-indicator>
@@ -33,7 +36,7 @@
 			<div class="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
 				<h2 class="text-sm font-semibold text-zinc-900">{{ day.dayName }}</h2>
 				<button (click)="editDay(day)"
-					class="flex items-center gap-1 text-xs font-medium text-zinc-400 hover:text-zinc-700 cursor-pointer transition bg-zinc-50 hover:bg-zinc-100 px-2.5 py-1 rounded-full">
+					class="flex items-center gap-1 text-xs font-medium text-zinc-400 hover:text-zinc-700 cursor-pointer transition bg-zinc-50 hover:bg-zinc-100 px-3 py-2 rounded-full min-h-[44px]">
 					<i class="fa-sharp fa-solid fa-plus text-[10px]"></i>
 					Add
 				</button>
@@ -51,7 +54,7 @@
 						<p class="text-[10px] text-blue-400 mt-0.5 uppercase tracking-wide">Strength</p>
 					</div>
 					<button (click)="removeWorkout(day.dayName, workout)"
-						class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0">
+						class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-2 -mr-1">
 						<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
 					</button>
 				</div>
@@ -64,7 +67,7 @@
 						<p class="text-[10px] text-green-400 mt-0.5 uppercase tracking-wide">Cardio</p>
 					</div>
 					<button (click)="removeConditioning(day.dayName, session)"
-						class="text-green-300 hover:text-red-400 transition cursor-pointer flex-shrink-0">
+						class="text-green-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-2 -mr-1">
 						<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
 					</button>
 				</div>
@@ -125,4 +128,5 @@
 	</app-side-drawer>
 
 	}
+</div>
 </div>

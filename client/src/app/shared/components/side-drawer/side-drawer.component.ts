@@ -11,7 +11,7 @@ export class SideDrawerComponent {
     showButton = false;
 
 	isOpen = false;
-	isReady = true;
+	isReady = false;
 
 	@Input() side: 'right' | 'left' = 'right';
 	@Output() closeEvent = new EventEmitter<void>();
@@ -24,6 +24,7 @@ export class SideDrawerComponent {
 	}
 
 	open() {
+		this.isReady = true;
 		this.isOpen = true;
 		this.lockScroll();
 	}

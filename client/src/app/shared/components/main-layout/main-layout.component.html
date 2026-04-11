@@ -1,6 +1,47 @@
 <div class="min-h-screen bg-zinc-50">
 	<app-menu></app-menu>
-	<main class="pt-14">
+
+	<!-- Welcome banner -->
+	<div class="bg-zinc-900 pt-20">
+		<div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-5 lg:py-7">
+
+			<!-- Top row: greeting + date -->
+			<div class="flex items-start justify-between gap-4">
+				<div>
+					<p class="text-xs text-zinc-500 font-medium uppercase tracking-widest mb-0.5">Welcome back</p>
+					<h1 class="text-base lg:text-lg font-semibold text-white tracking-tight">{{ user?.firstname }}</h1>
+				</div>
+				<div class="text-right hidden sm:block flex-shrink-0">
+					<p class="text-xs text-zinc-500 font-medium uppercase tracking-widest mb-0.5">Today</p>
+					<p class="text-sm text-white font-medium">{{ currentDate }}</p>
+				</div>
+			</div>
+
+			<!-- Month stat chips -->
+			<div class="mt-4 flex items-center gap-2 flex-wrap">
+				<span class="text-xs text-zinc-300 font-semibold uppercase tracking-widest mr-1">{{ currentMonth }}</span>
+				<div class="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-3.5 py-1.5">
+					<i class="fa-sharp fa-solid fa-dumbbell text-zinc-400 text-[10px]"></i>
+					<span class="text-xs text-zinc-400 font-medium">{{ workoutCount }} workouts</span>
+				</div>
+				<div class="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-3.5 py-1.5">
+					<i class="fa-sharp fa-solid fa-person-running text-zinc-400 text-[10px]"></i>
+					<span class="text-xs text-zinc-400 font-medium">{{ cardioCount }} cardio sessions</span>
+				</div>
+				<div class="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-3.5 py-1.5">
+					<i class="fa-sharp fa-solid fa-fire text-zinc-400 text-[10px]"></i>
+					<span class="text-xs text-zinc-400 font-medium">{{ kcalBurned | number }} kcal burned</span>
+				</div>
+				<div class="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-3.5 py-1.5">
+					<i class="fa-sharp fa-solid fa-utensils text-zinc-400 text-[10px]"></i>
+					<span class="text-xs text-zinc-400 font-medium">{{ kcalEaten | number }} kcal eaten</span>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<main>
 		<router-outlet></router-outlet>
 	</main>
 </div>

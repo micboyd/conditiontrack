@@ -18,6 +18,10 @@ import { SharedModule } from './shared/shared.module';
 import { StrengthModule } from './strength/strength.module';
 import { StyleguideComponent } from './styleguide/styleguide.component';
 import { WeekPlannerModule } from './week-planner/week-planner.module';
+import { ConditioningRecordService } from './conditioning/conditioning-records/conditioning-records.service';
+import { DailyLogService } from './shared/services/daily-log.service';
+import { MealLibraryService } from './nutrition/meal-library/meal-library.service';
+import { WorkoutRecordService } from './strength/workout-records/workout-records.service';
 import { WorkoutService } from './strength/workout-library/workout.service';
 import { provideHttpClient } from '@angular/common/http';
 
@@ -45,7 +49,7 @@ import { provideHttpClient } from '@angular/common/http';
         WeekPlannerModule,
         ProgressModule
 	],
-	providers: [provideHttpClient(), WorkoutService],
+	providers: [provideHttpClient(), WorkoutService, WorkoutRecordService, ConditioningRecordService, MealLibraryService, DailyLogService],
 	bootstrap: [AppComponent],
 })
 export class AppModule {}

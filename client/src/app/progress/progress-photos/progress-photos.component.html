@@ -6,7 +6,7 @@
 <div class="flex items-center justify-between mb-7">
 	<h2 class="text-xl font-semibold text-zinc-900">Photos</h2>
 	<button (click)="openUpload()"
-		class="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium px-5 py-2.5 rounded-full transition cursor-pointer">
+		class="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium px-5 py-3 rounded-full transition cursor-pointer min-h-[44px]">
 		<i class="fa-sharp fa-solid fa-plus text-xs"></i>
 		Add Photo
 	</button>
@@ -58,7 +58,7 @@
 								<!-- Delete button -->
 								@if (deleteConfirmId !== photo._id) {
 									<button (click)="confirmDelete(photo._id)"
-										class="absolute top-3 right-3 w-7 h-7 rounded-full bg-zinc-900/60 hover:bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer">
+										class="absolute top-3 right-3 w-10 h-10 rounded-full bg-zinc-900/60 hover:bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer">
 										<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
 									</button>
 								} @else {
@@ -67,11 +67,11 @@
 										<p class="text-white text-sm font-medium text-center">Delete this photo?</p>
 										<div class="flex gap-2">
 											<button (click)="deletePhoto(photo._id)"
-												class="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded-lg transition cursor-pointer">
+												class="px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded-lg transition cursor-pointer min-h-[44px]">
 												Delete
 											</button>
 											<button (click)="cancelDelete()"
-												class="px-3 py-1.5 bg-zinc-700 hover:bg-zinc-600 text-white text-xs font-medium rounded-lg transition cursor-pointer">
+												class="px-4 py-2.5 bg-zinc-700 hover:bg-zinc-600 text-white text-xs font-medium rounded-lg transition cursor-pointer min-h-[44px]">
 												Cancel
 											</button>
 										</div>

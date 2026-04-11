@@ -3,6 +3,19 @@ const DailyLog = require('../../models/nutrition/DailyLog');
 
 const router = express.Router();
 
+// Get all logs for a user for a given month
+router.get('/:userId/month/:year/:month', async (req, res) => {
+	try {
+		const { userId, year, month } = req.params;
+		const paddedMonth = String(month).padStart(2, '0');
+		const prefix = `${year}-${paddedMonth}`;
+		const logs = await DailyLog.find({ userId, date: { $regex: `^${prefix}` } });
+		res.json(logs);
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+});
+
 // Get today's log for a user — returns null (not 404) if none exists yet
 router.get('/:userId/:date', async (req, res) => {
 	try {

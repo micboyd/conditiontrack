@@ -3,7 +3,7 @@
 	<!-- ── Trigger: icon mode (dashboard) ──────────────────────────────────── -->
 	@if (displayMode === 'icon') {
 		<button type="button" (click)="toggle()"
-			class="w-8 h-8 flex items-center justify-center rounded-full border transition cursor-pointer"
+			class="w-10 h-10 flex items-center justify-center rounded-full border transition cursor-pointer"
 			[class]="isOpen ? 'bg-zinc-900 border-zinc-900 text-white' : 'bg-white border-zinc-200 text-zinc-500 hover:bg-zinc-100'">
 			<i class="fa-sharp fa-solid fa-calendar text-xs"></i>
 		</button>
@@ -36,12 +36,12 @@
 			<!-- Month navigation -->
 			<div class="flex items-center justify-between mb-4">
 				<button type="button" (click)="prevMonth()"
-					class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-zinc-100 text-zinc-500 transition cursor-pointer">
+					class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-zinc-100 text-zinc-500 transition cursor-pointer">
 					<i class="fa-sharp fa-solid fa-chevron-left text-xs"></i>
 				</button>
 				<span class="text-sm font-semibold text-zinc-900">{{ monthLabel }}</span>
 				<button type="button" (click)="nextMonth()" [disabled]="nextMonthDisabled"
-					class="w-8 h-8 flex items-center justify-center rounded-lg transition"
+					class="w-10 h-10 flex items-center justify-center rounded-lg transition"
 					[class]="nextMonthDisabled ? 'text-zinc-200 cursor-not-allowed' : 'hover:bg-zinc-100 text-zinc-500 cursor-pointer'">
 					<i class="fa-sharp fa-solid fa-chevron-right text-xs"></i>
 				</button>
@@ -61,7 +61,7 @@
 						<div></div>
 					} @else {
 						<button type="button" (click)="selectDate(day)" [disabled]="isDisabled(day)"
-							class="h-9 w-9 mx-auto flex items-center justify-center rounded-full text-sm transition"
+							class="h-10 w-10 mx-auto flex items-center justify-center rounded-full text-sm transition"
 							[class]="isDisabled(day)   ? 'text-zinc-200 cursor-not-allowed' :
 									 isSelected(day)   ? 'bg-zinc-900 text-white font-semibold cursor-pointer' :
 									 isDayToday(day)   ? 'bg-zinc-100 text-zinc-900 font-semibold hover:bg-zinc-200 cursor-pointer' :
