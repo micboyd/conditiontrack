@@ -22,6 +22,7 @@ import { WorkoutRecordsComponent } from './strength/workout-records/workout-reco
 import { WeekPlannerComponent } from './week-planner/week-planner.component';
 import { WorkoutLibraryComponent } from './strength/workout-library/workout-library.component';
 import { ProgressComponent } from './progress/progress.component';
+import { MeasurementsComponent } from './progress/measurements/measurements.component';
 import { ProgressPhotosComponent } from './progress/progress-photos/progress-photos.component';
 import { TrainingBlocksComponent } from './training-blocks/training-blocks.component';
 
@@ -136,7 +137,8 @@ const routes: Routes = [
 				component: ProgressComponent,
 				canActivate: [AuthGuard],
 				children: [
-					{ path: '', redirectTo: 'photos', pathMatch: 'full' },
+					{ path: '', redirectTo: 'measurements', pathMatch: 'full' },
+					{ path: 'measurements', component: MeasurementsComponent, canActivate: [AuthGuard] },
 					{ path: 'photos', component: ProgressPhotosComponent, canActivate: [AuthGuard] },
 				],
 			},

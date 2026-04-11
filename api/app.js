@@ -18,6 +18,7 @@ const conditionRecordRoutes = require('./routes/conditioning/conditioningRecord'
 const weekPlannerRoutes = require('./routes/week-planner/week');
 
 const progressPhotoRoutes = require('./routes/progress/progressPhoto');
+const measurementRoutes = require('./routes/progress/measurement');
 
 const goalRoutes = require('./routes/goals/goal');
 const trainingBlockRoutes = require('./routes/training-blocks/trainingBlock');
@@ -44,6 +45,7 @@ app.use('/api/conditioning/conditioning-session', conditionSessionRoutes);
 app.use('/api/conditioning/conditioning-record', conditionRecordRoutes);
 app.use('/api/week-planner/week', weekPlannerRoutes);
 app.use('/api/progress/photos', progressPhotoRoutes);
+app.use('/api/progress/measurements', measurementRoutes);
 app.use('/api/goals/goal', goalRoutes);
 app.use('/api/training-blocks/training-block', trainingBlockRoutes);
 

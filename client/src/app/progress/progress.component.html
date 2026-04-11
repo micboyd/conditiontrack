@@ -1,8 +1,22 @@
 <!-- Page header -->
 <div class="bg-white border-b border-zinc-100">
-	<app-container [noPadding]="true"><div class="pt-6 sm:pt-8 pb-6">
-		<h1 class="text-2xl sm:text-3xl font-bold text-zinc-900 mb-1">Progress Photos</h1>
-		<p class="text-sm text-zinc-400">Track your physical transformation over time</p>
+	<app-container [noPadding]="true"><div class="pt-6 sm:pt-8">
+		<h1 class="text-2xl sm:text-3xl font-bold text-zinc-900 mb-1">Body Composition</h1>
+		<p class="text-sm text-zinc-400 mb-5">Track your measurements and physical transformation over time</p>
+
+		<!-- Tab nav -->
+		<div class="flex gap-0 overflow-x-auto -mx-px">
+			<a routerLink="measurements" routerLinkActive="border-zinc-900 text-zinc-900 font-semibold"
+				[routerLinkActiveOptions]="{ exact: true }"
+				class="px-4 py-3 text-sm text-zinc-500 border-b-2 border-transparent whitespace-nowrap hover:text-zinc-700 transition cursor-pointer">
+				Measurements
+			</a>
+			<a routerLink="photos" routerLinkActive="border-zinc-900 text-zinc-900 font-semibold"
+				[routerLinkActiveOptions]="{ exact: true }"
+				class="px-4 py-3 text-sm text-zinc-500 border-b-2 border-transparent whitespace-nowrap hover:text-zinc-700 transition cursor-pointer">
+				Progress Photos
+			</a>
+		</div>
 	</div></app-container>
 </div>
 
