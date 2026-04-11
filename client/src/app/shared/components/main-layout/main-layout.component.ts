@@ -70,6 +70,10 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 		this.routerSub?.unsubscribe();
 	}
 
+	get initials(): string {
+		return `${this.user?.firstname?.[0] ?? ''}${this.user?.lastname?.[0] ?? ''}`.toUpperCase();
+	}
+
 	private loadActiveBlock(): void {
 		this.trainingBlocksService.getAllBlocks().subscribe({
 			next: (blocks) => {

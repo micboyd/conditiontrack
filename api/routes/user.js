@@ -29,12 +29,13 @@ router.get('/:id', async (req, res) => {
 		const user = await User.findById(req.params.id);
 		if (!user) return res.status(404).json({ error: 'User not found' });
 		res.json({
-			id: user._id,
+			_id: user._id,
 			firstname: user.firstname,
 			lastname: user.lastname,
 			username: user.username,
 			profileImage: user.profileImage,
 			bio: user.bio,
+			createdAt: user.createdAt,
 		});
 	} catch (err) {
 		res.status(500).json({ error: err.message });

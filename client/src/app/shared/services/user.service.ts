@@ -10,6 +10,7 @@ export interface UserProfile {
 	username: string;
 	profileImage?: string;
 	bio?: string;
+	createdAt?: string;
 }
 
 @Injectable({
