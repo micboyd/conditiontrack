@@ -12,6 +12,7 @@ import { GlobalSettingsComponent } from './global-settings/global-settings.compo
 import { GoalsComponent } from './goals/goals.component';
 import { MainLayoutComponent } from './shared/components/main-layout/main-layout.component';
 import { MealLibraryComponent } from './nutrition/meal-library/meal-library.component';
+import { MealPlansComponent } from './nutrition/meal-plans/meal-plans.component';
 import { NgModule } from '@angular/core';
 import { NotesComponent } from './notes/notes.component';
 import { NutritionComponent } from './nutrition/nutrition.component';
@@ -25,11 +26,13 @@ import { ProgressComponent } from './progress/progress.component';
 import { MeasurementsComponent } from './progress/measurements/measurements.component';
 import { ProgressPhotosComponent } from './progress/progress-photos/progress-photos.component';
 import { TrainingBlocksComponent } from './training-blocks/training-blocks.component';
+import { VerifyEmailComponent } from './authentication/verify-email/verify-email.component';
 
 const routes: Routes = [
 	// Login remains at top level
 	{ path: '', redirectTo: '/login', pathMatch: 'full' },
 	{ path: 'login', component: AuthenticationComponent },
+	{ path: 'verify-email', component: VerifyEmailComponent },
 	{
 		path: '',
 		component: MainLayoutComponent, // wraps the main app views
@@ -90,9 +93,15 @@ const routes: Routes = [
 				component: NutritionComponent,
 				canActivate: [AuthGuard],
 				children: [
+					{ path: '', redirectTo: 'meal-library', pathMatch: 'full' },
 					{
 						path: 'meal-library',
 						component: MealLibraryComponent,
+						canActivate: [AuthGuard],
+					},
+					{
+						path: 'meal-plans',
+						component: MealPlansComponent,
 						canActivate: [AuthGuard],
 					},
 				],

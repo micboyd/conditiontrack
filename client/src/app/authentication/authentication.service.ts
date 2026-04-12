@@ -25,8 +25,16 @@ export class AuthenticationService {
 		return this.http.post<LoginResponse>(`${this._apiUrl}/login`, payload);
 	}
 
-	register(payload: AuthUser): Observable<string> {
-		return this.http.post<string>(`${this._apiUrl}/register`, payload);
+	register(payload: AuthUser): Observable<{ msg: string }> {
+		return this.http.post<{ msg: string }>(`${this._apiUrl}/register`, payload);
+	}
+
+	verifyEmail(token: string): Observable<{ msg: string }> {
+		return this.http.get<{ msg: string }>(`${this._apiUrl}/verify-email?token=${token}`);
+	}
+
+	resendVerification(username: string): Observable<{ msg: string }> {
+		return this.http.post<{ msg: string }>(`${this._apiUrl}/resend-verification`, { username });
 	}
 
 	clearDetails() {

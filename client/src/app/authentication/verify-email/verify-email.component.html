@@ -1,0 +1,95 @@
+<div class="min-h-screen flex">
+
+	<!-- Left: Dark brand panel -->
+	<div class="hidden lg:flex lg:w-1/2 bg-zinc-900 flex-col justify-between p-12">
+		<div class="flex items-center gap-3">
+			<div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+				<i class="fa-sharp fa-solid fa-bolt text-zinc-900 text-sm"></i>
+			</div>
+			<span class="font-semibold text-white text-lg tracking-tight">ConditionTrack</span>
+		</div>
+		<div>
+			<h1 class="text-5xl font-bold text-white leading-tight mb-5">
+				Track your<br/>condition.<br/>Shape your<br/>future.
+			</h1>
+			<p class="text-zinc-400 text-base leading-relaxed">Your complete fitness tracking platform for strength, cardio, and nutrition.</p>
+		</div>
+		<p class="text-zinc-700 text-sm">© 2025 ConditionTrack</p>
+	</div>
+
+	<!-- Right: Status panel -->
+	<div class="flex-1 flex items-center justify-center bg-white px-6 py-12">
+		<div class="w-full max-w-sm text-center">
+
+			<!-- Mobile logo -->
+			<div class="lg:hidden flex items-center gap-2 mb-10 justify-center">
+				<div class="w-7 h-7 bg-zinc-900 rounded-md flex items-center justify-center flex-shrink-0">
+					<i class="fa-sharp fa-solid fa-bolt text-white text-xs"></i>
+				</div>
+				<span class="font-semibold text-zinc-900 text-base">ConditionTrack</span>
+			</div>
+
+			<!-- Loading -->
+			@if (state === 'loading') {
+			<div>
+				<div class="w-16 h-16 rounded-2xl bg-zinc-100 flex items-center justify-center mx-auto mb-6">
+					<i class="fa-sharp fa-solid fa-circle-notch fa-spin text-zinc-400 text-2xl"></i>
+				</div>
+				<h2 class="text-2xl font-bold text-zinc-900 mb-2">Verifying…</h2>
+				<p class="text-zinc-400 text-sm">Please wait while we verify your email address.</p>
+			</div>
+			}
+
+			<!-- Success -->
+			@if (state === 'success') {
+			<div>
+				<div class="w-16 h-16 rounded-2xl bg-emerald-500 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-200">
+					<i class="fa-sharp fa-solid fa-check text-white text-2xl"></i>
+				</div>
+				<h2 class="text-2xl font-bold text-zinc-900 mb-2">You're verified!</h2>
+				<p class="text-zinc-400 text-sm leading-relaxed mb-8">
+					Your email has been confirmed. You can now sign in and start tracking.
+				</p>
+				<button (click)="goToLogin()"
+					class="w-full bg-zinc-900 text-white py-4 rounded-xl text-sm font-medium hover:bg-zinc-800 transition cursor-pointer">
+					Sign in to your account
+				</button>
+			</div>
+			}
+
+			<!-- Error -->
+			@if (state === 'error') {
+			<div>
+				<div class="w-16 h-16 rounded-2xl bg-red-100 flex items-center justify-center mx-auto mb-6">
+					<i class="fa-sharp fa-solid fa-triangle-exclamation text-red-500 text-2xl"></i>
+				</div>
+				<h2 class="text-2xl font-bold text-zinc-900 mb-2">Link expired</h2>
+				<p class="text-zinc-400 text-sm leading-relaxed mb-8">{{ message }}</p>
+				<button (click)="goToLogin()"
+					class="w-full bg-zinc-900 text-white py-4 rounded-xl text-sm font-medium hover:bg-zinc-800 transition cursor-pointer">
+					Back to sign in
+				</button>
+			</div>
+			}
+
+			<!-- Missing token -->
+			@if (state === 'missing') {
+			<div>
+				<div class="w-16 h-16 rounded-2xl bg-zinc-100 flex items-center justify-center mx-auto mb-6">
+					<i class="fa-sharp fa-solid fa-link-slash text-zinc-400 text-2xl"></i>
+				</div>
+				<h2 class="text-2xl font-bold text-zinc-900 mb-2">Invalid link</h2>
+				<p class="text-zinc-400 text-sm leading-relaxed mb-8">
+					This verification link is missing a token. Please use the link from your email.
+				</p>
+				<button (click)="goToLogin()"
+					class="w-full bg-zinc-900 text-white py-4 rounded-xl text-sm font-medium hover:bg-zinc-800 transition cursor-pointer">
+					Back to sign in
+				</button>
+			</div>
+			}
+
+		</div>
+	</div>
+
+</div>

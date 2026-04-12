@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(xargs grep:*)"
+      "Bash(xargs grep:*)",
+      "Bash(find /Users/michaelboyd/Desktop/conditiontrack/client/src/app -name \"*.component.html\" -exec grep -l \"routerLink\" {} \\\\;)",
+      "Bash(node -e \"const { subWeeks } = require\\('date-fns'\\); console.log\\(typeof subWeeks\\)\")",
+      "Bash(npx ng:*)",
+      "Bash(npm install:*)"
     ]
   }
 }

@@ -11,6 +11,7 @@ const workoutRecordRoutes = require('./routes/strength/workoutRecord');
 
 const mealRoutes = require('./routes/nutrition/meal');
 const dailyLogRoutes = require('./routes/nutrition/dailyLog');
+const mealPlanRoutes = require('./routes/nutrition/mealPlan');
 
 const conditionSessionRoutes = require('./routes/conditioning/conditioningSession');
 const conditionRecordRoutes = require('./routes/conditioning/conditioningRecord');
@@ -41,6 +42,7 @@ app.use('/api/strength/workout', workoutRoutes);
 app.use('/api/strength/workout-record', workoutRecordRoutes);
 app.use('/api/nutrition/meal', mealRoutes);
 app.use('/api/nutrition/daily-log', dailyLogRoutes);
+app.use('/api/nutrition/meal-plan', mealPlanRoutes);
 app.use('/api/conditioning/conditioning-session', conditionSessionRoutes);
 app.use('/api/conditioning/conditioning-record', conditionRecordRoutes);
 app.use('/api/week-planner/week', weekPlannerRoutes);
