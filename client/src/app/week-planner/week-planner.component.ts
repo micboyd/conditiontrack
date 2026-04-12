@@ -22,6 +22,7 @@ export class WeekPlannerComponent implements OnInit {
 	resourcesLoading = false;
 	saving = false;
 	saved = false;
+	loadError = false;
 
 	private _selectedDay: DayPlan | null = null;
 	private _selectedBlock: BlockSelection = 'overarching';
@@ -56,6 +57,8 @@ export class WeekPlannerComponent implements OnInit {
 
 	ngOnInit() {
 		this.resourcesLoading = true;
+		this.loadError = false;
+
 		forkJoin({
 			conditioningSessions: this.conditioningLibraryService.getAllConditioningSessions(),
 			workouts: this.workoutService.getAllWorkouts(),
@@ -63,34 +66,53 @@ export class WeekPlannerComponent implements OnInit {
 			next: ({ conditioningSessions, workouts }) => {
 				this._allConditioningSessions = conditioningSessions;
 				this._allWorkouts = workouts;
-				this.resourcesLoading = false;
 				this.getWeekPlan();
+			},
+			error: () => {
+				this.resourcesLoading = false;
+				this.loadError = true;
 			},
 		});
 	}
 
 	getWeekPlan() {
-		this.weekPlannerService.getAllWeekPlans().subscribe(weekPlan => {
-			this._weekPlan = weekPlan ? new WeekPlan(weekPlan) : new WeekPlan();
-			if (!weekPlan) this.createWeekPlan();
+		this.weekPlannerService.getAllWeekPlans().subscribe({
+			next: weekPlan => {
+				this._weekPlan = weekPlan ? new WeekPlan(weekPlan) : new WeekPlan();
+				this.resourcesLoading = false;
+				if (!weekPlan) this.createWeekPlan();
+			},
+			error: () => {
+				this._weekPlan = new WeekPlan();
+				this.resourcesLoading = false;
+				this.loadError = true;
+			},
 		});
 	}
 
 	createWeekPlan() {
-		this.resourcesLoading = true;
-		this.weekPlannerService.createWeekPlan(this._weekPlan.payload()).subscribe(weekPlan => {
-			this._weekPlan = new WeekPlan(weekPlan);
-			this.resourcesLoading = false;
+		this.weekPlannerService.createWeekPlan(this._weekPlan.payload()).subscribe({
+			next: weekPlan => {
+				this._weekPlan = new WeekPlan(weekPlan);
+			},
+			error: () => {
+				// Plan stays as the local default — saves will retry
+			},
 		});
 	}
 
 	private autoSave() {
 		this.saving = true;
 		this.saved = false;
-		this.weekPlannerService.updateWeekPlan(this.weekPlan._id, this._weekPlan.payload()).subscribe(() => {
-			this.saving = false;
-			this.saved = true;
-			setTimeout(() => this.saved = false, 2000);
+		this.weekPlannerService.updateWeekPlan(this.weekPlan._id, this._weekPlan.payload()).subscribe({
+			next: () => {
+				this.saving = false;
+				this.saved = true;
+				setTimeout(() => this.saved = false, 2000);
+			},
+			error: () => {
+				this.saving = false;
+			},
 		});
 	}
 
@@ -146,5 +168,10 @@ export class WeekPlannerComponent implements OnInit {
 			day.evening.workouts.length > 0 ||
 			day.evening.conditioning.length > 0
 		);
+	}
+
+	retryLoad() {
+		this.loadError = false;
+		this.ngOnInit();
 	}
 }

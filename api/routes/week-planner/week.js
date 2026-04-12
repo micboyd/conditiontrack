@@ -44,7 +44,7 @@ router.put('/:id', async (req, res) => {
 router.get('/:userId', async (req, res) => {
 	try {
 		const plans = await WeekPlan.find({ userId: req.params.userId }).populate(POPULATE_PATHS);
-		res.json(plans[0]);
+		res.json(plans[0] ?? null); // always return valid JSON — null when no plan exists
 	} catch (err) {
 		res.status(500).json({ error: err.message });
 	}
