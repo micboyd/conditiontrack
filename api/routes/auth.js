@@ -128,8 +128,9 @@ router.post('/register', async (req, res) => {
 		await user.save();
 
 		// Send verification email via Resend
-		const clientUrl = process.env.CLIENT_URL || 'http://localhost:4200';
-		const verificationUrl = `${clientUrl}/verify-email?token=${verificationToken}`;
+		const clientUrl = process.env.CLIENT_URL;
+		if (!clientUrl) console.warn('⚠️  CLIENT_URL is not set — verification link will use localhost');
+		const verificationUrl = `${clientUrl || 'http://localhost:4200'}/verify-email?token=${verificationToken}`;
 
 		await getResend().emails.send({
 			from: process.env.RESEND_FROM_EMAIL || 'ConditionTrack <onboarding@resend.dev>',
@@ -196,7 +197,8 @@ router.post('/resend-verification', async (req, res) => {
 		user.verificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
 		await user.save();
 
-		const clientUrl = process.env.CLIENT_URL || 'http://localhost:4200';
+		const clientUrl = process.env.CLIENT_URL;
+		if (!clientUrl) console.warn('⚠️  CLIENT_URL is not set — verification link will use localhost');
 		const verificationUrl = `${clientUrl}/verify-email?token=${user.verificationToken}`;
 
 		await getResend().emails.send({

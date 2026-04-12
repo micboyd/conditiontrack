@@ -5,7 +5,8 @@
       "Bash(find /Users/michaelboyd/Desktop/conditiontrack/client/src/app -name \"*.component.html\" -exec grep -l \"routerLink\" {} \\\\;)",
       "Bash(node -e \"const { subWeeks } = require\\('date-fns'\\); console.log\\(typeof subWeeks\\)\")",
       "Bash(npx ng:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(python3 -c \"import json,sys; cfg=json.load\\(sys.stdin\\); build=cfg['projects']['client']['architect']['build']; print\\(json.dumps\\(build.get\\('options',{}\\), indent=2\\)\\)\")"
     ]
   }
 }
