@@ -103,7 +103,15 @@
 				<div>
 					<p class="text-sm text-zinc-400 mb-1.5">Calories Eaten</p>
 					<p class="text-4xl font-bold text-white leading-none tracking-tight">{{ totalCaloriesEaten }}</p>
-					<p class="text-sm text-zinc-500 mt-1.5">kcal</p>
+					@if (user?.macroGoals?.calories) {
+						<p class="text-xs text-zinc-400 mt-1">of {{ user!.macroGoals!.calories }} kcal goal</p>
+						<div class="mt-2 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+							<div class="h-full bg-violet-400 rounded-full transition-all"
+								[style.width.%]="macroProgress(totalCaloriesEaten, user!.macroGoals!.calories)"></div>
+						</div>
+					} @else {
+						<p class="text-sm text-zinc-500 mt-1.5">kcal</p>
+					}
 				</div>
 				<div>
 					<p class="text-sm text-zinc-400 mb-1.5">Calories Burned</p>
@@ -115,20 +123,101 @@
 				<div>
 					<p class="text-sm text-zinc-400 mb-1.5">Protein</p>
 					<p class="text-2xl font-bold text-white leading-none">{{ totalProtein }}<span class="text-sm text-zinc-500 font-normal ml-0.5">g</span></p>
+					@if (user?.macroGoals?.protein) {
+						<p class="text-[10px] text-zinc-400 mt-1">/ {{ user!.macroGoals!.protein }}g</p>
+						<div class="mt-1.5 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+							<div class="h-full bg-blue-400 rounded-full transition-all"
+								[style.width.%]="macroProgress(totalProtein, user!.macroGoals!.protein)"></div>
+						</div>
+					}
 				</div>
 				<div>
 					<p class="text-sm text-zinc-400 mb-1.5">Carbs</p>
 					<p class="text-2xl font-bold text-white leading-none">{{ totalCarbs }}<span class="text-sm text-zinc-500 font-normal ml-0.5">g</span></p>
+					@if (user?.macroGoals?.carbs) {
+						<p class="text-[10px] text-zinc-400 mt-1">/ {{ user!.macroGoals!.carbs }}g</p>
+						<div class="mt-1.5 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+							<div class="h-full bg-amber-400 rounded-full transition-all"
+								[style.width.%]="macroProgress(totalCarbs, user!.macroGoals!.carbs)"></div>
+						</div>
+					}
 				</div>
 				<div>
 					<p class="text-sm text-zinc-400 mb-1.5">Fat</p>
 					<p class="text-2xl font-bold text-white leading-none">{{ totalFat }}<span class="text-sm text-zinc-500 font-normal ml-0.5">g</span></p>
+					@if (user?.macroGoals?.fat) {
+						<p class="text-[10px] text-zinc-400 mt-1">/ {{ user!.macroGoals!.fat }}g</p>
+						<div class="mt-1.5 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+							<div class="h-full bg-rose-400 rounded-full transition-all"
+								[style.width.%]="macroProgress(totalFat, user!.macroGoals!.fat)"></div>
+						</div>
+					}
 				</div>
 			</div>
 		</div>
 
 		<!-- Activity sections -->
 		<div class="px-4 sm:px-8 lg:px-12 pb-6 lg:pb-10 space-y-5 flex-1">
+
+			<!-- Day's Plan -->
+			@if (viewDayPlanned.workouts.length > 0 || viewDayPlanned.conditioning.length > 0) {
+			<div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+				<div class="px-5 py-4 border-b border-zinc-50 flex items-center gap-2.5">
+					<div class="w-7 h-7 rounded-lg bg-violet-100 flex items-center justify-center flex-shrink-0">
+						<i class="fa-sharp fa-solid fa-calendar-day text-violet-600 text-[11px]"></i>
+					</div>
+					<span class="text-sm font-semibold text-zinc-900">Day's Plan</span>
+				</div>
+				<ul class="divide-y divide-zinc-50 px-5">
+					@for (workout of viewDayPlanned.workouts; track workout._id) {
+					<li class="flex items-center justify-between py-3 gap-3">
+						<div class="flex items-center gap-2.5 min-w-0">
+							<div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+								[class]="isWorkoutLoggedToday(workout._id) ? 'bg-emerald-100' : 'bg-zinc-100'">
+								<i [class]="isWorkoutLoggedToday(workout._id) ? 'fa-check text-emerald-500' : 'fa-dumbbell text-zinc-400'"
+									class="fa-sharp fa-solid text-[9px]"></i>
+							</div>
+							<div class="min-w-0">
+								<p class="text-sm font-medium text-zinc-800 truncate">{{ workout.name }}</p>
+								<p class="text-xs text-blue-400 uppercase tracking-wide">Strength</p>
+							</div>
+						</div>
+						@if (!isWorkoutLoggedToday(workout._id)) {
+						<button (click)="openLogWorkoutForPlanned(workout)"
+							class="flex-shrink-0 text-xs font-medium text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 px-3 py-1.5 rounded-full transition cursor-pointer">
+							Log
+						</button>
+						} @else {
+						<span class="flex-shrink-0 text-xs font-medium text-emerald-500 bg-emerald-50 px-3 py-1.5 rounded-full">Done</span>
+						}
+					</li>
+					}
+					@for (session of viewDayPlanned.conditioning; track session._id) {
+					<li class="flex items-center justify-between py-3 gap-3">
+						<div class="flex items-center gap-2.5 min-w-0">
+							<div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+								[class]="isCardioLoggedToday(session._id) ? 'bg-emerald-100' : 'bg-zinc-100'">
+								<i [class]="isCardioLoggedToday(session._id) ? 'fa-check text-emerald-500' : 'fa-person-running text-zinc-400'"
+									class="fa-sharp fa-solid text-[9px]"></i>
+							</div>
+							<div class="min-w-0">
+								<p class="text-sm font-medium text-zinc-800 truncate">{{ session.name }}</p>
+								<p class="text-xs text-green-400 uppercase tracking-wide">Cardio</p>
+							</div>
+						</div>
+						@if (!isCardioLoggedToday(session._id)) {
+						<button (click)="openLogCardioForPlanned(session)"
+							class="flex-shrink-0 text-xs font-medium text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 px-3 py-1.5 rounded-full transition cursor-pointer">
+							Log
+						</button>
+						} @else {
+						<span class="flex-shrink-0 text-xs font-medium text-emerald-500 bg-emerald-50 px-3 py-1.5 rounded-full">Done</span>
+						}
+					</li>
+					}
+				</ul>
+			</div>
+			}
 
 			<!-- Meals -->
 			<div class="bg-white rounded-2xl overflow-hidden shadow-sm">

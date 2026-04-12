@@ -104,8 +104,14 @@ export class WeekPlannerComponent implements OnInit {
 	private autoSave() {
 		this.saving = true;
 		this.saved = false;
-		this.weekPlannerService.updateWeekPlan(this.weekPlan._id, this._weekPlan.payload()).subscribe({
-			next: () => {
+
+		const obs = this._weekPlan._id
+			? this.weekPlannerService.updateWeekPlan(this._weekPlan._id, this._weekPlan.payload())
+			: this.weekPlannerService.createWeekPlan(this._weekPlan.payload());
+
+		obs.subscribe({
+			next: (saved) => {
+				this._weekPlan = new WeekPlan(saved); // captures _id if newly created
 				this.saving = false;
 				this.saved = true;
 				setTimeout(() => this.saved = false, 2000);

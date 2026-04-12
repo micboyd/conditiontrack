@@ -3,6 +3,13 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
+export interface MacroGoals {
+	calories: number;
+	protein: number;
+	carbs: number;
+	fat: number;
+}
+
 export interface UserProfile {
 	_id: string;
 	firstname: string;
@@ -11,6 +18,7 @@ export interface UserProfile {
 	profileImage?: string;
 	bio?: string;
 	createdAt?: string;
+	macroGoals?: MacroGoals;
 }
 
 @Injectable({
@@ -27,5 +35,9 @@ export class UserService {
 
 	updateUser(id: string, formData: FormData): Observable<UserProfile> {
 		return this.http.put<UserProfile>(`${this._apiUrl}/${id}`, formData);
+	}
+
+	updateMacroGoals(id: string, macroGoals: MacroGoals): Observable<UserProfile> {
+		return this.http.put<UserProfile>(`${this._apiUrl}/${id}`, { macroGoals });
 	}
 }

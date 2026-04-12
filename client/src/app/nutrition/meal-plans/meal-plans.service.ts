@@ -21,4 +21,8 @@ export class MealPlansService {
 	deletePlan(id: string): Observable<void> {
 		return this.http.delete<void>(`${this.base}/${id}`);
 	}
+
+	copyWeek(userId: string, fromWeekStart: string, toWeekStart: string): Observable<MealPlan> {
+		return this.http.post<MealPlan>(`${this.base}/copy`, { userId, fromWeekStart, toWeekStart });
+	}
 }

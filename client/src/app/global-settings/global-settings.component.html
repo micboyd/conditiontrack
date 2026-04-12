@@ -1,4 +1,118 @@
-<app-container>
-  <h1 class="text-2xl sm:text-3xl font-semibold text-gray-900 tracking-tight mb-4">Global Settings</h1>
-  <app-sub-menu [menuItems]="meunItems"></app-sub-menu>
-</app-container>
+<!-- Page header -->
+<div class="bg-white border-b border-zinc-100">
+<app-container [noPadding]="true"><div class="py-6 sm:py-8">
+	<h1 class="text-2xl sm:text-3xl font-bold text-zinc-900 mb-1">Settings</h1>
+	<p class="text-sm text-zinc-400">Manage your preferences and goals</p>
+</div></app-container>
+</div>
+
+<!-- Content -->
+<div class="bg-zinc-50 min-h-screen">
+<app-container [noPadding]="true"><div class="py-5 sm:py-8">
+
+@if (loading) {
+	<app-loading-indicator [loading]="true"></app-loading-indicator>
+} @else {
+
+<div class="max-w-lg">
+	<div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+
+		<!-- Card header -->
+		<div class="px-6 py-5 border-b border-zinc-100 flex items-center gap-3">
+			<div class="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center flex-shrink-0">
+				<i class="fa-sharp fa-solid fa-bullseye-arrow text-violet-600 text-sm"></i>
+			</div>
+			<div>
+				<h2 class="text-base font-semibold text-zinc-900">Daily Macro Goals</h2>
+				<p class="text-xs text-zinc-400">Set your daily nutrition targets</p>
+			</div>
+		</div>
+
+		<!-- Form -->
+		<form [formGroup]="form" (ngSubmit)="onSubmit()" class="px-6 py-6 space-y-4">
+
+			<div class="grid grid-cols-2 gap-4">
+
+				<!-- Calories -->
+				<div>
+					<label class="block text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-2">
+						<i class="fa-sharp fa-solid fa-fire text-orange-400 mr-1"></i>
+						Calories
+					</label>
+					<div class="relative">
+						<input formControlName="calories" type="number" min="0" placeholder="0"
+							class="w-full px-4 py-3 pr-14 rounded-xl border border-zinc-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-violet-400 transition" />
+						<span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-zinc-400 font-medium">kcal</span>
+					</div>
+				</div>
+
+				<!-- Protein -->
+				<div>
+					<label class="block text-xs font-semibold uppercase tracking-widest text-blue-400 mb-2">
+						<i class="fa-sharp fa-solid fa-circle text-blue-400 mr-1 text-[8px]"></i>
+						Protein
+					</label>
+					<div class="relative">
+						<input formControlName="protein" type="number" min="0" placeholder="0"
+							class="w-full px-4 py-3 pr-10 rounded-xl border border-zinc-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
+						<span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-zinc-400 font-medium">g</span>
+					</div>
+				</div>
+
+				<!-- Carbs -->
+				<div>
+					<label class="block text-xs font-semibold uppercase tracking-widest text-amber-500 mb-2">
+						<i class="fa-sharp fa-solid fa-circle text-amber-400 mr-1 text-[8px]"></i>
+						Carbs
+					</label>
+					<div class="relative">
+						<input formControlName="carbs" type="number" min="0" placeholder="0"
+							class="w-full px-4 py-3 pr-10 rounded-xl border border-zinc-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition" />
+						<span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-zinc-400 font-medium">g</span>
+					</div>
+				</div>
+
+				<!-- Fat -->
+				<div>
+					<label class="block text-xs font-semibold uppercase tracking-widest text-rose-400 mb-2">
+						<i class="fa-sharp fa-solid fa-circle text-rose-400 mr-1 text-[8px]"></i>
+						Fat
+					</label>
+					<div class="relative">
+						<input formControlName="fat" type="number" min="0" placeholder="0"
+							class="w-full px-4 py-3 pr-10 rounded-xl border border-zinc-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-rose-400 transition" />
+						<span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-zinc-400 font-medium">g</span>
+					</div>
+				</div>
+
+			</div>
+
+			<!-- Save button -->
+			<div class="flex items-center gap-4 pt-2">
+				<button type="submit" [disabled]="saving"
+					class="px-6 py-3 bg-zinc-900 text-white text-sm font-medium rounded-full hover:bg-zinc-700 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+					@if (saving) {
+						<span class="flex items-center gap-1.5">
+							<i class="fa-sharp fa-solid fa-spinner fa-spin text-xs"></i>
+							Saving...
+						</span>
+					} @else {
+						Save goals
+					}
+				</button>
+				@if (saved) {
+				<span class="flex items-center gap-1.5 text-sm text-emerald-500">
+					<i class="fa-sharp fa-solid fa-check text-xs"></i>
+					Saved
+				</span>
+				}
+			</div>
+
+		</form>
+	</div>
+</div>
+
+}
+
+</div></app-container>
+</div>

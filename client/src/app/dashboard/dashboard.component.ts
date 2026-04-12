@@ -537,6 +537,42 @@ export class DashboardComponent implements OnInit {
 		});
 	}
 
+	// ── Macro progress ───────────────────────────────────────────────────────
+
+	macroProgress(eaten: number, goal: number): number {
+		if (!goal) return 0;
+		return Math.min(100, Math.round((eaten / goal) * 100));
+	}
+
+	// ── Day's Plan ───────────────────────────────────────────────────────────
+
+	get viewDayPlanned(): { workouts: Workout[]; conditioning: ConditioningSession[] } {
+		const dayName = format(this.viewDate, 'EEEE');
+		return {
+			workouts: this.weekPlan?.getAllWorkouts(dayName) ?? [],
+			conditioning: this.weekPlan?.getAllConditioning(dayName) ?? [],
+		};
+	}
+
+	isWorkoutLoggedToday(workoutId: string): boolean {
+		return this.viewDayWorkouts.some(r => r.workoutId === workoutId);
+	}
+
+	isCardioLoggedToday(sessionId: string): boolean {
+		return this.viewDayCardio.some(r => r.sessionId === sessionId);
+	}
+
+	openLogWorkoutForPlanned(workout: Workout): void {
+		this.openLogWorkout();
+		// Use setTimeout to allow drawer to open first
+		setTimeout(() => this.selectWorkoutToLog(workout), 50);
+	}
+
+	openLogCardioForPlanned(session: ConditioningSession): void {
+		this.openLogCardio();
+		setTimeout(() => this.selectSessionToLog(session), 50);
+	}
+
 	// ── Helpers ──────────────────────────────────────────────────────────────
 
 	getWorkoutName(workoutId: string): string {

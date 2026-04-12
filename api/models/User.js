@@ -10,6 +10,12 @@ const userSchema = new mongoose.Schema({
 	verified: { type: Boolean, default: false },
 	verificationToken: { type: String, default: null },
 	verificationExpiry: { type: Date, default: null },
+	macroGoals: {
+		calories: { type: Number, default: 0 },
+		protein:  { type: Number, default: 0 },
+		carbs:    { type: Number, default: 0 },
+		fat:      { type: Number, default: 0 },
+	},
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

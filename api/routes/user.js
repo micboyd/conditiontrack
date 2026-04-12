@@ -36,6 +36,7 @@ router.get('/:id', async (req, res) => {
 			profileImage: user.profileImage,
 			bio: user.bio,
 			createdAt: user.createdAt,
+			macroGoals: user.macroGoals,
 		});
 	} catch (err) {
 		res.status(500).json({ error: err.message });

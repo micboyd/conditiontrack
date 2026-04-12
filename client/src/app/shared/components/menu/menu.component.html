@@ -13,36 +13,42 @@
 	<!-- Desktop Nav links (right-aligned) -->
 	<div class="hidden lg:flex items-center gap-1 flex-1 justify-end">
 		<a routerLink="/dashboard" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
+			class="px-5 py-2.5 rounded-lg text-sm text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
 			Dashboard
 		</a>
 		<a routerLink="/strength/workout-records" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
+			class="px-5 py-2.5 rounded-lg text-sm text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
 			Strength
 		</a>
 		<a routerLink="/conditioning/conditioning-records" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
+			class="px-5 py-2.5 rounded-lg text-sm text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
 			Cardio
 		</a>
 		<a routerLink="/nutrition/meal-library" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
+			class="px-5 py-2.5 rounded-lg text-sm text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
 			Nutrition
 		</a>
 		<a routerLink="/week-planner" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
+			class="px-5 py-2.5 rounded-lg text-sm text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
 			Week Planner
 		</a>
 		<a routerLink="/progress" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
+			class="px-5 py-2.5 rounded-lg text-sm text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
 			Body Composition
 		</a>
 		<a routerLink="/goals" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
+			class="px-5 py-2.5 rounded-lg text-sm text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
 			Goals
 		</a>
 		<a routerLink="/training-blocks" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
+			class="px-5 py-2.5 rounded-lg text-sm text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
 			Training Blocks
+		</a>
+		<div class="w-px h-5 bg-zinc-200 mx-1"></div>
+		<a routerLink="/global-settings" routerLinkActive="bg-zinc-900 !text-white"
+			class="px-5 py-2.5 rounded-lg text-sm text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer flex items-center gap-1.5">
+			<i class="fa-sharp fa-solid fa-gear text-xs"></i>
+			Settings
 		</a>
 	</div>
 
@@ -106,6 +112,12 @@
 			(click)="toggleMenu()"
 			class="px-4 py-4 rounded-xl text-white hover:bg-white/10 text-lg font-medium transition">
 			Training Blocks
+		</a>
+		<a routerLink="/global-settings" routerLinkActive="bg-white text-zinc-900"
+			(click)="toggleMenu()"
+			class="px-4 py-4 rounded-xl text-white hover:bg-white/10 text-lg font-medium transition flex items-center gap-2.5">
+			<i class="fa-sharp fa-solid fa-gear text-base"></i>
+			Settings
 		</a>
 	</nav>
 

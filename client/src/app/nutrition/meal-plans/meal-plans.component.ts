@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { addDays, addWeeks, format, isToday, startOfWeek, subWeeks } from 'date-fns';
 import { Meal } from '../models/Meal';
+import { MacroGoals, UserService } from '../../shared/services/user.service';
 import { MealPlan } from '../models/MealPlan';
 import { MealLibraryService } from '../meal-library/meal-library.service';
 import { MealPlansService } from './meal-plans.service';
@@ -36,6 +37,14 @@ export class MealPlansComponent implements OnInit {
 	loading = false;
 	saving = false;
 	saved = false;
+	copying = false;
+	showClearModal = false;
+
+	// Mobile view
+	selectedMobileDay = 'Monday';
+
+	// Macro goals
+	macroGoals: MacroGoals | null = null;
 
 	// Picker drawer state
 	pickerDay = '';
@@ -46,9 +55,14 @@ export class MealPlansComponent implements OnInit {
 	constructor(
 		private mealLibraryService: MealLibraryService,
 		private mealPlansService: MealPlansService,
+		private userService: UserService,
 	) {}
 
 	ngOnInit(): void {
+		const id = localStorage.getItem('id') ?? '';
+		this.userService.getUser(id).subscribe({
+			next: user => { this.macroGoals = user.macroGoals ?? null; },
+		});
 		this.loadMeals();
 	}
 
@@ -82,16 +96,19 @@ export class MealPlansComponent implements OnInit {
 
 	prevWeek(): void {
 		this.currentWeekStart = subWeeks(this.currentWeekStart, 1);
+		this.selectedMobileDay = 'Monday';
 		this.loadPlan();
 	}
 
 	nextWeek(): void {
 		this.currentWeekStart = addWeeks(this.currentWeekStart, 1);
+		this.selectedMobileDay = 'Monday';
 		this.loadPlan();
 	}
 
 	goToCurrentWeek(): void {
 		this.currentWeekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
+		this.selectedMobileDay = 'Monday';
 		this.loadPlan();
 	}
 
@@ -124,6 +141,61 @@ export class MealPlansComponent implements OnInit {
 
 	hasMealsThisWeek(): boolean {
 		return this.plan.entries.length > 0;
+	}
+
+	// ─── Weekly macro widget ─────────────────────────────────────────────────
+
+	get weeklyCaloriesPlanned(): number {
+		return this.DAYS.reduce((sum, day) => sum + this.getDayCalories(day), 0);
+	}
+
+	get weeklyProteinPlanned(): number {
+		return this.DAYS.reduce((sum, day) => sum + this.getDayMacros(day).protein, 0);
+	}
+
+	get weeklyCarbsPlanned(): number {
+		return this.DAYS.reduce((sum, day) => sum + this.getDayMacros(day).carbs, 0);
+	}
+
+	get weeklyFatPlanned(): number {
+		return this.DAYS.reduce((sum, day) => sum + this.getDayMacros(day).fat, 0);
+	}
+
+	macroProgress(value: number, goal: number): number {
+		if (!goal) return 0;
+		return Math.min(100, Math.round((value / goal) * 100));
+	}
+
+	// ─── Clear week modal ────────────────────────────────────────────────────
+
+	openClearModal(): void {
+		this.showClearModal = true;
+	}
+
+	cancelClearModal(): void {
+		this.showClearModal = false;
+	}
+
+	confirmClearWeek(): void {
+		this.showClearModal = false;
+		this.plan.entries = [];
+		this.autoSave();
+	}
+
+	// ─── Copy to next week ───────────────────────────────────────────────────
+
+	copyToNextWeek(): void {
+		const userId = localStorage.getItem('id') ?? '';
+		const fromWeekStart = this.weekStartStr;
+		const toWeekStart = format(addWeeks(this.currentWeekStart, 1), 'yyyy-MM-dd');
+		this.copying = true;
+		this.mealPlansService.copyWeek(userId, fromWeekStart, toWeekStart).subscribe({
+			next: () => {
+				this.copying = false;
+				this.nextWeek();
+			},
+			error: () => { this.copying = false; },
+		});
 	}
 
 	// ─── Picker ──────────────────────────────────────────────────────────────
@@ -161,11 +233,6 @@ export class MealPlansComponent implements OnInit {
 	removeMeal(day: string, slot: string, mealId: string, event: Event): void {
 		event.stopPropagation();
 		this.plan.entries = this.plan.entries.filter(e => !(e.day === day && e.slot === slot && e.mealId === mealId));
-		this.autoSave();
-	}
-
-	clearWeek(): void {
-		this.plan.entries = [];
 		this.autoSave();
 	}
 

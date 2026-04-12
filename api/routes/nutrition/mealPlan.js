@@ -2,6 +2,24 @@ const express = require('express');
 const router = express.Router();
 const MealPlan = require('../../models/nutrition/MealPlan');
 
+// Copy a week plan to another week
+router.post('/copy', async (req, res) => {
+	try {
+		const { userId, fromWeekStart, toWeekStart } = req.body;
+		const source = await MealPlan.findOne({ userId, weekStart: fromWeekStart });
+		if (!source || source.entries.length === 0)
+			return res.status(404).json({ message: 'No plan found for source week' });
+		const copied = await MealPlan.findOneAndUpdate(
+			{ userId, weekStart: toWeekStart },
+			{ userId, weekStart: toWeekStart, entries: source.entries },
+			{ upsert: true, new: true, setDefaultsOnInsert: true }
+		);
+		res.json(copied);
+	} catch (err) {
+		res.status(500).json({ message: err.message });
+	}
+});
+
 // GET plan for a specific user + week
 router.get('/:userId/:weekStart', async (req, res) => {
 	try {
