@@ -1,3 +1,5 @@
+require('dotenv').config(); // must be first — loads .env before any other module reads process.env
+
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -25,8 +27,6 @@ const goalRoutes = require('./routes/goals/goal');
 const trainingBlockRoutes = require('./routes/training-blocks/trainingBlock');
 
 const cors = require('cors');
-
-require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;

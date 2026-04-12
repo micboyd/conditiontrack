@@ -6,7 +6,14 @@ const { Resend } = require('resend');
 const User = require('../models/User');
 
 const router = express.Router();
-const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Lazy-initialise so the server starts even if RESEND_API_KEY isn't set yet
+function getResend() {
+	if (!process.env.RESEND_API_KEY) {
+		throw new Error('RESEND_API_KEY is not set in your .env file.');
+	}
+	return new Resend(process.env.RESEND_API_KEY);
+}
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -124,7 +131,7 @@ router.post('/register', async (req, res) => {
 		const clientUrl = process.env.CLIENT_URL || 'http://localhost:4200';
 		const verificationUrl = `${clientUrl}/verify-email?token=${verificationToken}`;
 
-		await resend.emails.send({
+		await getResend().emails.send({
 			from: process.env.RESEND_FROM_EMAIL || 'ConditionTrack <onboarding@resend.dev>',
 			to: username, // username is the email address in this system
 			subject: 'Verify your ConditionTrack account',
@@ -192,7 +199,7 @@ router.post('/resend-verification', async (req, res) => {
 		const clientUrl = process.env.CLIENT_URL || 'http://localhost:4200';
 		const verificationUrl = `${clientUrl}/verify-email?token=${user.verificationToken}`;
 
-		await resend.emails.send({
+		await getResend().emails.send({
 			from: process.env.RESEND_FROM_EMAIL || 'ConditionTrack <onboarding@resend.dev>',
 			to: username,
 			subject: 'Verify your ConditionTrack account',
