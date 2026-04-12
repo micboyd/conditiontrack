@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Goal, GoalCategory, GoalMetric } from '../models/Goal';
+import { Goal, GoalCategory, GoalMetric, Milestone } from '../models/Goal';
 import { GoalsService } from '../goals.service';
 
 interface MetricOption {
@@ -47,6 +47,11 @@ export class EditGoalComponent implements OnInit, OnChanges {
 
 	goalForm!: FormGroup;
 	formLoading = false;
+	showAdvanced = false;
+
+	milestones: Milestone[] = [];
+	newMilestoneTitle = '';
+	newMilestoneDate = '';
 
 	readonly categories = ['strength', 'cardio', 'nutrition', 'body-composition'];
 	readonly periods = ['week', 'month', 'total'];
@@ -66,12 +71,16 @@ export class EditGoalComponent implements OnInit, OnChanges {
 	private buildForm(): void {
 		const goal = this.selectedGoal ?? new Goal();
 		this.goalForm = Goal.toFormGroup(goal, this.fb);
+		this.showAdvanced = goal.mode === 'advanced';
+		this.milestones = goal.milestones.map(m => ({ ...m }));
+		this.newMilestoneTitle = '';
+		this.newMilestoneDate = '';
 	}
 
 	// ── Derived state ─────────────────────────────────────────────────────────
 
 	get selectedCategory(): GoalCategory {
-		return this.goalForm.get('category')?.value as GoalCategory;
+		return (this.goalForm.get('category')?.value as GoalCategory) ?? 'strength';
 	}
 
 	get selectedTracking(): string {
@@ -96,11 +105,21 @@ export class EditGoalComponent implements OnInit, OnChanges {
 		return this.availableMetrics.find(m => m.value === this.selectedMetric)?.needsExercise ?? false;
 	}
 
+	// ── Toggle advanced ───────────────────────────────────────────────────────
+
+	toggleAdvanced(): void {
+		this.showAdvanced = !this.showAdvanced;
+		// Set sensible defaults when opening advanced panel for the first time
+		if (this.showAdvanced && !this.goalForm.get('category')?.value) {
+			this.goalForm.get('category')?.setValue('strength');
+			this.goalForm.get('direction')?.setValue('increase');
+		}
+	}
+
 	// ── Event handlers ────────────────────────────────────────────────────────
 
 	onCategoryChange(values: string[]): void {
-		const cat = values[0] as GoalCategory;
-		this.goalForm.get('category')?.setValue(cat);
+		this.goalForm.get('category')?.setValue(values[0] as GoalCategory);
 		this.goalForm.get('metric')?.setValue(null);
 		this.goalForm.get('period')?.setValue(null);
 		this.goalForm.get('exerciseName')?.setValue(null);
@@ -142,8 +161,23 @@ export class EditGoalComponent implements OnInit, OnChanges {
 		this.goalForm.markAllAsTouched();
 		if (this.goalForm.invalid) return;
 
-		this.formLoading = true;
 		const value = this.goalForm.value;
+		value.mode = this.showAdvanced ? 'advanced' : 'simple';
+		value.milestones = this.milestones;
+
+		// Validate advanced-specific required fields
+		if (this.showAdvanced) {
+			if (!value.targetValue || value.targetValue <= 0) {
+				this.goalForm.get('targetValue')?.setErrors({ required: true });
+				return;
+			}
+			if (!value.unit?.trim()) {
+				this.goalForm.get('unit')?.setErrors({ required: true });
+				return;
+			}
+		}
+
+		this.formLoading = true;
 
 		if (this.selectedGoal?._id) {
 			this.goalsService.updateGoal(this.selectedGoal._id, value).subscribe(() => {
@@ -151,13 +185,34 @@ export class EditGoalComponent implements OnInit, OnChanges {
 				this.closeEvent.emit();
 			});
 		} else {
-			// Capture starting point for progress calculation on decrease goals
-			value.startValue = value.currentValue;
+			if (this.showAdvanced) value.startValue = value.currentValue;
 			this.goalsService.createGoal(value).subscribe(() => {
 				this.formLoading = false;
 				this.closeEvent.emit();
 			});
 		}
+	}
+
+	// ── Milestones ────────────────────────────────────────────────────────────
+
+	addMilestone(): void {
+		if (!this.newMilestoneTitle.trim()) return;
+		this.milestones.push({
+			title: this.newMilestoneTitle.trim(),
+			targetDate: this.newMilestoneDate || null,
+			completed: false,
+			completedAt: null,
+		});
+		this.newMilestoneTitle = '';
+		this.newMilestoneDate = '';
+	}
+
+	removeMilestone(index: number): void {
+		this.milestones.splice(index, 1);
+	}
+
+	onNewMilestoneDateChange(value: string): void {
+		this.newMilestoneDate = value;
 	}
 
 	onCancel(): void {

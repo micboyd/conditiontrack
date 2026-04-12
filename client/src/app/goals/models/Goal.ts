@@ -1,5 +1,14 @@
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
+export interface Milestone {
+	_id?: string;
+	title: string;
+	targetDate: string | null;
+	completed: boolean;
+	completedAt: string | null;
+}
+
+export type GoalMode = 'simple' | 'advanced';
 export type GoalCategory = 'strength' | 'cardio' | 'nutrition' | 'body-composition';
 export type GoalTracking = 'manual' | 'auto';
 export type GoalMetric =
@@ -16,8 +25,10 @@ export type GoalStatus = 'active' | 'completed';
 export class Goal {
 	_id: string;
 	userId: string;
+	mode: GoalMode;
 	title: string;
-	category: GoalCategory;
+	description: string;
+	category: GoalCategory | null;
 	trackingType: GoalTracking;
 	metric: GoalMetric | null;
 	period: GoalPeriod | null;
@@ -30,13 +41,16 @@ export class Goal {
 	targetDate: string | null;
 	notes: string;
 	status: GoalStatus;
+	milestones: Milestone[];
 	createdAt?: string;
 
 	constructor(data?: Partial<Goal>) {
 		this._id          = data?._id || '';
 		this.userId       = data?.userId || localStorage.getItem('id') || '';
+		this.mode         = data?.mode ?? 'simple';
 		this.title        = data?.title || '';
-		this.category     = data?.category || 'strength';
+		this.description  = data?.description || '';
+		this.category     = data?.category ?? null;
 		this.trackingType = data?.trackingType || 'manual';
 		this.metric       = data?.metric ?? null;
 		this.period       = data?.period ?? null;
@@ -49,6 +63,7 @@ export class Goal {
 		this.targetDate   = data?.targetDate ?? null;
 		this.notes        = data?.notes || '';
 		this.status       = data?.status || 'active';
+		this.milestones   = data?.milestones ?? [];
 		this.createdAt    = data?.createdAt;
 	}
 
@@ -56,17 +71,19 @@ export class Goal {
 		return fb.group({
 			_id:          [goal._id],
 			userId:       [goal.userId],
-			title:        [goal.title,        [Validators.required, Validators.maxLength(120)]],
-			category:     [goal.category,     [Validators.required]],
-			trackingType: [goal.trackingType, [Validators.required]],
+			mode:         [goal.mode],
+			title:        [goal.title, [Validators.required, Validators.maxLength(120)]],
+			description:  [goal.description],
+			category:     [goal.category],
+			trackingType: [goal.trackingType],
 			metric:       [goal.metric],
 			period:       [goal.period],
 			exerciseName: [goal.exerciseName],
-			direction:    [goal.direction,    [Validators.required]],
-			targetValue:  [goal.targetValue,  [Validators.required, Validators.min(0.01)]],
+			direction:    [goal.direction],
+			targetValue:  [goal.targetValue],
 			startValue:   [goal.startValue],
 			currentValue: [goal.currentValue],
-			unit:         [goal.unit,         [Validators.required]],
+			unit:         [goal.unit],
 			targetDate:   [goal.targetDate],
 			notes:        [goal.notes],
 			status:       [goal.status],

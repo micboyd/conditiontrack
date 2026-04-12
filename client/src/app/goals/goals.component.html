@@ -45,17 +45,70 @@
 				<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
 					@for (goal of goals; track goal._id) {
 
+						<!-- ── Simple goal card ── -->
+						@if (goal.mode === 'simple') {
+						<div class="bg-white rounded-2xl shadow-sm p-5 flex flex-col gap-3">
+							<div class="flex items-start gap-3">
+
+								<!-- Complete circle -->
+								<button (click)="markComplete(goal)" title="Mark complete"
+									class="mt-0.5 w-5 h-5 rounded-full border-2 border-zinc-300 hover:border-green-500 hover:bg-green-50 flex-shrink-0 transition-colors cursor-pointer">
+								</button>
+
+								<!-- Text -->
+								<div class="flex-1 min-w-0">
+									<p class="text-sm font-semibold text-zinc-900 leading-snug">{{ goal.title }}</p>
+									@if (goal.description) {
+										<p class="text-xs text-zinc-400 mt-0.5 leading-relaxed">{{ goal.description }}</p>
+									}
+									@if (goal.targetDate) {
+										<p class="text-xs text-zinc-400 mt-1.5 flex items-center gap-1">
+											<i class="fa-sharp fa-solid fa-calendar text-[9px]"></i>
+											{{ goal.targetDate }}
+										</p>
+									}
+								</div>
+
+								<!-- Edit / Delete -->
+								<div class="flex items-center -mt-1 -mr-1 flex-shrink-0">
+									<button (click)="openDrawer(goal)" title="Edit"
+										class="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-300 hover:text-zinc-700 transition-colors cursor-pointer">
+										<i class="fa-sharp fa-solid fa-pen-to-square text-xs"></i>
+									</button>
+									<button (click)="deleteGoal(goal)" title="Delete"
+										class="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-300 hover:text-red-500 transition-colors cursor-pointer">
+										<i class="fa-sharp fa-solid fa-trash text-xs"></i>
+									</button>
+								</div>
+							</div>
+
+							<!-- Milestones timeline -->
+							@if (goal.milestones?.length > 0) {
+							<div class="border-t border-zinc-50 pt-3">
+								<ng-container *ngTemplateOutlet="milestoneTimeline; context: { goal: goal }"></ng-container>
+							</div>
+							}
+						</div>
+						}
+
+						<!-- ── Advanced goal card ── -->
+						@if (goal.mode === 'advanced' || !goal.mode) {
 						<div class="bg-white rounded-2xl shadow-sm p-5 flex flex-col gap-4">
 
 							<!-- Card header -->
 							<div class="flex items-start justify-between gap-3">
 								<div class="min-w-0 flex-1">
+									@if (goal.category) {
 									<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wide mb-2"
 										[ngClass]="getCategoryColor(goal.category)">
 										<i class="fa-sharp fa-solid text-[9px]" [ngClass]="getCategoryIcon(goal.category)"></i>
 										{{ goal.category }}
 									</span>
+									}
 									<p class="text-sm font-semibold text-zinc-900 leading-snug">{{ goal.title }}</p>
+									@if (goal.description) {
+										<p class="text-xs text-zinc-400 mt-0.5">{{ goal.description }}</p>
+									}
 									@if (goal.targetDate) {
 										<p class="text-xs text-zinc-400 mt-0.5">Due {{ goal.targetDate }}</p>
 									}
@@ -124,7 +177,16 @@
 								<p class="text-xs text-zinc-400 truncate">{{ goal.notes }}</p>
 							}
 
+							<!-- Milestones timeline -->
+							@if (goal.milestones?.length > 0) {
+							<div class="border-t border-zinc-50 pt-3">
+								<ng-container *ngTemplateOutlet="milestoneTimeline; context: { goal: goal }"></ng-container>
+							</div>
+							}
+
 						</div>
+						}
+
 					}
 				</div>
 			}
@@ -132,3 +194,34 @@
 		</div>
 	</app-container>
 </div>
+
+<!-- Milestone timeline template -->
+<ng-template #milestoneTimeline let-goal="goal">
+	<div class="relative pl-5">
+		@if (goal.milestones.length > 1) {
+		<div class="absolute left-[7px] top-2 bottom-2 w-px bg-zinc-100"></div>
+		}
+		<div class="space-y-2.5">
+			@for (m of goal.milestones; track $index) {
+			<div class="flex items-start gap-2.5 cursor-pointer group"
+				(click)="toggleMilestone(goal, m, $event)">
+				<div class="relative z-10 -ml-5 mt-0.5 w-3.5 h-3.5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all"
+					[class]="m.completed ? 'bg-green-500 border-green-500' : 'bg-white border-zinc-300 group-hover:border-zinc-500'">
+					@if (m.completed) {
+					<i class="fa-sharp fa-solid fa-check text-white" style="font-size: 7px"></i>
+					}
+				</div>
+				<div class="flex-1 min-w-0 pb-0.5">
+					<p class="text-xs font-medium leading-snug transition-colors"
+						[class]="m.completed ? 'text-zinc-400 line-through' : 'text-zinc-700 group-hover:text-zinc-900'">
+						{{ m.title }}
+					</p>
+					@if (m.targetDate) {
+					<p class="text-[10px] text-zinc-400 mt-0.5">{{ m.targetDate }}</p>
+					}
+				</div>
+			</div>
+			}
+		</div>
+	</div>
+</ng-template>

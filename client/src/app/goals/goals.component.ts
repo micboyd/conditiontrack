@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { SideDrawerComponent } from '../shared/components/side-drawer/side-drawer.component';
-import { Goal } from './models/Goal';
+import { Goal, Milestone } from './models/Goal';
 import { GoalsService } from './goals.service';
 
 @Component({
@@ -97,6 +97,20 @@ export class GoalsComponent implements OnInit {
 
 	updateManualProgress(goal: Goal, newValue: number): void {
 		this.goalsService.updateGoal(goal._id, { currentValue: newValue }).subscribe(updated => {
+			const idx = this.goals.findIndex(g => g._id === updated._id);
+			if (idx !== -1) this.goals[idx] = new Goal(updated);
+		});
+	}
+
+	toggleMilestone(goal: Goal, milestone: Milestone, event: Event): void {
+		event.stopPropagation();
+		const today = new Date().toISOString().split('T')[0];
+		const updatedMilestones = goal.milestones.map(m =>
+			m._id === milestone._id
+				? { ...m, completed: !m.completed, completedAt: !m.completed ? today : null }
+				: m
+		);
+		this.goalsService.updateGoal(goal._id, { milestones: updatedMilestones } as any).subscribe(updated => {
 			const idx = this.goals.findIndex(g => g._id === updated._id);
 			if (idx !== -1) this.goals[idx] = new Goal(updated);
 		});
