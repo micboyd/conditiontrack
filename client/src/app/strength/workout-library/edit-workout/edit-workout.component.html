@@ -43,16 +43,30 @@
 				<div class="grid grid-cols-2 gap-4">
 					<div>
 						<p class="text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-2">Available</p>
-						<div class="space-y-1.5 max-h-64 overflow-y-auto">
-							@for (exercise of avalibleExercises; track exercise._id) {
+
+						<!-- Search -->
+						<div class="relative mb-2">
+							<i class="fa-sharp fa-solid fa-magnifying-glass absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400 text-[11px] pointer-events-none"></i>
+							<input
+								type="text"
+								placeholder="Search..."
+								[value]="exerciseSearch"
+								(input)="exerciseSearch = $any($event.target).value"
+								class="w-full pl-7 pr-3 py-1.5 text-xs border border-zinc-200 rounded-lg bg-zinc-50 text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition" />
+						</div>
+
+						<div class="space-y-1.5 max-h-56 overflow-y-auto">
+							@for (exercise of filteredAvailableExercises; track exercise._id) {
 								<div (click)="selectExercise(exercise)"
 									class="flex items-center justify-between px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm text-zinc-700 hover:border-zinc-400 hover:bg-zinc-100 cursor-pointer transition-colors">
 									<span>{{ exercise.name }}</span>
 									<i class="fa-sharp fa-solid fa-plus text-zinc-400 text-xs"></i>
 								</div>
 							}
-							@if (avalibleExercises.length === 0) {
-								<p class="text-xs text-zinc-300 italic px-1">All exercises selected</p>
+							@if (filteredAvailableExercises.length === 0) {
+								<p class="text-xs text-zinc-300 italic px-1">
+									{{ exerciseSearch ? 'No matches found' : 'All exercises selected' }}
+								</p>
 							}
 						</div>
 					</div>
