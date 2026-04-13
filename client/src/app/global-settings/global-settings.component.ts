@@ -78,6 +78,11 @@ export class GlobalSettingsComponent implements OnInit {
 		this.calculatedBmr = Math.round(base * (ACTIVITY_MULTIPLIERS[activityLevel] ?? 1.2));
 	}
 
+	useBmrAsGoal(): void {
+		const value = this.calculatedBmr || this.savedBmr;
+		if (value) this.form.get('calories')?.setValue(value);
+	}
+
 	onSubmit(): void {
 		if (!this.form.valid) return;
 		const id = localStorage.getItem('id') ?? '';

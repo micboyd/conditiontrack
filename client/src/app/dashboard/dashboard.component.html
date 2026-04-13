@@ -135,24 +135,26 @@
 		<!-- Daily totals card -->
 		<div class="mx-4 sm:mx-8 lg:mx-12 mb-5 lg:mb-6 bg-zinc-900 rounded-2xl px-6 py-5 lg:px-8 lg:py-7">
 			<p class="text-xs font-medium uppercase tracking-widest text-zinc-500 mb-5">Daily Totals</p>
-			<div class="grid grid-cols-3 gap-y-5 gap-x-3 mb-5">
+			<div class="grid grid-cols-2 gap-5 mb-5">
 				<div>
 					<p class="text-sm text-zinc-400 mb-1.5">Eaten</p>
 					<p class="text-3xl font-bold text-white leading-none tracking-tight">{{ totalCaloriesEaten }}</p>
-					@if (user?.macroGoals?.calories) {
-						<p class="text-xs text-zinc-400 mt-1">of {{ user!.macroGoals!.calories }}</p>
-						<div class="mt-2 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
-							<div class="h-full bg-violet-400 rounded-full transition-all"
-								[style.width.%]="macroProgress(totalCaloriesEaten, user!.macroGoals!.calories)"></div>
-						</div>
-					} @else {
-						<p class="text-xs text-zinc-500 mt-1.5">kcal</p>
-					}
+					<p class="text-xs text-zinc-500 mt-1.5">kcal</p>
 				</div>
 				<div>
 					<p class="text-sm text-zinc-400 mb-1.5">Burned</p>
 					<p class="text-3xl font-bold text-white leading-none tracking-tight">{{ totalCaloriesBurned }}</p>
 					<p class="text-xs text-zinc-500 mt-1.5">kcal</p>
+				</div>
+				<div>
+					<p class="text-sm text-zinc-400 mb-1.5">Goal</p>
+					@if (user?.macroGoals?.calories) {
+						<p class="text-3xl font-bold text-white leading-none tracking-tight">{{ user!.macroGoals!.calories }}</p>
+						<p class="text-xs text-zinc-500 mt-1.5">kcal / day</p>
+					} @else {
+						<p class="text-xl font-semibold text-zinc-600 leading-none">—</p>
+						<p class="text-xs text-zinc-600 mt-1.5">Not set</p>
+					}
 				</div>
 				<div>
 					<p class="text-sm text-zinc-400 mb-1.5">Balance</p>

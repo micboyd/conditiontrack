@@ -37,13 +37,20 @@
 				<div>
 					<label class="block text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-2">
 						<i class="fa-sharp fa-solid fa-fire text-orange-400 mr-1"></i>
-						Calories
+						Goal Calories
 					</label>
 					<div class="relative">
 						<input formControlName="calories" type="number" min="0" placeholder="0"
 							class="w-full px-4 py-3 pr-14 rounded-xl border border-zinc-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-violet-400 transition" />
 						<span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-zinc-400 font-medium">kcal</span>
 					</div>
+					@if (calculatedBmr || savedBmr) {
+						<button type="button" (click)="useBmrAsGoal()"
+							class="mt-2 flex items-center gap-1.5 text-xs text-orange-500 hover:text-orange-700 transition cursor-pointer">
+							<i class="fa-sharp fa-solid fa-arrow-up-to-line text-[10px]"></i>
+							Use BMR value ({{ calculatedBmr || savedBmr }} kcal)
+						</button>
+					}
 				</div>
 
 				<!-- Protein -->
