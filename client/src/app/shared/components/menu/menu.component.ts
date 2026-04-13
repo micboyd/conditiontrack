@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { UserProfile, UserService } from '../../services/user.service';
@@ -12,6 +12,7 @@ export class MenuComponent implements OnInit {
 	user: UserProfile | null = null;
 	initials = '';
 	menuOpen = false;
+	isReady = false;
 
 	constructor(private userService: UserService, private router: Router) {}
 
@@ -34,6 +35,12 @@ export class MenuComponent implements OnInit {
 	}
 
 	toggleMenu(): void {
+		if (!this.isReady) this.isReady = true;
 		this.menuOpen = !this.menuOpen;
+	}
+
+	@HostListener('document:keydown.escape')
+	onEsc(): void {
+		if (this.menuOpen) this.toggleMenu();
 	}
 }

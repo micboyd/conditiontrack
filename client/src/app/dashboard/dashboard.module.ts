@@ -10,6 +10,7 @@ import { NgModule } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
 import { WeekPlannerService } from '../week-planner/week-planner.service';
 import { GoalsService } from '../goals/goals.service';
+import { MeasurementsService } from '../progress/measurements/measurements.service';
 import { WorkoutRecordService } from '../strength/workout-records/workout-records.service';
 import { WorkoutService } from '../strength/workout-library/workout.service';
 
@@ -25,6 +26,7 @@ import { WorkoutService } from '../strength/workout-library/workout.service';
 		MealLibraryService,
 		DailyLogService,
 		GoalsService,
+		MeasurementsService,
 	],
 })
 export class DashboardModule {}

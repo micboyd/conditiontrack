@@ -3,19 +3,18 @@
 
 	<!-- Active training block banner -->
 	@if (activeBlock) {
-	<div class="fixed top-20 left-0 right-0 z-20 bg-gradient-to-r from-violet-600 to-purple-600 border-b border-violet-700">
+	<div class="fixed top-16 left-0 right-0 z-20 bg-gradient-to-r from-violet-600 to-purple-600 border-b border-violet-700">
 		<app-container [noPadding]="true"><div class="flex items-center gap-3 py-2">
 			<i class="fa-sharp fa-solid fa-bolt text-violet-200 text-xs flex-shrink-0"></i>
 			<span class="text-sm font-semibold text-white">{{ activeBlock.name }}</span>
 			<span class="text-violet-300 text-sm hidden sm:inline">·</span>
 			<span class="text-sm text-violet-200 hidden sm:inline">{{ activeBlock.dateRangeLabel }}</span>
-			<a routerLink="/training-blocks" class="ml-auto text-xs text-violet-300 hover:text-white transition cursor-pointer flex-shrink-0">View</a>
 		</div></app-container>
 	</div>
 	}
 
 	<!-- Welcome banner -->
-	<div class="bg-zinc-900" [style.paddingTop]="activeBlock ? '8.5rem' : '5rem'">
+	<div class="bg-zinc-900" [style.paddingTop]="activeBlock ? '7.5rem' : '4rem'">
 		<app-container [noPadding]="true"><div class="py-5 lg:py-7">
 
 			<!-- Top row: greeting + date -->

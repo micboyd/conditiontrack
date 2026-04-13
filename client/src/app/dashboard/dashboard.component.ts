@@ -22,6 +22,8 @@ import { WorkoutService } from '../strength/workout-library/workout.service';
 import { forkJoin } from 'rxjs';
 import { Goal } from '../goals/models/Goal';
 import { GoalsService } from '../goals/goals.service';
+import { Measurement } from '../progress/models/Measurement';
+import { MeasurementsService } from '../progress/measurements/measurements.service';
 
 export interface ActivityEntry {
 	date: string;
@@ -73,6 +75,7 @@ export class DashboardComponent implements OnInit {
 
 	activeGoals: Goal[] = [];
 	goalAutoValues = new Map<string, number>();
+	private measurements: Measurement[] = [];
 
 	constructor(
 		private fb: FormBuilder,
@@ -85,6 +88,7 @@ export class DashboardComponent implements OnInit {
 		private mealLibraryService: MealLibraryService,
 		private dailyLogService: DailyLogService,
 		private goalsService: GoalsService,
+		private measurementsService: MeasurementsService,
 	) {}
 
 	ngOnInit(): void {
@@ -99,6 +103,7 @@ export class DashboardComponent implements OnInit {
 			mealLibrary: this.mealLibraryService.getAllMeals(),
 			dailyLog: this.dailyLogService.getLog(id, this.todayStr),
 			goals: this.goalsService.getAllGoals(),
+			measurements: this.measurementsService.getAll(id),
 		}).subscribe({
 			next: (data) => {
 				this.user = data.user;
@@ -110,6 +115,7 @@ export class DashboardComponent implements OnInit {
 				this.allMeals = data.mealLibrary;
 				this.viewDateLog = data.dailyLog;
 				this.activeGoals = data.goals.map(g => new Goal(g));
+				this.measurements = data.measurements;
 				this.loading = false;
 				this.goalsService.resolveAutoValues(this.activeGoals).subscribe(map => {
 					this.goalAutoValues = map;
@@ -119,6 +125,28 @@ export class DashboardComponent implements OnInit {
 				this.loading = false;
 			},
 		});
+	}
+
+	// ── Setup checklist ──────────────────────────────────────────────────────
+
+	get checklistItems(): { title: string; completed: boolean; route: string }[] {
+		return [
+			{ title: 'Add a workout to your library',	completed: this.workouts.length > 0,			route: '/strength/workout-library' },
+			{ title: 'Log your first strength session',	completed: this.workoutRecords.length > 0,		route: '/strength/workout-records' },
+			{ title: 'Add a cardio session template',	completed: this.conditioningSessions.length > 0,route: '/conditioning/conditioning-library' },
+			{ title: 'Log your first cardio session',	completed: this.conditioningRecords.length > 0,	route: '/conditioning/conditioning-records' },
+			{ title: 'Add a meal to your library',		completed: this.allMeals.length > 0,			route: '/nutrition/meal-library' },
+			{ title: 'Log a body measurement',			completed: this.measurements.length > 0,		route: '/progress/measurements' },
+			{ title: 'Set a goal',						completed: this.activeGoals.length > 0,			route: '/goals' },
+			{ title: 'Complete your profile',			completed: !!(this.user?.profileImage || this.user?.bio), route: '/profile' },
+		];
+	}
+
+	get checklistDoneCount(): number { return this.checklistItems.filter(i => i.completed).length; }
+	get checklistTotal(): number { return this.checklistItems.length; }
+	get showChecklistBanner(): boolean { return !this.loading && this.checklistDoneCount < this.checklistTotal; }
+	get checklistIncomplete(): { title: string; route: string }[] {
+		return this.checklistItems.filter(i => !i.completed).slice(0, 3);
 	}
 
 	// ── Goals helpers ────────────────────────────────────────────────────────

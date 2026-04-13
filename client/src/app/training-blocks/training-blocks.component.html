@@ -6,7 +6,7 @@
 		<p class="text-sm text-zinc-400">Organise your training into named phases</p>
 	</div>
 	<button (click)="openDrawer(null)"
-		class="flex items-center gap-2 px-4 py-2.5 bg-zinc-900 text-white text-sm font-medium rounded-xl hover:bg-zinc-700 transition cursor-pointer flex-shrink-0">
+		class="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium px-5 py-3 rounded-full transition cursor-pointer flex-shrink-0 min-h-[44px]">
 		<i class="fa-sharp fa-solid fa-plus text-xs"></i>
 		Add Block
 	</button>
@@ -29,7 +29,7 @@
 			<h2 class="text-lg font-semibold text-zinc-800 mb-1">No training blocks yet</h2>
 			<p class="text-sm text-zinc-400 mb-6">Add a block to organise your training into named phases.</p>
 			<button (click)="openDrawer(null)"
-				class="px-5 py-2.5 bg-zinc-900 text-white text-sm font-medium rounded-xl hover:bg-zinc-700 transition cursor-pointer">
+				class="bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium px-5 py-3 rounded-full transition cursor-pointer min-h-[44px]">
 				Add your first block
 			</button>
 		</div>
@@ -39,9 +39,8 @@
 		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 			@for (block of blocks; track block._id) {
 
-			<!-- Active block gets dark card -->
 			<div class="rounded-2xl overflow-hidden shadow-sm flex flex-col"
-				[ngClass]="block.isActive ? 'bg-zinc-900' : 'bg-white'">
+				[ngClass]="block.isActive ? 'bg-zinc-900' : 'bg-white border border-zinc-100'">
 
 				<!-- Card header -->
 				<div class="px-5 pt-5 pb-4 flex items-start justify-between gap-3">
@@ -49,7 +48,7 @@
 						<p class="text-base font-semibold truncate" [ngClass]="block.isActive ? 'text-white' : 'text-zinc-900'">
 							{{ block.name }}
 						</p>
-						<p class="text-sm mt-0.5" [ngClass]="block.isActive ? 'text-zinc-400' : 'text-zinc-400'">
+						<p class="text-sm mt-0.5 text-zinc-400">
 							{{ block.dateRangeLabel }}
 						</p>
 					</div>
@@ -72,24 +71,18 @@
 				}
 
 				<!-- Actions -->
-				<div class="mt-auto px-5 py-3 flex items-center gap-2 border-t"
+				<div class="mt-auto px-3 py-2 flex items-center justify-end gap-1 border-t"
 					[ngClass]="block.isActive ? 'border-zinc-800' : 'border-zinc-100'">
 					<button (click)="openDrawer(block)"
-						class="flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg transition cursor-pointer"
-						[ngClass]="block.isActive
-							? 'text-zinc-300 hover:bg-white/10'
-							: 'text-zinc-500 hover:bg-zinc-100'">
-						<i class="fa-sharp fa-solid fa-pencil text-xs"></i>
-						Edit
+						class="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg transition cursor-pointer"
+						[ngClass]="block.isActive ? 'text-zinc-400 hover:text-white' : 'text-zinc-400 hover:text-zinc-700'">
+						<i class="fa-sharp fa-solid fa-pen-to-square text-sm"></i>
 					</button>
 					<button (click)="deleteBlock(block)"
 						[disabled]="deletingId === block._id"
-						class="flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg transition cursor-pointer disabled:opacity-40"
-						[ngClass]="block.isActive
-							? 'text-zinc-400 hover:text-red-400 hover:bg-white/10'
-							: 'text-zinc-400 hover:text-red-500 hover:bg-red-50'">
-						<i class="fa-sharp fa-solid fa-trash text-xs"></i>
-						{{ deletingId === block._id ? 'Deleting...' : 'Delete' }}
+						class="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg transition cursor-pointer disabled:opacity-40"
+						[ngClass]="block.isActive ? 'text-zinc-400 hover:text-red-400' : 'text-zinc-400 hover:text-red-500'">
+						<i class="fa-sharp fa-solid fa-trash text-sm"></i>
 					</button>
 				</div>
 

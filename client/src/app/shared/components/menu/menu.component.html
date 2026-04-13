@@ -1,143 +1,155 @@
-<nav class="fixed top-0 left-0 right-0 h-20 bg-white border-b border-zinc-200 z-30 flex items-center">
-<app-container [noPadding]="true">
-<div class="flex items-center gap-6">
+<!-- Fixed top bar -->
+<header class="fixed top-0 left-0 right-0 h-16 bg-white border-b border-zinc-200 z-30 flex items-center">
+	<app-container [noPadding]="true">
+		<div class="flex items-center justify-between">
 
-	<!-- Logo -->
-	<a routerLink="/dashboard" class="flex items-center gap-2.5 flex-shrink-0">
-		<div class="w-7 h-7 bg-zinc-900 rounded flex items-center justify-center flex-shrink-0">
-			<i class="fa-sharp fa-solid fa-bolt text-white text-xs"></i>
+			<!-- Logo -->
+			<a routerLink="/dashboard" class="flex items-center gap-2.5 flex-shrink-0">
+				<div class="w-7 h-7 bg-zinc-900 rounded flex items-center justify-center flex-shrink-0">
+					<i class="fa-sharp fa-solid fa-bolt text-white text-xs"></i>
+				</div>
+				<span class="font-semibold text-zinc-900 tracking-tight">ConditionTrack</span>
+			</a>
+
+			<!-- Menu button -->
+			<button (click)="toggleMenu()"
+				class="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-zinc-200 text-zinc-700 hover:bg-zinc-100 font-medium transition cursor-pointer min-h-[44px]"
+				aria-label="Open navigation menu">
+				<i class="fa-sharp fa-solid fa-bars text-sm"></i>
+				<span class="text-sm">Menu</span>
+			</button>
+
 		</div>
-		<span class="font-semibold text-zinc-900 tracking-tight">ConditionTrack</span>
-	</a>
+	</app-container>
+</header>
 
-	<!-- Desktop Nav links (right-aligned) -->
-	<div class="hidden lg:flex items-center gap-1 flex-1 justify-end">
-		<a routerLink="/dashboard" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-sm text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
-			Dashboard
-		</a>
-		<a routerLink="/strength/workout-records" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-sm text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
-			Strength
-		</a>
-		<a routerLink="/conditioning/conditioning-records" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-sm text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
-			Cardio
-		</a>
-		<a routerLink="/nutrition/meal-library" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-sm text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
-			Nutrition
-		</a>
-		<a routerLink="/week-planner" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-sm text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
-			Week Planner
-		</a>
-		<a routerLink="/progress" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-sm text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
-			Body Composition
-		</a>
-		<a routerLink="/goals" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-sm text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
-			Goals
-		</a>
-		<a routerLink="/training-blocks" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-sm text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer">
-			Training Blocks
-		</a>
-		<div class="w-px h-5 bg-zinc-200 mx-1"></div>
-		<a routerLink="/global-settings" routerLinkActive="bg-zinc-900 !text-white"
-			class="px-5 py-2.5 rounded-lg text-sm text-zinc-600 hover:bg-zinc-100 font-medium transition cursor-pointer flex items-center gap-1.5">
-			<i class="fa-sharp fa-solid fa-gear text-xs"></i>
-			Settings
-		</a>
+<!-- Backdrop -->
+@if (menuOpen) {
+<div (click)="toggleMenu()" class="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm" aria-hidden="true"></div>
+}
+
+<!-- Left-side nav drawer -->
+<aside
+	class="fixed top-0 left-0 h-screen w-72 bg-zinc-900 z-50 flex flex-col"
+	[ngClass]="{
+		'transition-transform duration-300 ease-in-out': isReady,
+		'-translate-x-full': !menuOpen,
+		'translate-x-0': menuOpen
+	}"
+	role="dialog"
+	aria-modal="true"
+	aria-label="Navigation menu">
+
+	<!-- Drawer header -->
+	<div class="flex items-center justify-between px-5 h-16 border-b border-white/10 flex-shrink-0">
+		<div class="flex items-center gap-2.5">
+			<div class="w-7 h-7 bg-white rounded flex items-center justify-center flex-shrink-0">
+				<i class="fa-sharp fa-solid fa-bolt text-zinc-900 text-xs"></i>
+			</div>
+			<span class="font-semibold text-white tracking-tight">ConditionTrack</span>
+		</div>
+		<button (click)="toggleMenu()"
+			class="w-9 h-9 flex items-center justify-center text-zinc-400 hover:text-white rounded-lg hover:bg-white/10 transition cursor-pointer"
+			aria-label="Close menu">
+			<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
+		</button>
 	</div>
 
-	<!-- Mobile: spacer + hamburger -->
-	<div class="flex-1 lg:hidden"></div>
-	<button (click)="toggleMenu()" class="lg:hidden flex items-center justify-center w-10 h-10 text-zinc-700 hover:bg-zinc-100 rounded-lg transition cursor-pointer" aria-label="Toggle menu">
-		<i class="fa-sharp fa-solid fa-bars text-base"></i>
-	</button>
+	<!-- Nav links -->
+	<nav class="flex-1 overflow-y-auto py-3 px-3">
+		<div class="flex flex-col gap-0.5">
 
-</div>
-</app-container>
-</nav>
+			<a routerLink="/dashboard" routerLinkActive="bg-white text-zinc-900"
+				(click)="toggleMenu()"
+				class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/10 font-medium transition">
+				<i class="fa-sharp fa-solid fa-gauge-high text-[13px] w-4 text-center flex-shrink-0"></i>
+				Dashboard
+			</a>
 
-<!-- Mobile full-screen overlay menu -->
-@if (menuOpen) {
-<div class="fixed inset-0 bg-zinc-900 z-40 flex flex-col pt-20 px-6 lg:hidden">
+			<a routerLink="/strength/workout-records" routerLinkActive="bg-white text-zinc-900"
+				(click)="toggleMenu()"
+				class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/10 font-medium transition">
+				<i class="fa-sharp fa-solid fa-dumbbell text-[13px] w-4 text-center flex-shrink-0"></i>
+				Strength
+			</a>
 
-	<!-- Close button -->
-	<button (click)="toggleMenu()" class="absolute top-4 right-6 w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-lg transition cursor-pointer" aria-label="Close menu">
-		<i class="fa-sharp fa-solid fa-xmark text-lg"></i>
-	</button>
+			<a routerLink="/conditioning/conditioning-records" routerLinkActive="bg-white text-zinc-900"
+				(click)="toggleMenu()"
+				class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/10 font-medium transition">
+				<i class="fa-sharp fa-solid fa-person-running text-[13px] w-4 text-center flex-shrink-0"></i>
+				Cardio
+			</a>
 
-	<!-- Nav links stacked -->
-	<nav class="flex flex-col gap-1 mb-8">
-		<a routerLink="/dashboard" routerLinkActive="bg-white text-zinc-900"
-			(click)="toggleMenu()"
-			class="px-4 py-4 rounded-xl text-white hover:bg-white/10 text-lg font-medium transition">
-			Dashboard
-		</a>
-		<a routerLink="/strength/workout-records" routerLinkActive="bg-white text-zinc-900"
-			(click)="toggleMenu()"
-			class="px-4 py-4 rounded-xl text-white hover:bg-white/10 text-lg font-medium transition">
-			Strength
-		</a>
-		<a routerLink="/conditioning/conditioning-records" routerLinkActive="bg-white text-zinc-900"
-			(click)="toggleMenu()"
-			class="px-4 py-4 rounded-xl text-white hover:bg-white/10 text-lg font-medium transition">
-			Cardio
-		</a>
-		<a routerLink="/nutrition/meal-library" routerLinkActive="bg-white text-zinc-900"
-			(click)="toggleMenu()"
-			class="px-4 py-4 rounded-xl text-white hover:bg-white/10 text-lg font-medium transition">
-			Nutrition
-		</a>
-		<a routerLink="/week-planner" routerLinkActive="bg-white text-zinc-900"
-			(click)="toggleMenu()"
-			class="px-4 py-4 rounded-xl text-white hover:bg-white/10 text-lg font-medium transition">
-			Week Planner
-		</a>
-		<a routerLink="/progress" routerLinkActive="bg-white text-zinc-900"
-			(click)="toggleMenu()"
-			class="px-4 py-4 rounded-xl text-white hover:bg-white/10 text-lg font-medium transition">
-			Body Composition
-		</a>
-		<a routerLink="/goals" routerLinkActive="bg-white text-zinc-900"
-			(click)="toggleMenu()"
-			class="px-4 py-4 rounded-xl text-white hover:bg-white/10 text-lg font-medium transition">
-			Goals
-		</a>
-		<a routerLink="/training-blocks" routerLinkActive="bg-white text-zinc-900"
-			(click)="toggleMenu()"
-			class="px-4 py-4 rounded-xl text-white hover:bg-white/10 text-lg font-medium transition">
-			Training Blocks
-		</a>
-		<a routerLink="/global-settings" routerLinkActive="bg-white text-zinc-900"
-			(click)="toggleMenu()"
-			class="px-4 py-4 rounded-xl text-white hover:bg-white/10 text-lg font-medium transition flex items-center gap-2.5">
-			<i class="fa-sharp fa-solid fa-gear text-base"></i>
-			Settings
-		</a>
+			<a routerLink="/nutrition/meal-library" routerLinkActive="bg-white text-zinc-900"
+				(click)="toggleMenu()"
+				class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/10 font-medium transition">
+				<i class="fa-sharp fa-solid fa-utensils text-[13px] w-4 text-center flex-shrink-0"></i>
+				Nutrition
+			</a>
+
+			<a routerLink="/week-planner" routerLinkActive="bg-white text-zinc-900"
+				(click)="toggleMenu()"
+				class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/10 font-medium transition">
+				<i class="fa-sharp fa-solid fa-calendar-days text-[13px] w-4 text-center flex-shrink-0"></i>
+				Week Planner
+			</a>
+
+			<a routerLink="/progress" routerLinkActive="bg-white text-zinc-900"
+				(click)="toggleMenu()"
+				class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/10 font-medium transition">
+				<i class="fa-sharp fa-solid fa-weight-scale text-[13px] w-4 text-center flex-shrink-0"></i>
+				Body Composition
+			</a>
+
+			<a routerLink="/goals" routerLinkActive="bg-white text-zinc-900"
+				(click)="toggleMenu()"
+				class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/10 font-medium transition">
+				<i class="fa-sharp fa-solid fa-bullseye text-[13px] w-4 text-center flex-shrink-0"></i>
+				Goals
+			</a>
+
+			<a routerLink="/training-blocks" routerLinkActive="bg-white text-zinc-900"
+				(click)="toggleMenu()"
+				class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/10 font-medium transition">
+				<i class="fa-sharp fa-solid fa-layer-group text-[13px] w-4 text-center flex-shrink-0"></i>
+				Training Blocks
+			</a>
+
+			<div class="my-2 border-t border-white/10"></div>
+
+			<a routerLink="/setup-checklist" routerLinkActive="bg-white text-zinc-900"
+				(click)="toggleMenu()"
+				class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/10 font-medium transition">
+				<i class="fa-sharp fa-solid fa-circle-check text-[13px] w-4 text-center flex-shrink-0"></i>
+				Setup Checklist
+			</a>
+
+			<a routerLink="/global-settings" routerLinkActive="bg-white text-zinc-900"
+				(click)="toggleMenu()"
+				class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/10 font-medium transition">
+				<i class="fa-sharp fa-solid fa-gear text-[13px] w-4 text-center flex-shrink-0"></i>
+				Settings
+			</a>
+
+		</div>
 	</nav>
 
-	<!-- Divider -->
-	<div class="border-t border-zinc-800 mb-6"></div>
-
-	<!-- User info + sign out -->
-	<div class="flex items-center justify-between">
-		<div class="flex items-center gap-3">
-			<div class="w-10 h-10 rounded-full bg-zinc-700 flex items-center justify-center overflow-hidden flex-shrink-0">
-				<img *ngIf="user?.profileImage" [src]="user!.profileImage" alt="Profile" class="w-full h-full object-cover" />
-				<span *ngIf="!user?.profileImage" class="text-white text-sm font-medium">{{ initials }}</span>
+	<!-- User footer -->
+	<div class="px-3 pb-4 pt-2 border-t border-white/10 flex-shrink-0">
+		<div class="flex items-center justify-between px-2 py-2">
+			<div class="flex items-center gap-3 min-w-0">
+				<div class="w-9 h-9 rounded-full bg-zinc-700 flex items-center justify-center overflow-hidden flex-shrink-0">
+					<img *ngIf="user?.profileImage" [src]="user!.profileImage" alt="Profile" class="w-full h-full object-cover" />
+					<span *ngIf="!user?.profileImage" class="text-white text-xs font-semibold">{{ initials }}</span>
+				</div>
+				<span class="text-sm text-white font-medium truncate">{{ user?.firstname }} {{ user?.lastname }}</span>
 			</div>
-			<span class="text-white font-medium">{{ user?.firstname }} {{ user?.lastname }}</span>
+			<a routerLink="/login" (click)="toggleMenu()"
+				class="flex-shrink-0 w-9 h-9 flex items-center justify-center text-zinc-400 hover:text-white rounded-lg hover:bg-white/10 transition cursor-pointer"
+				title="Sign out">
+				<i class="fa-sharp fa-solid fa-arrow-right-from-bracket text-sm"></i>
+			</a>
 		</div>
-		<a routerLink="/login" (click)="toggleMenu()" class="flex items-center gap-2 text-zinc-400 hover:text-white transition py-2 px-3" title="Sign out">
-			<i class="fa-sharp fa-solid fa-arrow-right-from-bracket"></i>
-			<span class="text-sm font-medium">Sign out</span>
-		</a>
 	</div>
 
-</div>
-}
+</aside>

@@ -6,7 +6,10 @@
       "Bash(node -e \"const { subWeeks } = require\\('date-fns'\\); console.log\\(typeof subWeeks\\)\")",
       "Bash(npx ng:*)",
       "Bash(npm install:*)",
-      "Bash(python3 -c \"import json,sys; cfg=json.load\\(sys.stdin\\); build=cfg['projects']['client']['architect']['build']; print\\(json.dumps\\(build.get\\('options',{}\\), indent=2\\)\\)\")"
+      "Bash(python3 -c \"import json,sys; cfg=json.load\\(sys.stdin\\); build=cfg['projects']['client']['architect']['build']; print\\(json.dumps\\(build.get\\('options',{}\\), indent=2\\)\\)\")",
+      "Bash(python3 -c ':*)",
+      "Bash(node -e \"const fs=require\\('fs'\\); const c=fs.readFileSync\\('client/src/app/dashboard/dashboard.module.ts','utf8'\\); const i=c.indexOf\\('GoalsService'\\); console.log\\(JSON.stringify\\(c.slice\\(i, i+30\\)\\)\\);\")",
+      "Bash(node -e \"const fs=require\\('fs'\\); const c=fs.readFileSync\\('client/src/app/dashboard/dashboard.module.ts','utf8'\\); const i=c.lastIndexOf\\('GoalsService'\\); console.log\\(JSON.stringify\\(c.slice\\(i, i+30\\)\\)\\);\")"
     ]
   }
 }

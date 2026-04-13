@@ -20,6 +20,7 @@ import { StyleguideComponent } from './styleguide/styleguide.component';
 import { WeekPlannerModule } from './week-planner/week-planner.module';
 import { TrainingBlocksModule } from './training-blocks/training-blocks.module';
 import { TrainingBlocksService } from './training-blocks/training-blocks.service';
+import { SetupChecklistComponent } from './setup-checklist/setup-checklist.component';
 import { ConditioningRecordService } from './conditioning/conditioning-records/conditioning-records.service';
 import { DailyLogService } from './shared/services/daily-log.service';
 import { MealLibraryService } from './nutrition/meal-library/meal-library.service';
@@ -34,7 +35,8 @@ import { provideHttpClient } from '@angular/common/http';
         MainLayoutComponent,
         ProfileComponent,
         NotesComponent,
-        BodyCompositionComponent
+        BodyCompositionComponent,
+        SetupChecklistComponent,
     ],
 	imports: [
 		BrowserModule,
