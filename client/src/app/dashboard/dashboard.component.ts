@@ -407,6 +407,24 @@ export class DashboardComponent implements OnInit {
 		return this.viewDayCardio.reduce((sum, r) => sum + (r.caloriesBurned ?? 0), 0);
 	}
 
+	get dailyCalorieBalance(): number {
+		return this.totalCaloriesEaten - this.totalCaloriesBurned;
+	}
+
+	get calorieBudgetStatus(): 'deficit' | 'maintenance' | 'surplus' {
+		const balance = this.dailyCalorieBalance;
+		if (balance < -100) return 'deficit';
+		if (balance > 100) return 'surplus';
+		return 'maintenance';
+	}
+
+	get dayWorkoutDetails(): { name: string }[] {
+		return this.viewDayWorkouts.map(r => {
+			const w = this.workouts.find(w => w._id === r.workoutId);
+			return { name: w?.name ?? 'Workout' };
+		});
+	}
+
 	get totalProtein(): number {
 		return this.viewDayMealObjects.reduce((sum, m) => sum + m.protein, 0);
 	}
