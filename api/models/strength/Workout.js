@@ -7,9 +7,9 @@ const workoutSchema = new mongoose.Schema(
 		description: { type: String, required: true },
 		exercises: [
 			{
-				userId: { type: String, required: true },
-				name: { type: String, required: true },
-				description: { type: String, required: true },
+				name:        { type: String, required: true },
+				defaultSets: { type: Number, default: 3 },
+				defaultReps: { type: Number, default: 10 },
 			},
 		],
 	},
