@@ -129,7 +129,7 @@ export class WeekPlan {
 		return {
 			userId: this.userId,
 			days: this.days.map(d => ({
-				_id:          d._id,
+				...(d._id && { _id: d._id }),
 				dayName:      d.dayName,
 				workouts:     d.workouts.map(w => w._id),
 				conditioning: d.conditioning.map(c => c._id),
