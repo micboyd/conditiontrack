@@ -33,7 +33,7 @@
 				<div class="flex items-start justify-between gap-3">
 					<div class="min-w-0">
 						<p class="text-sm font-semibold text-zinc-900 truncate">{{ getWorkoutName(record.workoutId) }}</p>
-						<p class="text-sm text-zinc-500 mt-0.5">{{ formatDate(record.date) }} · {{ record.duration }} min · {{ record.exercises.length }} exercises</p>
+						<p class="text-sm text-zinc-500 mt-0.5">{{ formatDate(record.date) }} · {{ record.duration | number:'1.0-0' }} min · {{ record.exercises.length }} exercises</p>
 						@if(record.notes){<p class="text-sm text-zinc-400 mt-1 truncate">{{ record.notes }}</p>}
 					</div>
 					<div class="flex items-center gap-1 text-zinc-400 flex-shrink-0">
@@ -64,7 +64,7 @@
 					<td class="px-6 py-5 text-sm text-zinc-500 font-medium whitespace-nowrap">{{ formatDate(record.date) }}</td>
 					<td class="px-6 py-5 text-sm text-zinc-900 font-semibold">{{ getWorkoutName(record.workoutId) }}</td>
 					<td class="px-6 py-5 text-sm text-zinc-700 font-medium">{{ record.exercises.length }}</td>
-					<td class="px-6 py-5 text-sm text-zinc-700 font-medium whitespace-nowrap">{{ record.duration }} min</td>
+					<td class="px-6 py-5 text-sm text-zinc-700 font-medium whitespace-nowrap">{{ record.duration | number:'1.0-0' }} min</td>
 					<td class="px-6 py-5 text-sm text-zinc-400 max-w-xs truncate">{{ record.notes || '—' }}</td>
 					<td class="px-6 py-5">
 						<div class="flex items-center justify-end gap-1 text-zinc-400">

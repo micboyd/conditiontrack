@@ -66,7 +66,7 @@
 									@if (goal.targetDate) {
 										<p class="text-xs text-zinc-400 mt-1.5 flex items-center gap-1">
 											<i class="fa-sharp fa-solid fa-calendar text-[9px]"></i>
-											{{ goal.targetDate }}
+											{{ goal.targetDate | date:'d MMM y' }}
 										</p>
 									}
 								</div>
@@ -139,7 +139,7 @@
 								<div class="flex justify-between items-baseline mb-1.5">
 									<span class="text-xs text-zinc-400">Progress</span>
 									<span class="text-xs font-semibold text-zinc-900">
-										{{ getCurrentValue(goal) }} / {{ goal.targetValue }} {{ goal.unit }}
+										{{ getCurrentValue(goal) | number:'1.0-1' }} / {{ goal.targetValue | number:'1.0-1' }} {{ goal.unit }}
 									</span>
 								</div>
 								<div class="h-2 bg-zinc-100 rounded-full overflow-hidden">
@@ -148,7 +148,7 @@
 										[style.width.%]="getProgress(goal)">
 									</div>
 								</div>
-								<p class="text-[11px] text-zinc-400 mt-1 text-right">{{ getProgress(goal) }}%</p>
+								<p class="text-[11px] text-zinc-400 mt-1 text-right">{{ getProgress(goal) | number:'1.0-0' }}%</p>
 							</div>
 
 							<!-- Manual: inline progress update -->
@@ -219,7 +219,7 @@
 						{{ m.title }}
 					</p>
 					@if (m.targetDate) {
-					<p class="text-[10px] text-zinc-400 mt-0.5">{{ m.targetDate }}</p>
+					<p class="text-[10px] text-zinc-400 mt-0.5">{{ m.targetDate | date:'d MMM y' }}</p>
 					}
 				</div>
 			</div>

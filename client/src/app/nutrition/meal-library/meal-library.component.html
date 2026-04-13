@@ -33,7 +33,7 @@
 				<div class="flex items-start justify-between gap-3">
 					<div class="min-w-0">
 						<p class="text-sm font-semibold text-zinc-900 truncate">{{ meal.name }}</p>
-						<p class="text-sm text-zinc-500 mt-0.5">{{ meal.calories }} kcal · P{{ meal.protein }}g · C{{ meal.carbs }}g · F{{ meal.fat }}g</p>
+						<p class="text-sm text-zinc-500 mt-0.5">{{ meal.calories | number:'1.0-0' }} kcal · P{{ meal.protein | number:'1.0-1' }}g · C{{ meal.carbs | number:'1.0-1' }}g · F{{ meal.fat | number:'1.0-1' }}g</p>
 						@if(meal.category){
 							<span class="inline-block mt-1.5 text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-500 font-medium">{{ meal.category }}</span>
 						}
@@ -84,10 +84,10 @@
 							}
 						}
 					</td>
-					<td class="px-6 py-5 text-sm text-zinc-700 font-medium">{{ meal.calories }} kcal</td>
-					<td class="px-6 py-5 text-sm text-zinc-700 font-medium">{{ meal.protein }}g</td>
-					<td class="px-6 py-5 text-sm text-zinc-700 font-medium">{{ meal.carbs }}g</td>
-					<td class="px-6 py-5 text-sm text-zinc-700 font-medium">{{ meal.fat }}g</td>
+					<td class="px-6 py-5 text-sm text-zinc-700 font-medium">{{ meal.calories | number:'1.0-0' }} kcal</td>
+					<td class="px-6 py-5 text-sm text-zinc-700 font-medium">{{ meal.protein | number:'1.0-1' }}g</td>
+					<td class="px-6 py-5 text-sm text-zinc-700 font-medium">{{ meal.carbs | number:'1.0-1' }}g</td>
+					<td class="px-6 py-5 text-sm text-zinc-700 font-medium">{{ meal.fat | number:'1.0-1' }}g</td>
 					<td class="px-6 py-5">
 						<div class="flex items-center justify-end gap-1 text-zinc-400">
 							<button (click)="openDrawer(meal)" class="min-h-[44px] min-w-[44px] flex items-center justify-center hover:text-zinc-700 transition cursor-pointer">

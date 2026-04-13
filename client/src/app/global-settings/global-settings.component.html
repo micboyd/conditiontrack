@@ -48,7 +48,7 @@
 						<button type="button" (click)="useBmrAsGoal()"
 							class="mt-2 flex items-center gap-1.5 text-xs text-orange-500 hover:text-orange-700 transition cursor-pointer">
 							<i class="fa-sharp fa-solid fa-arrow-up-to-line text-[10px]"></i>
-							Use BMR value ({{ calculatedBmr || savedBmr }} kcal)
+							Use BMR value ({{ (calculatedBmr || savedBmr) | number:'1.0-0' }} kcal)
 						</button>
 					}
 				</div>
@@ -138,7 +138,7 @@
 				<div class="mb-5 flex items-center justify-between px-4 py-3 bg-orange-50 rounded-xl border border-orange-100">
 					<div>
 						<p class="text-xs font-semibold uppercase tracking-widest text-orange-400 mb-0.5">Current maintenance target</p>
-						<p class="text-2xl font-bold text-zinc-900">{{ savedBmr }} <span class="text-sm font-normal text-zinc-400">kcal / day</span></p>
+						<p class="text-2xl font-bold text-zinc-900">{{ savedBmr | number:'1.0-0' }} <span class="text-sm font-normal text-zinc-400">kcal / day</span></p>
 					</div>
 					<i class="fa-sharp fa-solid fa-circle-check text-orange-400 text-lg"></i>
 				</div>
@@ -204,7 +204,7 @@
 					<div class="flex items-center justify-between px-4 py-3 bg-zinc-50 rounded-xl border border-zinc-100">
 						<div>
 							<p class="text-xs font-medium text-zinc-400 mb-0.5">Estimated maintenance</p>
-							<p class="text-3xl font-bold text-zinc-900">{{ calculatedBmr }} <span class="text-sm font-normal text-zinc-400">kcal / day</span></p>
+							<p class="text-3xl font-bold text-zinc-900">{{ calculatedBmr | number:'1.0-0' }} <span class="text-sm font-normal text-zinc-400">kcal / day</span></p>
 						</div>
 						<i class="fa-sharp fa-solid fa-calculator text-zinc-300 text-2xl"></i>
 					</div>
