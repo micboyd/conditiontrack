@@ -22,6 +22,7 @@ export class WeekPlannerComponent implements OnInit {
 	resourcesLoading = false;
 	saving = false;
 	saved = false;
+	saveError = false;
 	loadError = false;
 
 	private _selectedDay: DayPlan | null = null;
@@ -78,9 +79,22 @@ export class WeekPlannerComponent implements OnInit {
 	getWeekPlan() {
 		this.weekPlannerService.getAllWeekPlans().subscribe({
 			next: weekPlan => {
-				this._weekPlan = weekPlan ? new WeekPlan(weekPlan) : new WeekPlan();
-				this.resourcesLoading = false;
-				if (!weekPlan) this.createWeekPlan();
+				if (weekPlan) {
+					this._weekPlan = new WeekPlan(weekPlan);
+					this.resourcesLoading = false;
+				} else {
+					this.weekPlannerService.createWeekPlan(new WeekPlan().payload()).subscribe({
+						next: created => {
+							this._weekPlan = new WeekPlan(created);
+							this.resourcesLoading = false;
+						},
+						error: () => {
+							this._weekPlan = new WeekPlan();
+							this.resourcesLoading = false;
+							this.loadError = true;
+						},
+					});
+				}
 			},
 			error: () => {
 				this._weekPlan = new WeekPlan();
@@ -90,20 +104,10 @@ export class WeekPlannerComponent implements OnInit {
 		});
 	}
 
-	createWeekPlan() {
-		this.weekPlannerService.createWeekPlan(this._weekPlan.payload()).subscribe({
-			next: weekPlan => {
-				this._weekPlan = new WeekPlan(weekPlan);
-			},
-			error: () => {
-				// Plan stays as the local default — saves will retry
-			},
-		});
-	}
-
 	private autoSave() {
 		this.saving = true;
 		this.saved = false;
+		this.saveError = false;
 
 		const obs = this._weekPlan._id
 			? this.weekPlannerService.updateWeekPlan(this._weekPlan._id, this._weekPlan.payload())
@@ -111,13 +115,15 @@ export class WeekPlannerComponent implements OnInit {
 
 		obs.subscribe({
 			next: (saved) => {
-				this._weekPlan = new WeekPlan(saved); // captures _id if newly created
+				this._weekPlan = new WeekPlan(saved);
 				this.saving = false;
 				this.saved = true;
 				setTimeout(() => this.saved = false, 2000);
 			},
 			error: () => {
 				this.saving = false;
+				this.saveError = true;
+				setTimeout(() => this.saveError = false, 3000);
 			},
 		});
 	}

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { ConditioningLibraryService } from '../conditioning-library.service';
@@ -11,7 +11,7 @@ ConditioningSession;
 	templateUrl: './edit-session.component.html',
 	standalone: false,
 })
-export class EditSessionComponent implements OnInit {
+export class EditSessionComponent implements OnInit, OnChanges {
 	sessionForm!: FormGroup;
 	formLoading = false;
 	selectedCategories: string[] = [];
@@ -23,9 +23,18 @@ export class EditSessionComponent implements OnInit {
 	constructor(private fb: FormBuilder, public conditioningLibraryService: ConditioningLibraryService) {}
 
 	ngOnInit(): void {
+		this.initForm();
+	}
+
+	ngOnChanges(changes: SimpleChanges): void {
+		if (changes['selectedSession']) {
+			this.initForm();
+		}
+	}
+
+	private initForm(): void {
 		const sessionToEdit = this.selectedSession ?? new ConditioningSession(null);
 		this.sessionForm = ConditioningSession.createFormGroup(this.fb, sessionToEdit);
-
 		this.selectedCategories = sessionToEdit.category ? [sessionToEdit.category] : [];
 	}
 	isInvalid(controlName: string): boolean {

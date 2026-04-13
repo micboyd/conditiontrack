@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { Exercise } from '../../models/Exercise';
@@ -9,7 +9,7 @@ import { ExerciseService } from '../exercise.service';
 	templateUrl: './edit-exercise.component.html',
 	standalone: false,
 })
-export class EditExerciseComponent {
+export class EditExerciseComponent implements OnInit, OnChanges {
 	exerciseForm!: FormGroup;
 	formLoading: boolean = false;
 
@@ -19,6 +19,16 @@ export class EditExerciseComponent {
 	constructor(private fb: FormBuilder, public exerciseService: ExerciseService) {}
 
 	ngOnInit(): void {
+		this.initForm();
+	}
+
+	ngOnChanges(changes: SimpleChanges): void {
+		if (changes['selectedExercise']) {
+			this.initForm();
+		}
+	}
+
+	private initForm(): void {
 		this.exerciseForm = Exercise.toFormGroup(this.selectedExercise ?? new Exercise(null), this.fb);
 	}
 
