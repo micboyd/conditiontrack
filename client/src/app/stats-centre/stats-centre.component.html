@@ -1,0 +1,120 @@
+<app-container>
+
+    <!-- Page header -->
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-zinc-900">Stats Centre</h1>
+        <p class="text-sm text-zinc-500 mt-1">Track your progress over time.</p>
+    </div>
+
+    <!-- Loading -->
+    @if (loading) {
+        <div class="flex items-center justify-center py-24 text-zinc-400">
+            <i class="fa-sharp fa-solid fa-spinner-third fa-spin text-2xl mr-3"></i>
+            Loading data...
+        </div>
+    }
+
+    <!-- Load error -->
+    @if (loadError) {
+        <div class="text-center py-16 text-zinc-400">
+            <i class="fa-sharp fa-solid fa-triangle-exclamation text-3xl mb-3 block"></i>
+            <p>Could not load data. Please refresh and try again.</p>
+        </div>
+    }
+
+    @if (!loading && !loadError) {
+
+        <!-- Controls -->
+        <div class="bg-white rounded-2xl shadow-sm p-4 mb-6">
+            <div class="flex flex-wrap gap-4 items-end">
+
+                <!-- Exercise selector -->
+                <div class="flex-1 min-w-[200px]">
+                    <label class="block text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wide">Exercise</label>
+                    <app-select
+                        [options]="exerciseOptions"
+                        placeholder="Select an exercise..."
+                        (valueChange)="onExerciseChange($event)">
+                    </app-select>
+                </div>
+
+                <!-- Time range pills -->
+                <div>
+                    <label class="block text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wide">Time Range</label>
+                    <div class="flex gap-1 bg-zinc-100 rounded-lg p-1">
+                        @for (range of ranges; track range.key) {
+                            <button
+                                (click)="onRangeChange(range.key)"
+                                class="px-3.5 py-1.5 rounded-md text-sm font-medium transition cursor-pointer"
+                                [class.bg-white]="selectedRange === range.key"
+                                [class.text-zinc-900]="selectedRange === range.key"
+                                [class.shadow-sm]="selectedRange === range.key"
+                                [class.text-zinc-500]="selectedRange !== range.key">
+                                {{ range.label }}
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                <!-- Block selector -->
+                @if (selectedRange === 'block') {
+                    <div class="flex-1 min-w-[200px]">
+                        <label class="block text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wide">Training Block</label>
+                        <app-select
+                            [options]="blockOptions"
+                            placeholder="Select a block..."
+                            (valueChange)="onBlockChange($event)">
+                        </app-select>
+                    </div>
+                }
+
+            </div>
+        </div>
+
+        <!-- Chart -->
+        @if (selectedExerciseName && hasData) {
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="font-semibold text-zinc-900">{{ selectedExerciseName }}</h2>
+                        <p class="text-xs text-zinc-400 mt-0.5">Max weight per session</p>
+                    </div>
+                    @if (selectedRange === 'block' && selectedBlock) {
+                        <span class="text-xs text-zinc-400">{{ selectedBlock.dateRangeLabel }}</span>
+                    }
+                </div>
+                <canvas baseChart
+                    [type]="'line'"
+                    [data]="chartData"
+                    [options]="chartOptions">
+                </canvas>
+            </div>
+        }
+
+        <!-- No data for selected exercise in range -->
+        @if (selectedExerciseName && !hasData) {
+            <div class="bg-white rounded-2xl shadow-sm p-12 text-center">
+                <i class="fa-sharp fa-solid fa-chart-line text-4xl text-zinc-200 mb-4 block"></i>
+                <p class="text-zinc-500 font-medium">No records found</p>
+                <p class="text-zinc-400 text-sm mt-1">
+                    @if (selectedRange === 'block' && !selectedBlockId) {
+                        Select a training block above to set the date range.
+                    } @else {
+                        No workout records include <strong>{{ selectedExerciseName }}</strong> in this period.
+                    }
+                </p>
+            </div>
+        }
+
+        <!-- Prompt: no exercise selected -->
+        @if (!selectedExerciseName) {
+            <div class="bg-white rounded-2xl shadow-sm p-12 text-center">
+                <i class="fa-sharp fa-solid fa-dumbbell text-4xl text-zinc-200 mb-4 block"></i>
+                <p class="text-zinc-500 font-medium">Select an exercise above</p>
+                <p class="text-zinc-400 text-sm mt-1">Your weight progression chart will appear here.</p>
+            </div>
+        }
+
+    }
+
+</app-container>

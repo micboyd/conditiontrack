@@ -475,7 +475,9 @@ export class DashboardComponent implements OnInit {
 
 	removeMealFromDay(mealId: string): void {
 		if (!this.viewDateLog?._id) return;
-		const updated = this.viewDateLog.meals.filter((id) => id !== mealId);
+		const updated = [...this.viewDateLog.meals];
+		const idx = updated.findIndex(id => id === mealId);
+		if (idx !== -1) updated.splice(idx, 1);
 		this.dailyLogService.updateLog(this.viewDateLog._id, { meals: updated }).subscribe((log) => {
 			this.viewDateLog = log;
 		});

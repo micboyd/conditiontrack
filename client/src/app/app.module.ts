@@ -20,6 +20,7 @@ import { StyleguideComponent } from './styleguide/styleguide.component';
 import { WeekPlannerModule } from './week-planner/week-planner.module';
 import { TrainingBlocksModule } from './training-blocks/training-blocks.module';
 import { TrainingBlocksService } from './training-blocks/training-blocks.service';
+import { StatsCentreModule } from './stats-centre/stats-centre.module';
 import { SetupChecklistComponent } from './setup-checklist/setup-checklist.component';
 import { ConditioningRecordService } from './conditioning/conditioning-records/conditioning-records.service';
 import { DailyLogService } from './shared/services/daily-log.service';
@@ -52,7 +53,8 @@ import { provideHttpClient } from '@angular/common/http';
         WeekPlannerModule,
         ProgressModule,
         GoalsModule,
-        TrainingBlocksModule
+        TrainingBlocksModule,
+        StatsCentreModule,
 	],
 	providers: [provideHttpClient(), WorkoutService, WorkoutRecordService, ConditioningRecordService, MealLibraryService, DailyLogService, TrainingBlocksService],
 	bootstrap: [AppComponent],

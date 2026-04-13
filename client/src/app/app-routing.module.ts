@@ -28,6 +28,7 @@ import { ProgressPhotosComponent } from './progress/progress-photos/progress-pho
 import { TrainingBlocksComponent } from './training-blocks/training-blocks.component';
 import { VerifyEmailComponent } from './authentication/verify-email/verify-email.component';
 import { SetupChecklistComponent } from './setup-checklist/setup-checklist.component';
+import { StatsCentreComponent } from './stats-centre/stats-centre.component';
 
 const routes: Routes = [
 	// Login remains at top level
@@ -145,6 +146,11 @@ const routes: Routes = [
 			{
 				path: 'setup-checklist',
 				component: SetupChecklistComponent,
+				canActivate: [AuthGuard],
+			},
+			{
+				path: 'stats-centre',
+				component: StatsCentreComponent,
 				canActivate: [AuthGuard],
 			},
 			{
