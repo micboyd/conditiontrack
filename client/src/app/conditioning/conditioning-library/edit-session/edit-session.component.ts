@@ -2,9 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { ConditioningLibraryService } from '../conditioning-library.service';
-import { ConditioningSession } from '../../models/ConditioningSession';
-
-ConditioningSession;
+import { ConditioningSession, SessionPart } from '../../models/ConditioningSession';
 
 @Component({
 	selector: 'app-edit-session',
@@ -15,9 +13,9 @@ export class EditSessionComponent implements OnInit, OnChanges {
 	sessionForm!: FormGroup;
 	formLoading = false;
 	selectedCategories: string[] = [];
+	parts: SessionPart[] = [];
 
 	@Input() selectedSession: ConditioningSession | null = null;
-
 	@Output() closeEditModeEvent = new EventEmitter<void>();
 
 	constructor(private fb: FormBuilder, public conditioningLibraryService: ConditioningLibraryService) {}
@@ -33,10 +31,12 @@ export class EditSessionComponent implements OnInit, OnChanges {
 	}
 
 	private initForm(): void {
-		const sessionToEdit = this.selectedSession ?? new ConditioningSession(null);
-		this.sessionForm = ConditioningSession.createFormGroup(this.fb, sessionToEdit);
-		this.selectedCategories = sessionToEdit.category ? [sessionToEdit.category] : [];
+		const s = this.selectedSession ?? new ConditioningSession(null);
+		this.sessionForm = ConditioningSession.createFormGroup(this.fb, s);
+		this.selectedCategories = s.category ? [s.category] : [];
+		this.parts = s.parts.map(p => ({ ...p }));
 	}
+
 	isInvalid(controlName: string): boolean {
 		const control = this.sessionForm.get(controlName);
 		return !!(control && control.invalid && (control.touched || control.dirty));
@@ -47,20 +47,34 @@ export class EditSessionComponent implements OnInit, OnChanges {
 		this.sessionForm.patchValue({ category: selected[0] || '' });
 	}
 
+	addPart(): void {
+		this.parts.push({ part: '', work: '' });
+	}
+
+	removePart(index: number): void {
+		this.parts.splice(index, 1);
+	}
+
+	updatePart(index: number, field: 'part' | 'work', value: string): void {
+		this.parts[index][field] = value;
+	}
+
 	onSubmit(): void {
 		this.sessionForm.markAllAsTouched();
 		if (this.sessionForm.invalid) return;
 
 		this.formLoading = true;
+		const payload = { ...this.sessionForm.value, parts: this.parts };
+
 		if (this.selectedSession) {
 			this.conditioningLibraryService
-				.updateConditioningSession(this.selectedSession._id, this.sessionForm.value)
+				.updateConditioningSession(this.selectedSession._id, payload)
 				.subscribe(() => {
 					this.closeEditModeEvent.emit();
 					this.formLoading = false;
 				});
 		} else {
-			this.conditioningLibraryService.createConditioningSession(this.sessionForm.value).subscribe(() => {
+			this.conditioningLibraryService.createConditioningSession(payload).subscribe(() => {
 				this.closeEditModeEvent.emit();
 				this.formLoading = false;
 			});

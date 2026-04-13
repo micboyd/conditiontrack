@@ -5,11 +5,12 @@
 
 	<form [formGroup]="sessionForm" (ngSubmit)="onSubmit()" class="space-y-5">
 
+		<!-- Name -->
 		<div>
 			<label class="block text-xs font-medium text-zinc-500 mb-1.5">
 				Session Name <span class="text-red-400">*</span>
 			</label>
-			<input type="text" formControlName="name" placeholder="e.g. Full Body HIIT"
+			<input type="text" formControlName="name" placeholder="e.g. Extensive Tempo Runs"
 				class="w-full px-3 py-2 border rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
 				[ngClass]="isInvalid('name') ? 'border-red-400 focus:ring-red-300' : 'border-zinc-200 focus:ring-zinc-900'" />
 			@if (isInvalid('name')) {
@@ -20,21 +21,25 @@
 			}
 		</div>
 
-		<div>
-			<label class="block text-xs font-medium text-zinc-500 mb-1.5">
-				Duration (minutes) <span class="text-red-400">*</span>
-			</label>
-			<input type="number" formControlName="duration" placeholder="e.g. 45"
-				class="w-full px-3 py-2 border rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
-				[ngClass]="isInvalid('duration') ? 'border-red-400 focus:ring-red-300' : 'border-zinc-200 focus:ring-zinc-900'" />
-			@if (isInvalid('duration')) {
-				<p class="flex items-center gap-1 text-xs text-red-500 mt-1.5">
-					<i class="fa-sharp fa-solid fa-circle-exclamation text-[10px]"></i>
-					Duration is required
-				</p>
-			}
+		<!-- Duration + Category row -->
+		<div class="grid grid-cols-2 gap-4">
+			<div>
+				<label class="block text-xs font-medium text-zinc-500 mb-1.5">
+					Duration (min) <span class="text-red-400">*</span>
+				</label>
+				<input type="number" formControlName="duration" placeholder="45"
+					class="w-full px-3 py-2 border rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
+					[ngClass]="isInvalid('duration') ? 'border-red-400 focus:ring-red-300' : 'border-zinc-200 focus:ring-zinc-900'" />
+				@if (isInvalid('duration')) {
+					<p class="flex items-center gap-1 text-xs text-red-500 mt-1.5">
+						<i class="fa-sharp fa-solid fa-circle-exclamation text-[10px]"></i>
+						Required
+					</p>
+				}
+			</div>
 		</div>
 
+		<!-- Category -->
 		<div>
 			<label class="block text-xs font-medium text-zinc-500 mb-1.5">
 				Category <span class="text-red-400">*</span>
@@ -54,9 +59,60 @@
 			}
 		</div>
 
+		<!-- Purpose -->
 		<div>
-			<label class="block text-xs font-medium text-zinc-500 mb-1.5">Description</label>
-			<textarea formControlName="description" placeholder="e.g. High intensity intervals with short rest periods" rows="3"
+			<label class="block text-xs font-medium text-zinc-500 mb-1.5">Purpose</label>
+			<textarea formControlName="purpose" placeholder="e.g. Build aerobic base, support recovery, improve work capacity" rows="2"
+				class="w-full px-3 py-2 border border-zinc-200 rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent resize-none"></textarea>
+		</div>
+
+		<!-- Parts -->
+		<div>
+			<div class="flex items-center justify-between mb-2">
+				<label class="block text-xs font-medium text-zinc-500">Session Parts</label>
+				<button type="button" (click)="addPart()"
+					class="flex items-center gap-1.5 text-xs text-violet-600 hover:text-violet-800 font-medium transition cursor-pointer">
+					<i class="fa-sharp fa-solid fa-plus text-[10px]"></i>
+					Add part
+				</button>
+			</div>
+
+			@if (parts.length === 0) {
+				<p class="text-xs text-zinc-300 italic">No parts yet — add a warm-up, main set, cool-down, etc.</p>
+			} @else {
+				<div class="space-y-2">
+					<!-- Header -->
+					<div class="grid grid-cols-[1fr_2fr_auto] gap-2 px-1">
+						<span class="text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Part</span>
+						<span class="text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Work</span>
+						<span></span>
+					</div>
+					@for (part of parts; track $index) {
+						<div class="grid grid-cols-[1fr_2fr_auto] gap-2 items-start">
+							<input type="text"
+								[value]="part.part"
+								(input)="updatePart($index, 'part', $any($event.target).value)"
+								placeholder="e.g. Warm-up"
+								class="px-2.5 py-2 border border-zinc-200 rounded-lg text-xs text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent" />
+							<input type="text"
+								[value]="part.work"
+								(input)="updatePart($index, 'work', $any($event.target).value)"
+								placeholder="e.g. 10 min easy jog + mobility"
+								class="px-2.5 py-2 border border-zinc-200 rounded-lg text-xs text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent" />
+							<button type="button" (click)="removePart($index)"
+								class="mt-1.5 text-zinc-300 hover:text-red-400 transition cursor-pointer">
+								<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
+							</button>
+						</div>
+					}
+				</div>
+			}
+		</div>
+
+		<!-- How to use -->
+		<div>
+			<label class="block text-xs font-medium text-zinc-500 mb-1.5">How to Use</label>
+			<textarea formControlName="howToUse" placeholder="e.g. Think rhythm, posture, breathing. Very useful for players who need more engine without frying their legs." rows="3"
 				class="w-full px-3 py-2 border border-zinc-200 rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent resize-none"></textarea>
 		</div>
 
