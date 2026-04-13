@@ -13,6 +13,7 @@ export class TrainingBlocksComponent implements OnInit {
 
 	blocks: TrainingBlock[] = [];
 	selectedBlock: TrainingBlock | null = null;
+	drawerOpen = false;
 	loading = false;
 	deletingId: string | null = null;
 
@@ -38,15 +39,18 @@ export class TrainingBlocksComponent implements OnInit {
 
 	openDrawer(block: TrainingBlock | null): void {
 		this.selectedBlock = block;
+		this.drawerOpen = true;
 		this.drawer.open();
 	}
 
 	onSaved(): void {
+		this.drawerOpen = false;
 		this.drawer.close();
 		this.loadBlocks();
 	}
 
 	onCancelled(): void {
+		this.drawerOpen = false;
 		this.drawer.close();
 	}
 

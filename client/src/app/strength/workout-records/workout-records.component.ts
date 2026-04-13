@@ -22,6 +22,7 @@ export class WorkoutRecordsComponent implements OnInit {
 	private _allWorkouts: Workout[] = [];
 
 	selectedWorkoutRecord: WorkoutRecord | null = null;
+	drawerOpen = false;
 
 	constructor(public workoutRecordService: WorkoutRecordService, public workoutService: WorkoutService) {}
 
@@ -52,14 +53,17 @@ export class WorkoutRecordsComponent implements OnInit {
 
 	openDrawer(workoutRecord?: WorkoutRecord): void {
 		this.selectedWorkoutRecord = workoutRecord ?? null;
+		this.drawerOpen = true;
 		this.drawer.open();
 	}
 
 	closeDrawer(): void {
+		this.drawerOpen = false;
 		this.drawer.close();
 	}
 
 	onDrawerClosed(): void {
+		this.drawerOpen = false;
 		this.getAllWorkoutRecords();
 	}
 

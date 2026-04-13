@@ -14,6 +14,7 @@ export class GoalsComponent implements OnInit {
 	goals: Goal[] = [];
 	loading = false;
 	selectedGoal: Goal | null = null;
+	drawerOpen = false;
 	autoValues = new Map<string, number>();
 
 	constructor(private goalsService: GoalsService) {}
@@ -76,10 +77,17 @@ export class GoalsComponent implements OnInit {
 
 	openDrawer(goal: Goal | null): void {
 		this.selectedGoal = goal;
+		this.drawerOpen = true;
 		this.drawer.open();
 	}
 
+	closeDrawer(): void {
+		this.drawerOpen = false;
+		this.drawer.close();
+	}
+
 	onDrawerClosed(): void {
+		this.drawerOpen = false;
 		this.loadGoals();
 	}
 

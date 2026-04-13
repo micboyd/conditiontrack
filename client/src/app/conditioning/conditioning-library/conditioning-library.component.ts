@@ -14,6 +14,7 @@ export class ConditioningLibraryComponent implements OnInit {
 
 	loading = false;
 	selectedConditioningSession: ConditioningSession | null = null;
+	drawerOpen = false;
 	private _allSessions: ConditioningSession[] = [];
 
 	constructor(public conditioningLibraryService: ConditioningLibraryService) {}
@@ -28,6 +29,7 @@ export class ConditioningLibraryComponent implements OnInit {
 
 	openDrawer(session: ConditioningSession | null): void {
 		this.selectedConditioningSession = session;
+		this.drawerOpen = true;
 		this.drawer.open();
 	}
 
@@ -46,10 +48,12 @@ export class ConditioningLibraryComponent implements OnInit {
 	}
 
 	closeDrawer(): void {
+		this.drawerOpen = false;
 		this.drawer.close();
 	}
 
 	onDrawerClosed(): void {
+		this.drawerOpen = false;
 		this.getAllConditioningSessions();
 	}
 }

@@ -10,10 +10,12 @@
 
 <!-- Side drawer -->
 <app-side-drawer (closeEvent)="onDrawerClosed()">
-	<app-edit-goal
-		[selectedGoal]="selectedGoal"
-		(closeEvent)="drawer.close()">
-	</app-edit-goal>
+	@if (drawerOpen) {
+		<app-edit-goal
+			[selectedGoal]="selectedGoal"
+			(closeEvent)="closeDrawer()">
+		</app-edit-goal>
+	}
 </app-side-drawer>
 
 <!-- Content -->

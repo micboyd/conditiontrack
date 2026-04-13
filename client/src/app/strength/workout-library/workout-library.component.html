@@ -1,8 +1,10 @@
 <app-side-drawer (closeEvent)="onDrawerClosed()">
-	<app-edit-workout
-		[selectedWorkout]="selectedWorkout"
-		(closeEditModeEvent)="closeDrawer()">
-	</app-edit-workout>
+	@if (drawerOpen) {
+		<app-edit-workout
+			[selectedWorkout]="selectedWorkout"
+			(closeEditModeEvent)="closeDrawer()">
+		</app-edit-workout>
+	}
 </app-side-drawer>
 
 <div class="flex items-center justify-between mb-7">

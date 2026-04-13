@@ -14,6 +14,7 @@ export class ExerciseLibraryComponent implements OnInit {
 
 	exercisesLoading = false;
 	selectedExercise: Exercise | null = null;
+	drawerOpen = false;
 	private _allExercises: Exercise[] = [];
 
 	constructor(public exerciseService: ExerciseService) {}
@@ -42,14 +43,17 @@ export class ExerciseLibraryComponent implements OnInit {
 
 	openDrawer(exercise?: Exercise): void {
 		this.selectedExercise = exercise ?? null;
+		this.drawerOpen = true;
 		this.drawer.open();
 	}
 
 	closeDrawer(): void {
+		this.drawerOpen = false;
 		this.drawer.close();
 	}
 
 	onDrawerClosed(): void {
+		this.drawerOpen = false;
 		this.getAllExercises();
 	}
 }

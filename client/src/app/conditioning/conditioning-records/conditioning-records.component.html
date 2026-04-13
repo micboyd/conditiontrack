@@ -1,8 +1,10 @@
 <app-side-drawer (closeEvent)="onDrawerClosed()">
-	<app-edit-record
-		[selectedRecord]="selectedConditioningRecord"
-		(closeEditModeEvent)="closeDrawer()">
-	</app-edit-record>
+	@if (drawerOpen) {
+		<app-edit-record
+			[selectedRecord]="selectedConditioningRecord"
+			(closeEditModeEvent)="closeDrawer()">
+		</app-edit-record>
+	}
 </app-side-drawer>
 
 <div class="flex items-center justify-between mb-7">

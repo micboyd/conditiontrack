@@ -94,12 +94,14 @@
 
 	<!-- Side drawer -->
 	<app-side-drawer side="right">
-		<app-edit-training-block
-			[selectedBlock]="selectedBlock"
-			[allBlocks]="blocks"
-			(saved)="onSaved()"
-			(cancelled)="onCancelled()">
-		</app-edit-training-block>
+		@if (drawerOpen) {
+			<app-edit-training-block
+				[selectedBlock]="selectedBlock"
+				[allBlocks]="blocks"
+				(saved)="onSaved()"
+				(cancelled)="onCancelled()">
+			</app-edit-training-block>
+		}
 	</app-side-drawer>
 
 </div></app-container>

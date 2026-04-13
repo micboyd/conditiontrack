@@ -16,6 +16,7 @@ export class ConditioningRecordsComponent implements OnInit {
 	@ViewChild(SideDrawerComponent) drawer!: SideDrawerComponent;
 
 	selectedConditioningRecord: ConditioningRecord | null = null;
+	drawerOpen = false;
 	loading = false;
 
 	private _allRecords: ConditioningRecord[] = [];
@@ -49,14 +50,17 @@ export class ConditioningRecordsComponent implements OnInit {
 
 	openDrawer(record: ConditioningRecord | null): void {
 		this.selectedConditioningRecord = record;
+		this.drawerOpen = true;
 		this.drawer.open();
 	}
 
 	closeDrawer(): void {
+		this.drawerOpen = false;
 		this.drawer.close();
 	}
 
 	onDrawerClosed(): void {
+		this.drawerOpen = false;
 		this.getAllRecords();
 	}
 

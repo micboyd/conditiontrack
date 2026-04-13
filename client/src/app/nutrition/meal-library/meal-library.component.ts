@@ -14,6 +14,7 @@ export class MealLibraryComponent implements OnInit {
 
 	loading = false;
 	selectedMeal: Meal | null = null;
+	drawerOpen = false;
 	private _allMeals: Meal[] = [];
 
 	constructor(public mealService: MealLibraryService) {}
@@ -28,14 +29,17 @@ export class MealLibraryComponent implements OnInit {
 
 	openDrawer(meal: Meal | null): void {
 		this.selectedMeal = meal;
+		this.drawerOpen = true;
 		this.drawer.open();
 	}
 
 	closeDrawer(): void {
+		this.drawerOpen = false;
 		this.drawer.close();
 	}
 
 	onDrawerClosed(): void {
+		this.drawerOpen = false;
 		this.getAllMeals();
 	}
 

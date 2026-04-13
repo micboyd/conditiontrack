@@ -1,8 +1,10 @@
 <app-side-drawer (closeEvent)="onDrawerClosed()">
-	<app-edit-session
-		[selectedSession]="selectedConditioningSession"
-		(closeEditModeEvent)="closeDrawer()">
-	</app-edit-session>
+	@if (drawerOpen) {
+		<app-edit-session
+			[selectedSession]="selectedConditioningSession"
+			(closeEditModeEvent)="closeDrawer()">
+		</app-edit-session>
+	}
 </app-side-drawer>
 
 <div class="flex items-center justify-between mb-7">
