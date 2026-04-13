@@ -15,12 +15,22 @@ export class ExerciseLibraryComponent implements OnInit {
 	exercisesLoading = false;
 	selectedExercise: Exercise | null = null;
 	drawerOpen = false;
+	searchQuery = '';
 	private _allExercises: Exercise[] = [];
 
 	constructor(public exerciseService: ExerciseService) {}
 
 	get allExercises(): Exercise[] {
-		return this._allExercises;
+		const q = this.searchQuery.trim().toLowerCase();
+		if (!q) return this._allExercises;
+		return this._allExercises.filter(e =>
+			e.name.toLowerCase().includes(q) ||
+			e.description.toLowerCase().includes(q)
+		);
+	}
+
+	get hasExercises(): boolean {
+		return this._allExercises.length > 0;
 	}
 
 	ngOnInit(): void {

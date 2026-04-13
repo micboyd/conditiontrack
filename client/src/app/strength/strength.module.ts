@@ -6,7 +6,7 @@ import { EditWorkoutRecordsComponent } from './workout-records/edit-workout-reco
 import { ExerciseLibraryComponent } from './exercise-library/exercise-library.component';
 import { ExerciseService } from './exercise-library/exercise.service';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { StrengthComponent } from './strength.component';
 import { WorkoutLibraryComponent } from './workout-library/workout-library.component';
@@ -24,7 +24,7 @@ import { WorkoutService } from './workout-library/workout.service';
 		EditWorkoutComponent,
 		EditWorkoutRecordsComponent,
 	],
-	imports: [CommonModule, AppRoutingModule, ReactiveFormsModule, SharedModule],
+	imports: [CommonModule, AppRoutingModule, FormsModule, ReactiveFormsModule, SharedModule],
 	exports: [StrengthComponent],
 	providers: [WorkoutService, ExerciseService, WorkoutRecordService],
 })
