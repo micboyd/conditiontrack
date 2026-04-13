@@ -413,6 +413,13 @@ export class DashboardComponent implements OnInit {
 
 	get calorieBudgetStatus(): 'deficit' | 'maintenance' | 'surplus' {
 		const balance = this.dailyCalorieBalance;
+		const bmr = this.user?.bmr;
+		if (bmr) {
+			if (balance > bmr + 100) return 'surplus';
+			if (balance < bmr - 100) return 'deficit';
+			return 'maintenance';
+		}
+		// fallback if no BMR set: simple threshold on raw balance
 		if (balance < -100) return 'deficit';
 		if (balance > 100) return 'surplus';
 		return 'maintenance';

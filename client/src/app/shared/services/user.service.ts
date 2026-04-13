@@ -19,6 +19,7 @@ export interface UserProfile {
 	bio?: string;
 	createdAt?: string;
 	macroGoals?: MacroGoals;
+	bmr?: number;
 }
 
 @Injectable({
@@ -39,5 +40,9 @@ export class UserService {
 
 	updateMacroGoals(id: string, macroGoals: MacroGoals): Observable<UserProfile> {
 		return this.http.put<UserProfile>(`${this._apiUrl}/${id}`, { macroGoals });
+	}
+
+	updateBmr(id: string, bmr: number): Observable<UserProfile> {
+		return this.http.put<UserProfile>(`${this._apiUrl}/${id}`, { bmr });
 	}
 }

@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { Exercise } from '../../models/Exercise';
 import { ExerciseService } from '../../exercise-library/exercise.service';
-import { Workout } from '../../models/Workout';
+import { Workout, WorkoutExerciseTemplate } from '../../models/Workout';
 import { WorkoutService } from '../workout.service';
 
 @Component({
@@ -22,7 +22,7 @@ export class EditWorkoutComponent implements OnInit, OnChanges {
 
 	allExercises: Exercise[] = [];
 	avalibleExercises: Exercise[] = [];
-	selectedExercises: Exercise[] = [];
+	selectedExercises: WorkoutExerciseTemplate[] = [];
 
 	constructor(
 		private fb: FormBuilder,
@@ -57,7 +57,13 @@ export class EditWorkoutComponent implements OnInit, OnChanges {
 
 			this.allExercises.forEach(ex => {
 				if (selectedIds.includes(ex._id)) {
-					this.selectedExercises.push(ex);
+					const existing = this.selectedWorkout!.exercises.find(e => e._id === ex._id);
+					this.selectedExercises.push({
+						_id: ex._id,
+						name: ex.name,
+						defaultSets: existing?.defaultSets ?? 3,
+						defaultReps: existing?.defaultReps ?? 10,
+					});
 				} else {
 					this.avalibleExercises.push(ex);
 				}
@@ -70,17 +76,31 @@ export class EditWorkoutComponent implements OnInit, OnChanges {
 	selectExercise(exercise: Exercise): void {
 		const index = this.avalibleExercises.indexOf(exercise);
 		if (index > -1) {
-			this.selectedExercises.push(exercise);
+			this.selectedExercises.push({
+				_id: exercise._id,
+				name: exercise.name,
+				defaultSets: 3,
+				defaultReps: 10,
+			});
 			this.avalibleExercises.splice(index, 1);
 		}
 	}
 
-	removeExercise(exercise: Exercise): void {
-		const index = this.selectedExercises.indexOf(exercise);
+	removeExercise(template: WorkoutExerciseTemplate): void {
+		const index = this.selectedExercises.findIndex(e => e._id === template._id);
 		if (index > -1) {
 			this.selectedExercises.splice(index, 1);
-			this.avalibleExercises.push(exercise);
+			const ex = this.allExercises.find(e => e._id === template._id);
+			if (ex) this.avalibleExercises.push(ex);
 		}
+	}
+
+	updateDefaultSets(exercise: WorkoutExerciseTemplate, value: string): void {
+		exercise.defaultSets = Math.max(1, parseInt(value, 10) || 1);
+	}
+
+	updateDefaultReps(exercise: WorkoutExerciseTemplate, value: string): void {
+		exercise.defaultReps = Math.max(1, parseInt(value, 10) || 1);
 	}
 
 	isInvalid(controlName: string): boolean {

@@ -35,10 +35,10 @@ export class WorkoutRecord {
 
 	// ----- Form Builders -----
 
-	static createSetFormGroup(fb: FormBuilder) {
+	static createSetFormGroup(fb: FormBuilder, reps: number | '' = '', weight: number | '' = '') {
 		return fb.group({
-			reps: ['', [Validators.required]], // now required
-			weight: ['', [Validators.required]], // now required
+			reps: [reps, [Validators.required]],
+			weight: [weight, [Validators.required]],
 		});
 	}
 
@@ -58,7 +58,12 @@ export class WorkoutRecord {
 			workoutId: [record.workoutId, [Validators.required]],
 			date: [record.date, [Validators.required]],
 			exercises: fb.array(
-				record.exercises.map(e => this.createExerciseFormGroup(e.name, fb))
+				record.exercises.map(e => fb.group({
+					name: [e.name, [Validators.required]],
+					sets: fb.array(
+						e.sets.map(s => this.createSetFormGroup(fb, s.reps || '', s.weight || ''))
+					),
+				}))
 			),
 		});
 	}
@@ -66,9 +71,12 @@ export class WorkoutRecord {
 	static fromWorkoutTemplate(workout: Workout): WorkoutRecord {
 		const record = new WorkoutRecord();
 		record.workoutId = workout._id;
-		record.exercises = workout.exercises.map(exName => ({
-			name: exName.name,
-			sets: [] as WorkoutSet[],
+		record.exercises = workout.exercises.map(ex => ({
+			name: ex.name,
+			sets: Array.from({ length: ex.defaultSets ?? 0 }, () => ({
+				reps: ex.defaultReps ?? 0,
+				weight: 0,
+			})) as WorkoutSet[],
 		}));
 		return record;
 	}
