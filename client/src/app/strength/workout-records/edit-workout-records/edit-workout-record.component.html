@@ -1,151 +1,147 @@
-<div class="p-6">
+<div class="flex flex-col min-h-full">
 
 	@if (workoutsLoading) {
-		<app-loading-indicator [loading]="true"></app-loading-indicator>
+		<div class="p-6">
+			<app-loading-indicator [loading]="true"></app-loading-indicator>
+		</div>
 	} @else if (!selectedWorkoutRecord) {
 
 		<!-- Step 1: Pick a workout -->
-		<h2 class="text-base font-semibold text-zinc-900 mb-1">Log Workout</h2>
-		<p class="text-sm text-zinc-400 mb-6">Select a workout to log a session</p>
+		<div class="p-6">
+			<h2 class="text-base font-semibold text-zinc-900 mb-1">Log Workout</h2>
+			<p class="text-sm text-zinc-400 mb-6">Select a workout to log a session</p>
 
-		<div class="space-y-2">
-			@for (workout of allWorkouts; track workout._id) {
-				<div (click)="selectWorkoutById(workout._id)"
-					class="flex items-center justify-between px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl hover:bg-zinc-100 hover:border-zinc-300 cursor-pointer transition-colors">
-					<div>
-						<p class="text-sm font-medium text-zinc-800">{{ workout.name }}</p>
-						<p class="text-xs text-zinc-400 mt-0.5">{{ workout.exercises.length }} exercises</p>
+			<div class="space-y-2">
+				@for (workout of allWorkouts; track workout._id) {
+					<div (click)="selectWorkoutById(workout._id)"
+						class="flex items-center justify-between px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl hover:bg-zinc-100 hover:border-zinc-300 cursor-pointer transition-colors">
+						<div>
+							<p class="text-sm font-medium text-zinc-800">{{ workout.name }}</p>
+							<p class="text-xs text-zinc-400 mt-0.5">{{ workout.exercises.length }} exercises</p>
+						</div>
+						<i class="fa-sharp fa-solid fa-chevron-right text-zinc-400 text-xs"></i>
 					</div>
-					<i class="fa-sharp fa-solid fa-chevron-right text-zinc-400 text-xs"></i>
-				</div>
-			}
-			@if (allWorkouts.length === 0) {
-				<p class="text-sm text-zinc-400 text-center py-8">No workouts in your library yet.</p>
-			}
+				}
+				@if (allWorkouts.length === 0) {
+					<p class="text-sm text-zinc-400 text-center py-8">No workouts in your library yet.</p>
+				}
+			</div>
 		</div>
 
 	} @else {
 
 		<!-- Step 2: Fill in the record -->
-		<h2 class="text-base font-semibold text-zinc-900 mb-6">
-			{{ selectedWorkout?.name || getWorkoutName(selectedWorkoutRecord) }}
-		</h2>
+		<div class="p-6 flex-1">
+			<h2 class="text-base font-semibold text-zinc-900 mb-6">
+				{{ selectedWorkout?.name || getWorkoutName(selectedWorkoutRecord) }}
+			</h2>
 
-		@if (workoutRecordForm) {
-		<form [formGroup]="workoutRecordForm" (ngSubmit)="saveRecord()" class="space-y-5">
+			@if (workoutRecordForm) {
+			<form id="workoutRecordForm" [formGroup]="workoutRecordForm" (ngSubmit)="saveRecord()" class="space-y-5">
 
-			<div class="grid grid-cols-2 gap-4">
-				<div>
-					<label class="block text-xs font-medium text-zinc-500 mb-1.5">
-						Date <span class="text-red-400">*</span>
-					</label>
-					<app-date-picker
-						displayMode="field"
-						[value]="workoutRecordForm.get('date')?.value"
-						(valueChange)="workoutRecordForm.get('date')?.setValue($event); workoutRecordForm.get('date')?.markAsTouched()">
-					</app-date-picker>
-					@if (isInvalid('date')) {
-						<p class="flex items-center gap-1 text-xs text-red-500 mt-1.5">
-							<i class="fa-sharp fa-solid fa-circle-exclamation text-[10px]"></i>
-							Date is required
-						</p>
-					}
-				</div>
-
-				<div>
-					<label class="block text-xs font-medium text-zinc-500 mb-1.5">
-						Duration (min) <span class="text-red-400">*</span>
-					</label>
-					<input type="number" formControlName="duration" placeholder="45"
-						class="w-full px-3 py-2 border rounded-lg text-base sm:text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
-						[ngClass]="isInvalid('duration') ? 'border-red-400 focus:ring-red-300' : 'border-zinc-200 focus:ring-zinc-900'" />
-					@if (isInvalid('duration')) {
-						<p class="flex items-center gap-1 text-xs text-red-500 mt-1.5">
-							<i class="fa-sharp fa-solid fa-circle-exclamation text-[10px]"></i>
-							Duration is required
-						</p>
-					}
-				</div>
-			</div>
-
-			<div>
-				<label class="block text-xs font-medium text-zinc-500 mb-1.5">Notes</label>
-				<textarea formControlName="notes" placeholder="How did the session feel?" rows="2"
-					class="w-full px-3 py-2 border border-zinc-200 rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent resize-none"></textarea>
-			</div>
-
-			<!-- Exercises -->
-			<div formArrayName="exercises" class="space-y-4">
-				@for (ex of exercisesArray.controls; track $index; let i = $index) {
-				<div [formGroupName]="i" class="border border-zinc-100 rounded-xl overflow-hidden">
-					<div class="px-4 py-2.5 bg-zinc-50 border-b border-zinc-100">
-						<p class="text-xs font-semibold text-zinc-700">{{ ex.get('name')?.value }}</p>
+				<div class="grid grid-cols-2 gap-4">
+					<div>
+						<label class="block text-xs font-medium text-zinc-500 mb-1.5">
+							Date <span class="text-red-400">*</span>
+						</label>
+						<app-date-picker
+							displayMode="field"
+							[value]="workoutRecordForm.get('date')?.value"
+							(valueChange)="workoutRecordForm.get('date')?.setValue($event); workoutRecordForm.get('date')?.markAsTouched()">
+						</app-date-picker>
+						@if (isInvalid('date')) {
+							<p class="flex items-center gap-1 text-xs text-red-500 mt-1.5">
+								<i class="fa-sharp fa-solid fa-circle-exclamation text-[10px]"></i>
+								Date is required
+							</p>
+						}
 					</div>
-					<div class="p-4 space-y-2">
-						<div formArrayName="sets">
-							@for (set of getSets(i).controls; track $index; let j = $index) {
-							<div [formGroupName]="j" class="flex items-center gap-2">
-								<span class="text-xs text-zinc-400 w-6 flex-shrink-0">{{ j + 1 }}</span>
-								<div class="flex-1">
-									<input formControlName="reps" placeholder="Reps" type="number"
-										class="w-full px-3 py-1.5 border rounded-lg text-base sm:text-sm text-zinc-800 focus:outline-none focus:ring-1 focus:border-transparent transition-colors"
-										[ngClass]="set.get('reps')?.invalid && set.get('reps')?.touched ? 'border-red-400 focus:ring-red-300' : 'border-zinc-200 focus:ring-zinc-900'" />
-									@if (set.get('reps')?.invalid && set.get('reps')?.touched) {
-										<p class="text-[10px] text-red-500 mt-0.5">Required</p>
-									}
-								</div>
-								<div class="flex-1">
-									<input formControlName="weight" placeholder="kg" type="number"
-										class="w-full px-3 py-1.5 border rounded-lg text-base sm:text-sm text-zinc-800 focus:outline-none focus:ring-1 focus:border-transparent transition-colors"
-										[ngClass]="set.get('weight')?.invalid && set.get('weight')?.touched ? 'border-red-400 focus:ring-red-300' : 'border-zinc-200 focus:ring-zinc-900'" />
-									@if (set.get('weight')?.invalid && set.get('weight')?.touched) {
-										<p class="text-[10px] text-red-500 mt-0.5">Required</p>
-									}
-								</div>
-								<button type="button" (click)="removeSet(i, j)"
-									class="text-zinc-300 hover:text-red-400 transition-colors cursor-pointer flex-shrink-0 p-2">
-									<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
-								</button>
-							</div>
-							}
+
+					<div>
+						<label class="block text-xs font-medium text-zinc-500 mb-1.5">Duration (min)</label>
+						<input type="number" formControlName="duration" placeholder="45"
+							class="w-full px-3 py-2 border border-zinc-200 rounded-lg text-base sm:text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent transition-colors" />
+					</div>
+				</div>
+
+				<div>
+					<label class="block text-xs font-medium text-zinc-500 mb-1.5">Notes</label>
+					<textarea formControlName="notes" placeholder="How did the session feel?" rows="2"
+						class="w-full px-3 py-2 border border-zinc-200 rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent resize-none"></textarea>
+				</div>
+
+				<!-- Exercises -->
+				<div formArrayName="exercises" class="space-y-4">
+					@for (ex of exercisesArray.controls; track $index; let i = $index) {
+					<div [formGroupName]="i" class="border border-zinc-100 rounded-xl overflow-hidden">
+						<div class="px-4 py-2.5 bg-zinc-50 border-b border-zinc-100">
+							<p class="text-xs font-semibold text-zinc-700">{{ ex.get('name')?.value }}</p>
 						</div>
-						<button type="button" (click)="addSet(i)"
-							class="text-xs font-medium text-zinc-500 hover:text-zinc-800 cursor-pointer mt-1 min-h-[44px] flex items-center px-1">
-							<i class="fa-sharp fa-solid fa-plus mr-1"></i>Add Set
-						</button>
+						<div class="p-4 space-y-2">
+							<div formArrayName="sets">
+								@for (set of getSets(i).controls; track $index; let j = $index) {
+								<div [formGroupName]="j" class="flex items-center gap-2">
+									<span class="text-xs text-zinc-400 w-6 flex-shrink-0">{{ j + 1 }}</span>
+									<div class="flex-1">
+										<input formControlName="reps" placeholder="Reps" type="number"
+											class="w-full px-3 py-1.5 border rounded-lg text-base sm:text-sm text-zinc-800 focus:outline-none focus:ring-1 focus:border-transparent transition-colors"
+											[ngClass]="set.get('reps')?.invalid && set.get('reps')?.touched ? 'border-red-400 focus:ring-red-300' : 'border-zinc-200 focus:ring-zinc-900'" />
+										@if (set.get('reps')?.invalid && set.get('reps')?.touched) {
+											<p class="text-[10px] text-red-500 mt-0.5">Required</p>
+										}
+									</div>
+									<div class="flex-1">
+										<input formControlName="weight" placeholder="kg" type="number"
+											class="w-full px-3 py-1.5 border border-zinc-200 rounded-lg text-base sm:text-sm text-zinc-800 focus:outline-none focus:ring-1 focus:ring-zinc-900 focus:border-transparent transition-colors" />
+									</div>
+									<button type="button" (click)="removeSet(i, j)"
+										class="text-zinc-300 hover:text-red-400 transition-colors cursor-pointer flex-shrink-0 p-2">
+										<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
+									</button>
+								</div>
+								}
+							</div>
+							<button type="button" (click)="addSet(i)"
+								class="text-xs font-medium text-zinc-500 hover:text-zinc-800 cursor-pointer mt-1 min-h-[44px] flex items-center px-1">
+								<i class="fa-sharp fa-solid fa-plus mr-1"></i>Add Set
+							</button>
+						</div>
 					</div>
+					}
 				</div>
+
+				@if (validationErrors.length > 0) {
+					<div class="bg-red-50 border border-red-100 rounded-xl px-4 py-3 space-y-1">
+						@for (err of validationErrors; track err) {
+							<p class="flex items-center gap-1.5 text-xs text-red-600">
+								<i class="fa-sharp fa-solid fa-circle-exclamation text-[10px]"></i>
+								{{ err }}
+							</p>
+						}
+					</div>
 				}
-			</div>
 
-			@if (validationErrors.length > 0) {
-				<div class="bg-red-50 border border-red-100 rounded-xl px-4 py-3 space-y-1">
-					@for (err of validationErrors; track err) {
-						<p class="flex items-center gap-1.5 text-xs text-red-600">
-							<i class="fa-sharp fa-solid fa-circle-exclamation text-[10px]"></i>
-							{{ err }}
-						</p>
-					}
-				</div>
+			</form>
 			}
+		</div>
 
-			<div class="flex gap-3 pt-2">
-				<button type="submit"
-					[disabled]="workoutRecordForm.invalid"
-					class="flex-1 bg-zinc-900 hover:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-3.5 rounded-lg transition-colors cursor-pointer">
-					@if (formLoading) {
-						<app-loading-indicator [spinner]="true" [loading]="true"></app-loading-indicator>
-					} @else {
-						Save Record
-					}
-				</button>
-				<button type="button" (click)="closeEditMode()"
-					class="px-4 py-3.5 text-sm font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-lg transition-colors cursor-pointer">
-					Cancel
-				</button>
-			</div>
+		<!-- Sticky save footer -->
+		<div class="sticky bottom-0 bg-white border-t border-zinc-100 px-6 py-4 flex gap-3">
+			<button type="submit" form="workoutRecordForm"
+				(click)="saveRecord()"
+				[disabled]="workoutRecordForm?.invalid || formLoading"
+				class="flex-1 bg-zinc-900 hover:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-3.5 rounded-lg transition-colors cursor-pointer">
+				@if (formLoading) {
+					<app-loading-indicator [spinner]="true" [loading]="true"></app-loading-indicator>
+				} @else {
+					Save Record
+				}
+			</button>
+			<button type="button" (click)="closeEditMode()"
+				class="px-4 py-3.5 text-sm font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-lg transition-colors cursor-pointer">
+				Cancel
+			</button>
+		</div>
 
-		</form>
-		}
 	}
 </div>

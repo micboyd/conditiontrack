@@ -104,16 +104,15 @@ export class EditWorkoutRecordsComponent implements OnInit {
 				return; // Skip further checks for this exercise
 			}
 
-			// 2. Check each set for missing fields
+			// 2. Check each set for missing reps (weight is optional)
 			setsArray.controls.forEach((set, setIndex) => {
 				const reps = set.get('reps')?.value;
-				const weight = set.get('weight')?.value;
 
-				if (reps === null || reps === '' || weight === null || weight === '') {
+				if (reps === null || reps === '') {
 					errors.push(
 						`Exercise "${exercise.get('name')?.value || `#${exerciseIndex + 1}`}", Set ${
 							setIndex + 1
-						} is incomplete.`,
+						} is missing reps.`,
 					);
 				}
 			});

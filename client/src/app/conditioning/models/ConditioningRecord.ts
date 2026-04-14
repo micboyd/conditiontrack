@@ -32,10 +32,7 @@ export class ConditioningRecord {
 		return fb.group({
 			sessionId: [record?.sessionId || session?._id || '', Validators.required],
 			date: [record?.date || format(new Date(), 'yyyy-MM-dd'), Validators.required],
-			duration: [
-				record?.duration ?? session?.duration ?? 0,
-				[Validators.required, Validators.min(1)]
-			],
+			duration: [record?.duration ?? session?.duration ?? 0],
 			notes: [record?.notes || ''],
 			completed: [record?.completed ?? false],
             caloriesBurned: [record?.caloriesBurned ?? 0],

@@ -24,6 +24,7 @@ export class EditRecordComponent {
 
 	selectedSessionTemplate?: ConditioningSession;
 	recordForm!: FormGroup | null; // allow null until ready
+	showSessionDetail = false;
 
 	constructor(
 		private fb: FormBuilder,
