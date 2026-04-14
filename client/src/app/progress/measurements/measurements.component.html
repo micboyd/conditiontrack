@@ -60,7 +60,7 @@
 
 		<!-- Time range -->
 		<div class="flex items-center gap-1">
-			@for (r of ['3M','6M','1Y','All']; track r) {
+			@for (r of ranges; track r) {
 			<button (click)="setRange(r)"
 				class="px-3 py-1.5 rounded-full text-xs font-medium border transition cursor-pointer"
 				[class]="selectedRange === r ? 'bg-zinc-900 text-white border-zinc-900' : 'bg-white text-zinc-500 border-zinc-200 hover:border-zinc-400'">

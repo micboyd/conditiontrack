@@ -36,6 +36,7 @@ export class MeasurementsComponent implements OnInit, AfterViewChecked, OnDestro
 	deletingId: string | null = null;
 
 	// Chart state
+	readonly ranges: TimeRange[] = ['3M', '6M', '1Y', 'All'];
 	selectedRange: TimeRange = 'All';
 	showWeight = true;
 	showMuscle = true;
