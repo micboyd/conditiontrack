@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
 		carbs:    { type: Number, default: 0 },
 		fat:      { type: Number, default: 0 },
 	},
+	bmr: { type: Number, default: null },
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

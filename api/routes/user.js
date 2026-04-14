@@ -28,6 +28,7 @@ router.get('/:id', async (req, res) => {
 			bio: user.bio,
 			createdAt: user.createdAt,
 			macroGoals: user.macroGoals,
+			bmr: user.bmr,
 		});
 	} catch (err) {
 		res.status(500).json({ error: err.message });

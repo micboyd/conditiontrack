@@ -413,6 +413,15 @@ export class DashboardComponent implements OnInit {
 		return this.totalCaloriesEaten - this.totalCaloriesBurned;
 	}
 
+	get goalVsMaintenance(): { diff: number; type: 'deficit' | 'surplus' | 'on-track' } | null {
+		const goal = this.user?.macroGoals?.calories;
+		const bmr = this.user?.bmr;
+		if (!goal || !bmr) return null;
+		const diff = goal - bmr;
+		if (Math.abs(diff) < 50) return { diff: 0, type: 'on-track' };
+		return { diff: Math.abs(diff), type: diff < 0 ? 'deficit' : 'surplus' };
+	}
+
 	get calorieBudgetStatus(): 'deficit' | 'maintenance' | 'surplus' {
 		const goal = this.user?.macroGoals?.calories;
 		if (!goal) return 'maintenance';
