@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { ConditioningLibraryService } from '../../conditioning-library/conditioning-library.service';
@@ -12,19 +12,18 @@ import { format } from 'date-fns';
 	standalone: false,
 	templateUrl: './edit-record.component.html',
 })
-export class EditRecordComponent {
+export class EditRecordComponent implements OnInit {
 	@Input() selectedRecord?: ConditioningRecord = null;
+	@Output() closeEditModeEvent = new EventEmitter<void>();
 
 	formLoading = false;
 	sessionsLoading = false;
-
-	@Output() closeEditModeEvent = new EventEmitter<void>();
-
-	private _conditioningSessions: Array<ConditioningSession> = [];
+	showSessionDetail = false;
 
 	selectedSessionTemplate?: ConditioningSession;
-	recordForm!: FormGroup | null; // allow null until ready
-	showSessionDetail = false;
+	recordForm: FormGroup | null = null;
+
+	private _conditioningSessions: Array<ConditioningSession> = [];
 
 	constructor(
 		private fb: FormBuilder,
@@ -40,20 +39,18 @@ export class EditRecordComponent {
 		this.getAllSessions();
 	}
 
-	/** Build the form once we know the session */
-	private buildForm(session: ConditioningSession) {
+	private buildForm(session: ConditioningSession): void {
 		const recordToEdit = this.selectedRecord ?? new ConditioningRecord(null);
-        this.selectedSessionTemplate = session;
+		this.selectedSessionTemplate = session;
 		this.recordForm = ConditioningRecord.createFormGroup(this.fb, recordToEdit, session);
 	}
 
-	getAllSessions() {
+	getAllSessions(): void {
 		this.sessionsLoading = true;
 		this.conditioningLibraryService.getAllConditioningSessions().subscribe(allSessions => {
 			this._conditioningSessions = allSessions;
 			this.sessionsLoading = false;
 
-			// If editing an existing record, build the form now that sessions are available
 			if (this.selectedRecord?.sessionId) {
 				const session = this.getSessionById(this.selectedRecord.sessionId);
 				if (session) {
@@ -63,19 +60,18 @@ export class EditRecordComponent {
 		});
 	}
 
-    formatDate(date: string): string {
-        if (!date) return '';
-        const parsedDate = typeof date === 'string' ? new Date(date) : date;
-        return format(parsedDate, 'MMMM dd, yyyy');
-    }
+	formatDate(date: string): string {
+		if (!date) return '';
+		const parsedDate = typeof date === 'string' ? new Date(date) : date;
+		return format(parsedDate, 'MMMM dd, yyyy');
+	}
 
 	getSessionById(sessionId: string | null | undefined): ConditioningSession | null {
 		if (!sessionId) return null;
-		const session = this.allConditioningSessions.find(s => s._id === sessionId);
-		return session || null;
+		return this.allConditioningSessions.find(s => s._id === sessionId) ?? null;
 	}
 
-	selectSession(conditioningSession: ConditioningSession) {
+	selectSession(conditioningSession: ConditioningSession): void {
 		this.selectedSessionTemplate = conditioningSession;
 		this.buildForm(conditioningSession);
 	}
