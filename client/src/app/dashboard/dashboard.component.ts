@@ -62,6 +62,7 @@ export class DashboardComponent implements OnInit {
 
 	// Cardio logging state
 	logCardioStep: 1 | 2 = 1;
+	showCardioSessionDetail = false;
 	logCardioSelectedSession: ConditioningSession | null = null;
 	cardioLogForm!: FormGroup;
 	cardioLogLoading = false;

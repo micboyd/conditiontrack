@@ -37,7 +37,7 @@ export class WorkoutRecord {
 
 	static createSetFormGroup(fb: FormBuilder, reps: number | '' = '', weight: number | '' = '') {
 		return fb.group({
-			reps: [reps, [Validators.required]],
+			reps: [reps],
 			weight: [weight],
 		});
 	}
@@ -61,7 +61,7 @@ export class WorkoutRecord {
 				record.exercises.map(e => fb.group({
 					name: [e.name, [Validators.required]],
 					sets: fb.array(
-						e.sets.map(s => this.createSetFormGroup(fb, s.reps || '', s.weight || ''))
+						e.sets.map(s => this.createSetFormGroup(fb, s.reps ?? '', s.weight ?? ''))
 					),
 				}))
 			),
