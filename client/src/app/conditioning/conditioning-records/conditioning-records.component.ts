@@ -82,6 +82,15 @@ export class ConditioningRecordsComponent implements OnInit {
 		});
 	}
 
+	toggleCompleted(record: ConditioningRecord, event: Event): void {
+		event.stopPropagation();
+		const updated = { ...record, completed: !record.completed } as ConditioningRecord;
+		this.conditioningRecordService.updateConditioningRecord(record._id, updated).subscribe(saved => {
+			const idx = this._allRecords.findIndex(r => r._id === saved._id);
+			if (idx !== -1) this._allRecords[idx] = saved;
+		});
+	}
+
 	deleteRecord(record: ConditioningRecord): void {
 		this.conditioningRecordService.deleteConditioningRecord(record._id).subscribe(() => {
 			this.getAllRecords();

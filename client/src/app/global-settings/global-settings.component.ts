@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MacroGoals, UserService } from '../shared/services/user.service';
+import { SelectOption } from '../shared/components/select/select.component';
 
 const ACTIVITY_MULTIPLIERS: Record<string, number> = {
 	sedentary: 1.2,
@@ -10,12 +11,27 @@ const ACTIVITY_MULTIPLIERS: Record<string, number> = {
 	veryActive: 1.9,
 };
 
+const GENDER_OPTIONS: SelectOption[] = [
+	{ value: 'male',   label: 'Male' },
+	{ value: 'female', label: 'Female' },
+];
+
+const ACTIVITY_OPTIONS: SelectOption[] = [
+	{ value: 'sedentary',  label: 'Sedentary (little or no exercise)' },
+	{ value: 'light',      label: 'Lightly Active (1–3 days/week)' },
+	{ value: 'moderate',   label: 'Moderately Active (3–5 days/week)' },
+	{ value: 'active',     label: 'Very Active (6–7 days/week)' },
+	{ value: 'veryActive', label: 'Extra Active (physical job or 2× training)' },
+];
+
 @Component({
 	selector: 'app-global-settings',
 	templateUrl: './global-settings.component.html',
 	standalone: false,
 })
 export class GlobalSettingsComponent implements OnInit {
+	readonly genderOptions = GENDER_OPTIONS;
+	readonly activityOptions = ACTIVITY_OPTIONS;
 	form!: FormGroup;
 	loading = false;
 	saving = false;

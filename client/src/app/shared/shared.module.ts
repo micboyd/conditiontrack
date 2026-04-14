@@ -9,11 +9,12 @@ import { MenuComponent } from './components/menu/menu.component';
 import { NgModule } from '@angular/core';
 import { SideDrawerComponent } from './components/side-drawer/side-drawer.component';
 import { SubMenuComponent } from './components/sub-menu/sub-menu.component';
+import { SelectComponent } from './components/select/select.component';
 
 @NgModule({
-	declarations: [MenuComponent, ContainerComponent, FooterComponent, SubMenuComponent, LoadingIndicatorComponent, ButtonToggleComponent, SideDrawerComponent, DatePickerComponent],
+	declarations: [MenuComponent, ContainerComponent, FooterComponent, SubMenuComponent, LoadingIndicatorComponent, ButtonToggleComponent, SideDrawerComponent, DatePickerComponent, SelectComponent],
 	imports: [CommonModule, AppRoutingModule],
-	exports: [MenuComponent, ContainerComponent, FooterComponent, SubMenuComponent, LoadingIndicatorComponent, ButtonToggleComponent, SideDrawerComponent, DatePickerComponent],
+	exports: [MenuComponent, ContainerComponent, FooterComponent, SubMenuComponent, LoadingIndicatorComponent, ButtonToggleComponent, SideDrawerComponent, DatePickerComponent, SelectComponent],
 })
 export class SharedModule {}
 

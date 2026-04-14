@@ -14,8 +14,8 @@
 	<app-loading-indicator [loading]="true"></app-loading-indicator>
 } @else {
 
-<div class="max-w-lg space-y-5">
-	<div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+<div class="flex flex-col lg:flex-row lg:items-start gap-5 max-w-4xl">
+	<div class="bg-white rounded-2xl shadow-sm overflow-hidden lg:flex-1">
 
 		<!-- Card header -->
 		<div class="px-6 py-5 border-b border-zinc-100 flex items-center gap-3">
@@ -119,7 +119,7 @@
 	</div>
 
 	<!-- BMR Calculator -->
-	<div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+	<div class="bg-white rounded-2xl shadow-sm overflow-hidden lg:flex-1">
 
 		<!-- Card header -->
 		<div class="px-6 py-5 border-b border-zinc-100 flex items-center gap-3">
@@ -150,11 +150,7 @@
 				<div class="grid grid-cols-2 gap-4">
 					<div>
 						<label class="block text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-2">Gender</label>
-						<select formControlName="gender"
-							class="w-full px-4 py-3 rounded-xl border border-zinc-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-orange-400 transition bg-white">
-							<option value="male">Male</option>
-							<option value="female">Female</option>
-						</select>
+						<app-select formControlName="gender" [options]="genderOptions"></app-select>
 					</div>
 					<div>
 						<label class="block text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-2">Age</label>
@@ -189,14 +185,7 @@
 				<!-- Activity Level -->
 				<div>
 					<label class="block text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-2">Activity Level</label>
-					<select formControlName="activityLevel"
-						class="w-full px-4 py-3 rounded-xl border border-zinc-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-orange-400 transition bg-white">
-						<option value="sedentary">Sedentary (little or no exercise)</option>
-						<option value="light">Lightly Active (1–3 days/week)</option>
-						<option value="moderate">Moderately Active (3–5 days/week)</option>
-						<option value="active">Very Active (6–7 days/week)</option>
-						<option value="veryActive">Extra Active (physical job or 2× training)</option>
-					</select>
+					<app-select formControlName="activityLevel" [options]="activityOptions"></app-select>
 				</div>
 
 				<!-- Result -->

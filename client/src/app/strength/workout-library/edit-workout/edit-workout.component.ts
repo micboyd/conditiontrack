@@ -23,6 +23,13 @@ export class EditWorkoutComponent implements OnInit, OnChanges {
 	allExercises: Exercise[] = [];
 	avalibleExercises: Exercise[] = [];
 	selectedExercises: WorkoutExerciseTemplate[] = [];
+	exerciseSearch = '';
+
+	get filteredAvailableExercises(): Exercise[] {
+		const q = this.exerciseSearch.trim().toLowerCase();
+		if (!q) return this.avalibleExercises;
+		return this.avalibleExercises.filter(e => e.name.toLowerCase().includes(q));
+	}
 
 	constructor(
 		private fb: FormBuilder,
@@ -42,6 +49,7 @@ export class EditWorkoutComponent implements OnInit, OnChanges {
 
 	private initForm(): void {
 		this.workoutForm = Workout.toFormGroup(this.selectedWorkout ?? new Workout(null), this.fb);
+		this.exerciseSearch = '';
 		this.getAllExercises();
 	}
 

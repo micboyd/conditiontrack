@@ -45,7 +45,7 @@ export class WeekPlan {
 		this._id = weekPlan?._id ?? '';
 		this.userId = weekPlan?.userId ?? localStorage.getItem('id') ?? '';
 
-		const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+		const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 		this.days = weekDays.map(day => {
 			const existingDay = weekPlan?.days?.find(d => d.dayName === day);
