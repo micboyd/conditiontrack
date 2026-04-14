@@ -155,6 +155,12 @@
 						<p class="text-xl font-semibold text-zinc-600 leading-none">—</p>
 						<p class="text-xs text-zinc-600 mt-1.5">Not set</p>
 					}
+					@if (user?.bmr) {
+						<div class="mt-2.5 pt-2.5 border-t border-zinc-800">
+							<p class="text-[10px] text-zinc-500 leading-none">Maintenance</p>
+							<p class="text-sm font-semibold text-zinc-400 mt-1 leading-none">{{ user!.bmr | number:'1.0-0' }} <span class="text-[10px] font-normal">kcal</span></p>
+						</div>
+					}
 				</div>
 				<div>
 					<p class="text-sm text-zinc-400 mb-1.5">Balance</p>
