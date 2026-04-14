@@ -28,7 +28,7 @@ router.put('/:id', async (req, res) => {
 // Read all user Workout
 router.get('/:userId', async (req, res) => {
     try {
-        const workouts = await Workout.find();
+        const workouts = await Workout.find({ userId: req.params.userId });
         res.json(workouts);
     } catch (err) {
         res.status(500).json({ error: err.message });
