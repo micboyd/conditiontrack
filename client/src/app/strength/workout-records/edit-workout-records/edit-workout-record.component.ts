@@ -52,19 +52,7 @@ export class EditWorkoutRecordsComponent implements OnInit {
 
 		const record = new WorkoutRecord(recordData);
 		this.workoutRecordForm = WorkoutRecord.toFormGroup(record, this.fb);
-
-		// Fill sets for each exercise
-		record.exercises.forEach((ex, i) => {
-			const setsArray = WorkoutRecord.getSets(this.exercisesArray, i);
-			ex.sets.forEach(set => {
-				setsArray.push(
-					this.fb.group({
-						reps: [set.reps],
-						weight: [set.weight],
-					}),
-				);
-			});
-		});
+		// toFormGroup already maps all exercises and sets — no further population needed
 	}
 
 	selectWorkoutById(workoutId: string | null) {
