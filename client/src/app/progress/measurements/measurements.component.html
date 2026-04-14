@@ -32,48 +32,6 @@
 </div>
 }
 
-<!-- Body Composition Chart -->
-@if (showChart) {
-<div class="bg-white rounded-2xl shadow-sm p-5 mb-7">
-
-	<!-- Chart header row -->
-	<div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-
-		<!-- Metric toggles -->
-		<div class="flex items-center gap-2 flex-wrap">
-			<button (click)="toggleMetric('weight')"
-				class="px-3 py-1.5 rounded-full text-xs font-medium border transition cursor-pointer"
-				[class]="showWeight ? 'bg-zinc-900 text-white border-zinc-900' : 'bg-white text-zinc-500 border-zinc-200 hover:border-zinc-400'">
-				Weight
-			</button>
-			<button (click)="toggleMetric('muscle')"
-				class="px-3 py-1.5 rounded-full text-xs font-medium border transition cursor-pointer"
-				[class]="showMuscle ? 'bg-zinc-700 text-white border-zinc-700' : 'bg-white text-zinc-500 border-zinc-200 hover:border-zinc-400'">
-				Muscle
-			</button>
-			<button (click)="toggleMetric('bodyFat')"
-				class="px-3 py-1.5 rounded-full text-xs font-medium border transition cursor-pointer"
-				[class]="showBodyFat ? 'bg-zinc-500 text-white border-zinc-500' : 'bg-white text-zinc-500 border-zinc-200 hover:border-zinc-400'">
-				Body Fat
-			</button>
-		</div>
-
-		<!-- Time range -->
-		<div class="flex items-center gap-1">
-			@for (r of ranges; track r) {
-			<button (click)="setRange(r)"
-				class="px-3 py-1.5 rounded-full text-xs font-medium border transition cursor-pointer"
-				[class]="selectedRange === r ? 'bg-zinc-900 text-white border-zinc-900' : 'bg-white text-zinc-500 border-zinc-200 hover:border-zinc-400'">
-				{{ r }}
-			</button>
-			}
-		</div>
-	</div>
-
-	<canvas #bodyCompCanvas></canvas>
-</div>
-}
-
 @if (loading) {
 	<app-loading-indicator [loading]="true"></app-loading-indicator>
 } @else if (measurements.length === 0) {

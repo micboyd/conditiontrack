@@ -6,12 +6,15 @@ import { format, subMonths, subYears, parseISO } from 'date-fns';
 import { Exercise } from '../strength/models/Exercise';
 import { WorkoutRecord } from '../strength/models/WorkoutRecord';
 import { TrainingBlock } from '../training-blocks/models/TrainingBlock';
+import { Measurement } from '../progress/models/Measurement';
 import { ExerciseService } from '../strength/exercise-library/exercise.service';
 import { WorkoutRecordService } from '../strength/workout-records/workout-records.service';
 import { TrainingBlocksService } from '../training-blocks/training-blocks.service';
+import { MeasurementsService } from '../progress/measurements/measurements.service';
 import { SelectOption } from '../shared/components/select/select.component';
 
 export type TimeRange = '1M' | '6M' | '1Y' | 'block';
+export type BodyCompRange = '3M' | '6M' | '1Y' | 'All';
 
 @Component({
     selector: 'app-stats-centre',
@@ -22,13 +25,21 @@ export class StatsCentreComponent implements OnInit {
     exercises: Exercise[] = [];
     trainingBlocks: TrainingBlock[] = [];
     allRecords: WorkoutRecord[] = [];
+    measurements: Measurement[] = [];
 
     loading = false;
     loadError = false;
 
+    // Strength progression state
     selectedExerciseName: string | null = null;
     selectedRange: TimeRange = '1M';
     selectedBlockId: string | null = null;
+
+    // Body composition state
+    bodyCompRange: BodyCompRange = 'All';
+    showWeight = true;
+    showMuscle = true;
+    showBodyFat = true;
 
     readonly ranges: { key: TimeRange; label: string }[] = [
         { key: '1M', label: '1M' },
@@ -37,6 +48,9 @@ export class StatsCentreComponent implements OnInit {
         { key: 'block', label: 'Block' },
     ];
 
+    readonly bodyCompRanges: BodyCompRange[] = ['3M', '6M', '1Y', 'All'];
+
+    // Strength chart
     chartData: ChartData<'line'> = { labels: [], datasets: [] };
 
     chartOptions: ChartOptions<'line'> = {
@@ -72,10 +86,61 @@ export class StatsCentreComponent implements OnInit {
         },
     };
 
+    // Body composition chart
+    bodyCompChartData: ChartData<'line'> = { labels: [], datasets: [] };
+
+    bodyCompChartOptions: ChartOptions<'line'> = {
+        responsive: true,
+        maintainAspectRatio: true,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: ctx => {
+                        if (ctx.parsed.y === null) return '';
+                        const unit = ctx.datasetIndex === 2 ? '%' : ' kg';
+                        return ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}${unit}`;
+                    },
+                },
+            },
+        },
+        scales: {
+            x: {
+                grid: { display: false },
+                ticks: { font: { size: 12 }, maxTicksLimit: 8 },
+            },
+            y: {
+                position: 'left',
+                grid: { color: '#f4f4f5' },
+                ticks: {
+                    font: { size: 12 },
+                    callback: val => `${val} kg`,
+                },
+                title: { display: true, text: 'kg', color: '#a1a1aa', font: { size: 11 } },
+            },
+            y1: {
+                position: 'right',
+                grid: { drawOnChartArea: false },
+                ticks: {
+                    font: { size: 12 },
+                    callback: val => `${val}%`,
+                    color: '#71717a',
+                },
+                title: { display: true, text: '%', color: '#71717a', font: { size: 11 } },
+            },
+        },
+        elements: {
+            line: { tension: 0.3, borderWidth: 2 },
+            point: { radius: 3, hoverRadius: 5 },
+        },
+    };
+
     constructor(
         private exerciseService: ExerciseService,
         private workoutRecordService: WorkoutRecordService,
         private trainingBlocksService: TrainingBlocksService,
+        private measurementsService: MeasurementsService,
     ) {}
 
     get exerciseOptions(): SelectOption[] {
@@ -92,19 +157,23 @@ export class StatsCentreComponent implements OnInit {
     ngOnInit(): void {
         this.loading = true;
         this.loadError = false;
+        const userId = localStorage.getItem('id') ?? '';
 
         forkJoin({
             exercises: this.exerciseService.getAllExercises(),
             records: this.workoutRecordService.getAllWorkoutRecords(),
             blocks: this.trainingBlocksService.getAllBlocks(),
+            measurements: this.measurementsService.getAll(userId),
         }).subscribe({
-            next: ({ exercises, records, blocks }) => {
+            next: ({ exercises, records, blocks, measurements }) => {
                 this.exercises = exercises.sort((a, b) => a.name.localeCompare(b.name));
                 this.allRecords = records;
                 this.trainingBlocks = blocks
                     .map(b => new TrainingBlock(b))
                     .sort((a, b) => b.startDate.localeCompare(a.startDate));
+                this.measurements = measurements.map(m => new Measurement(m));
                 this.loading = false;
+                this.buildBodyCompChart();
             },
             error: () => {
                 this.loading = false;
@@ -112,6 +181,8 @@ export class StatsCentreComponent implements OnInit {
             },
         });
     }
+
+    // ── Strength Progression ──────────────────────────────────────────────────
 
     onExerciseChange(name: string): void {
         this.selectedExerciseName = name || null;
@@ -164,11 +235,9 @@ export class StatsCentreComponent implements OnInit {
         const name = this.selectedExerciseName.toLowerCase();
         const { from, to } = this.dateRange;
 
-        // Collect max weight per date
         const weightByDate = new Map<string, number>();
 
         for (const record of this.allRecords) {
-            // Strip any time component from record.date before comparing
             const recordDate = (record.date ?? '').slice(0, 10);
             if (recordDate < from || recordDate > to) continue;
 
@@ -185,7 +254,6 @@ export class StatsCentreComponent implements OnInit {
             }
         }
 
-        // Sort by date
         const sorted = Array.from(weightByDate.entries()).sort(([a], [b]) => a.localeCompare(b));
 
         const labels = sorted.map(([date]) => format(parseISO(date), 'd MMM'));
@@ -209,5 +277,85 @@ export class StatsCentreComponent implements OnInit {
 
     get hasData(): boolean {
         return (this.chartData.datasets[0]?.data?.length ?? 0) > 0;
+    }
+
+    // ── Body Composition ──────────────────────────────────────────────────────
+
+    get filteredMeasurements(): Measurement[] {
+        const sorted = [...this.measurements].sort((a, b) => a.date.localeCompare(b.date));
+        if (this.bodyCompRange === 'All') return sorted;
+        const today = new Date();
+        const cutoff = this.bodyCompRange === '3M'
+            ? subMonths(today, 3)
+            : this.bodyCompRange === '6M'
+                ? subMonths(today, 6)
+                : subYears(today, 1);
+        const cutoffStr = format(cutoff, 'yyyy-MM-dd');
+        return sorted.filter(m => m.date >= cutoffStr);
+    }
+
+    get hasBodyCompData(): boolean {
+        return this.measurements.length >= 2;
+    }
+
+    onBodyCompRangeChange(range: BodyCompRange): void {
+        this.bodyCompRange = range;
+        this.buildBodyCompChart();
+    }
+
+    toggleMetric(metric: 'weight' | 'muscle' | 'bodyFat'): void {
+        if (metric === 'weight')  this.showWeight  = !this.showWeight;
+        if (metric === 'muscle')  this.showMuscle  = !this.showMuscle;
+        if (metric === 'bodyFat') this.showBodyFat = !this.showBodyFat;
+        this.buildBodyCompChart();
+    }
+
+    buildBodyCompChart(): void {
+        const data = this.filteredMeasurements;
+        const labels = data.map(m => {
+            try { return format(parseISO(m.date), 'd MMM yy'); } catch { return m.date; }
+        });
+
+        this.bodyCompChartData = {
+            labels,
+            datasets: [
+                {
+                    label: 'Weight (kg)',
+                    data: data.map(m => m.weight) as number[],
+                    borderColor: '#18181b',
+                    backgroundColor: 'transparent',
+                    yAxisID: 'y',
+                    hidden: !this.showWeight,
+                    spanGaps: true,
+                    pointBackgroundColor: '#18181b',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                },
+                {
+                    label: 'Muscle (kg)',
+                    data: data.map(m => m.muscleMass) as number[],
+                    borderColor: '#3f3f46',
+                    backgroundColor: 'transparent',
+                    yAxisID: 'y',
+                    hidden: !this.showMuscle,
+                    spanGaps: true,
+                    pointBackgroundColor: '#3f3f46',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                },
+                {
+                    label: 'Body Fat (%)',
+                    data: data.map(m => m.bodyFat) as number[],
+                    borderColor: '#71717a',
+                    backgroundColor: 'transparent',
+                    yAxisID: 'y1',
+                    hidden: !this.showBodyFat,
+                    spanGaps: true,
+                    pointBackgroundColor: '#71717a',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                },
+            ],
+        };
     }
 }
