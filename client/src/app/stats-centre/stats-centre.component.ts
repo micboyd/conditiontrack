@@ -56,6 +56,7 @@ export class StatsCentreComponent implements OnInit {
     chartOptions: ChartOptions<'line'> = {
         responsive: true,
         maintainAspectRatio: true,
+        aspectRatio: 3,
         plugins: {
             legend: { display: false },
             tooltip: {
@@ -92,6 +93,7 @@ export class StatsCentreComponent implements OnInit {
     bodyCompChartOptions: ChartOptions<'line'> = {
         responsive: true,
         maintainAspectRatio: true,
+        aspectRatio: 3,
         interaction: { mode: 'index', intersect: false },
         plugins: {
             legend: { display: false },
