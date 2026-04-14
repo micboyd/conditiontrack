@@ -2,6 +2,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 export class Meal {
     _id: string;
+    userId: string;
 	name: string;
 	calories: number;
 	fat: number;
@@ -12,6 +13,7 @@ export class Meal {
 
 	constructor(meal?: Partial<Meal> | null) {
         this._id = meal?._id || '';
+        this.userId = meal?.userId || '';
 		this.name = meal?.name || '';
 		this.calories = meal?.calories ?? 0;
 		this.fat = meal?.fat ?? 0;

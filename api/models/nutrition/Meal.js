@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const mealSchema = new mongoose.Schema({
+    userId: { type: String, required: true },
     name: { type: String, required: true },
     calories: { type: Number, required: true, min: 0 },
     fat: { type: Number, required: true, min: 0 },

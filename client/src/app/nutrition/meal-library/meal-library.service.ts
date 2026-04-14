@@ -9,7 +9,8 @@ export class MealLibraryService {
 	constructor(private http: HttpClient) {}
 
 	createMeal(meal: Meal): Observable<Meal> {
-		return this.http.post<Meal>(`${environment.baseApiUrl}/nutrition/meal`, meal);
+		const userId = localStorage.getItem('id');
+		return this.http.post<Meal>(`${environment.baseApiUrl}/nutrition/meal`, { ...meal, userId });
 	}
 
 	updateMeal(mealId: string, meal: Meal): Observable<Meal> {
@@ -18,7 +19,7 @@ export class MealLibraryService {
 
 	getAllMeals(): Observable<Array<Meal>> {
 		const userId = localStorage.getItem('id');
-		return this.http.get<Array<Meal>>(`${environment.baseApiUrl}/nutrition/meal/${userId}`);
+		return this.http.get<Array<Meal>>(`${environment.baseApiUrl}/nutrition/meal/user/${userId}`);
 	}
 
 	getMealById(mealId: string): Observable<Meal> {

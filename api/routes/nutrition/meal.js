@@ -25,8 +25,8 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Read all Meals
-router.get('/:userId', async (req, res) => {
+// Read all Meals for a user
+router.get('/user/:userId', async (req, res) => {
     try {
         const meals = await Meal.find({ userId: req.params.userId });
         res.json(meals);
