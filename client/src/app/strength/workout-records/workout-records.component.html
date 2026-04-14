@@ -16,6 +16,27 @@
 	</button>
 </div>
 
+<!-- Strength Progression Chart -->
+@if (showChart) {
+<div class="bg-white rounded-2xl shadow-sm p-5 mb-6">
+
+	<!-- Chart header -->
+	<div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+		<p class="text-sm font-semibold text-zinc-900">Strength Progression</p>
+		<select
+			[value]="selectedExercise"
+			(change)="onExerciseChange($any($event.target).value)"
+			class="px-3 py-2 rounded-xl border border-zinc-200 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 transition cursor-pointer">
+			@for (ex of uniqueExercises; track ex) {
+				<option [value]="ex">{{ ex }}</option>
+			}
+		</select>
+	</div>
+
+	<canvas #strengthCanvas></canvas>
+</div>
+}
+
 @if (loading) {
 	<div class="py-8">
 		<app-loading-indicator [loading]="true"></app-loading-indicator>
