@@ -15,10 +15,10 @@ import { format } from 'date-fns';
 export class EditRecordComponent implements OnInit {
 	@Input() selectedRecord?: ConditioningRecord = null;
 	@Output() closeEditModeEvent = new EventEmitter<void>();
+	@Output() viewSessionRequested = new EventEmitter<ConditioningSession>();
 
 	formLoading = false;
 	sessionsLoading = false;
-	showSessionDetail = false;
 
 	selectedSessionTemplate?: ConditioningSession;
 	recordForm: FormGroup | null = null;

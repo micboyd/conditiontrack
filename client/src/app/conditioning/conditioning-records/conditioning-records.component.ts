@@ -18,6 +18,7 @@ export class ConditioningRecordsComponent implements OnInit {
 	selectedConditioningRecord: ConditioningRecord | null = null;
 	drawerOpen = false;
 	loading = false;
+	sessionToView: ConditioningSession | null = null;
 
 	private _allRecords: ConditioningRecord[] = [];
 	private _allSessions: ConditioningSession[] = [];
@@ -56,11 +57,13 @@ export class ConditioningRecordsComponent implements OnInit {
 
 	closeDrawer(): void {
 		this.drawerOpen = false;
+		this.sessionToView = null;
 		this.drawer.close();
 	}
 
 	onDrawerClosed(): void {
 		this.drawerOpen = false;
+		this.sessionToView = null;
 		this.getAllRecords();
 	}
 
