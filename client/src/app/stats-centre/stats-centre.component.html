@@ -24,6 +24,44 @@
 
     @if (!loading && !loadError) {
 
+        <!-- ── Personal Bests ─────────────────────────────────────────────────── -->
+
+        <div class="bg-zinc-900 rounded-2xl px-6 py-6 mb-8">
+            <div class="flex items-center justify-between mb-5">
+                <div>
+                    <p class="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1">All-Time</p>
+                    <h2 class="text-base font-semibold text-white">Personal Bests</h2>
+                </div>
+                <i class="fa-sharp fa-solid fa-trophy text-zinc-600 text-xl"></i>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                @for (slot of [0, 1, 2, 3]; track slot) {
+                <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+                    <app-select
+                        [options]="exerciseOptions"
+                        placeholder="Select..."
+                        [ngModel]="pbSelectedExercises[slot]"
+                        (ngModelChange)="setPbExercise(slot, $event)">
+                    </app-select>
+                    @if (pbSelectedExercises[slot]) {
+                        @if (getPersonalBest(pbSelectedExercises[slot]) !== null) {
+                            <div class="mt-4">
+                                <p class="text-3xl font-bold text-white leading-none tracking-tight">
+                                    {{ getPersonalBest(pbSelectedExercises[slot]) }}<span class="text-sm font-normal text-zinc-500 ml-1">kg</span>
+                                </p>
+                                <p class="text-[10px] text-zinc-500 uppercase tracking-wide mt-1.5">Max weight</p>
+                            </div>
+                        } @else {
+                            <p class="text-sm text-zinc-600 mt-4">No records yet</p>
+                        }
+                    } @else {
+                        <p class="text-2xl font-bold text-zinc-700 mt-4">—</p>
+                    }
+                </div>
+                }
+            </div>
+        </div>
+
         <!-- ── Strength Progression ─────────────────────────────────────────── -->
 
         <div class="mb-3">

@@ -78,6 +78,7 @@ export class DashboardComponent implements OnInit {
 	goalAutoValues = new Map<string, number>();
 	private measurements: Measurement[] = [];
 
+
 	constructor(
 		private fb: FormBuilder,
 		private userService: UserService,

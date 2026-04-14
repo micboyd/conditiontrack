@@ -35,6 +35,10 @@ export class StatsCentreComponent implements OnInit {
     selectedRange: TimeRange = '1M';
     selectedBlockId: string | null = null;
 
+    // Personal Bests state
+    pbSelectedExercises: string[] = ['', '', '', ''];
+    private readonly PB_STORAGE_KEY = 'stats_pb_exercises';
+
     // Body composition state
     bodyCompRange: BodyCompRange = 'All';
     showWeight = true;
@@ -175,6 +179,7 @@ export class StatsCentreComponent implements OnInit {
                     .sort((a, b) => b.startDate.localeCompare(a.startDate));
                 this.measurements = measurements.map(m => new Measurement(m));
                 this.loading = false;
+                this.loadPbExercises();
                 this.buildBodyCompChart();
             },
             error: () => {
@@ -279,6 +284,40 @@ export class StatsCentreComponent implements OnInit {
 
     get hasData(): boolean {
         return (this.chartData.datasets[0]?.data?.length ?? 0) > 0;
+    }
+
+    // ── Personal Bests ────────────────────────────────────────────────────────
+
+    getPersonalBest(name: string): number | null {
+        if (!name) return null;
+        const lower = name.toLowerCase();
+        let max: number | null = null;
+        for (const record of this.allRecords) {
+            const ex = record.exercises.find(e => e.name.toLowerCase() === lower);
+            if (!ex || ex.sets.length === 0) continue;
+            const weights = ex.sets.map(s => s.weight).filter(w => w > 0);
+            if (weights.length === 0) continue;
+            const m = Math.max(...weights);
+            if (max === null || m > max) max = m;
+        }
+        return max;
+    }
+
+    setPbExercise(slot: number, name: string): void {
+        this.pbSelectedExercises[slot] = name || '';
+        localStorage.setItem(this.PB_STORAGE_KEY, JSON.stringify(this.pbSelectedExercises));
+    }
+
+    private loadPbExercises(): void {
+        try {
+            const stored = localStorage.getItem(this.PB_STORAGE_KEY);
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed)) {
+                    this.pbSelectedExercises = [...parsed, '', '', '', ''].slice(0, 4).map(v => v ?? '');
+                }
+            }
+        } catch { /* ignore */ }
     }
 
     // ── Body Composition ──────────────────────────────────────────────────────
