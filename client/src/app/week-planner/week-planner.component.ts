@@ -24,7 +24,7 @@ export class WeekPlannerComponent implements OnInit {
 	saved = false;
 	saveError = false;
 	loadError = false;
-	isEditMode = true;
+	isEditMode = false;
 
 	toggleMode() {
 		this.isEditMode = !this.isEditMode;
