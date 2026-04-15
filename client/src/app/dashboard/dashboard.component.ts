@@ -19,7 +19,7 @@ import { Workout } from '../strength/models/Workout';
 import { WorkoutRecord } from '../strength/models/WorkoutRecord';
 import { WorkoutRecordService } from '../strength/workout-records/workout-records.service';
 import { WorkoutService } from '../strength/workout-library/workout.service';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import { Goal } from '../goals/models/Goal';
 import { GoalsService } from '../goals/goals.service';
 import { Measurement } from '../progress/models/Measurement';
@@ -81,6 +81,7 @@ export class DashboardComponent implements OnInit {
 	conditioningSessions: ConditioningSession[] = [];
 	private weekPlan: WeekPlan | null = null;
 	private allMeals: Meal[] = [];
+	private weeklyDailyLogs: DailyLog[] = [];
 
 	activeGoals: Goal[] = [];
 	goalAutoValues = new Map<string, number>();
@@ -103,6 +104,10 @@ export class DashboardComponent implements OnInit {
 
 	ngOnInit(): void {
 		const id = localStorage.getItem('id') ?? '';
+		const now = new Date();
+		const weekStart = startOfWeek(now, { weekStartsOn: 1 });
+		const spansTwoMonths = weekStart.getMonth() !== now.getMonth();
+
 		forkJoin({
 			user: this.userService.getUser(id),
 			workoutRecords: this.workoutRecordService.getAllWorkoutRecords(),
@@ -114,6 +119,10 @@ export class DashboardComponent implements OnInit {
 			dailyLog: this.dailyLogService.getLog(id, this.todayStr),
 			goals: this.goalsService.getAllGoals(),
 			measurements: this.measurementsService.getAll(id),
+			monthLogs: this.dailyLogService.getMonthlyLogs(id, now.getFullYear(), now.getMonth() + 1),
+			prevMonthLogs: spansTwoMonths
+				? this.dailyLogService.getMonthlyLogs(id, weekStart.getFullYear(), weekStart.getMonth() + 1)
+				: of([] as DailyLog[]),
 		}).subscribe({
 			next: (data) => {
 				this.user = data.user;
@@ -126,6 +135,9 @@ export class DashboardComponent implements OnInit {
 				this.viewDateLog = data.dailyLog;
 				this.activeGoals = data.goals.map(g => new Goal(g));
 				this.measurements = data.measurements;
+				const weekDateStrs = new Set(this.currentWeekDays.map(d => d.dateStr));
+				this.weeklyDailyLogs = [...data.monthLogs, ...data.prevMonthLogs]
+					.filter(l => weekDateStrs.has(l.date));
 				this.loading = false;
 				this.goalsService.resolveAutoValues(this.activeGoals).subscribe(map => {
 					this.goalAutoValues = map;
@@ -304,6 +316,48 @@ export class DashboardComponent implements OnInit {
 		return this.workoutRecords
 			.filter((r) => this.isThisWeek(r.date))
 			.reduce((sum, r) => sum + r.exercises.reduce((s, e) => s + (e.sets?.length ?? 0), 0), 0);
+	}
+
+	get weeklyCaloriesEaten(): number {
+		return this.weeklyDailyLogs.reduce((total, log) => {
+			const mealCals = log.meals
+				.map(id => this.allMeals.find(m => m._id === id))
+				.filter((m): m is Meal => !!m)
+				.reduce((sum, m) => sum + m.calories, 0);
+			return total + mealCals;
+		}, 0);
+	}
+
+	get weeklyExtraCaloriesBurned(): number {
+		return this.weeklyDailyLogs.reduce((sum, log) => sum + (log.extraCaloriesBurned ?? 0), 0);
+	}
+
+	get weeklyTotalCaloriesBurned(): number {
+		return this.caloriesThisWeek + this.weeklyExtraCaloriesBurned;
+	}
+
+	/** Weekly calorie intake target (macroGoal or BMR × 7). */
+	get weeklyCalorieTarget(): number {
+		return (this.user?.macroGoals?.calories ?? this.user?.bmr ?? 0) * 7;
+	}
+
+	/** Weekly maintenance baseline (BMR × 7). */
+	get weeklyMaintenance(): number {
+		return (this.user?.bmr ?? 0) * 7;
+	}
+
+	get weeklyCalorieBalance(): number {
+		return this.weeklyCaloriesEaten - this.weeklyTotalCaloriesBurned - (this.user?.bmr ?? 0) * 7;
+	}
+
+	get weeklyCaloriesInPct(): number {
+		if (!this.weeklyCalorieTarget) return 0;
+		return Math.min(100, (this.weeklyCaloriesEaten / this.weeklyCalorieTarget) * 100);
+	}
+
+	get weeklyCaloriesOutPct(): number {
+		if (!this.weeklyMaintenance) return 0;
+		return Math.min(100, (this.weeklyTotalCaloriesBurned / this.weeklyMaintenance) * 100);
 	}
 
 	// ── Recent activity ──────────────────────────────────────────────────────
