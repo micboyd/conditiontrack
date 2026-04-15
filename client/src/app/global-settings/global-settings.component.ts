@@ -3,25 +3,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MacroGoals, UserService } from '../shared/services/user.service';
 import { SelectOption } from '../shared/components/select/select.component';
 
-const ACTIVITY_MULTIPLIERS: Record<string, number> = {
-	sedentary: 1.2,
-	light: 1.375,
-	moderate: 1.55,
-	active: 1.725,
-	veryActive: 1.9,
-};
-
 const GENDER_OPTIONS: SelectOption[] = [
 	{ value: 'male',   label: 'Male' },
 	{ value: 'female', label: 'Female' },
-];
-
-const ACTIVITY_OPTIONS: SelectOption[] = [
-	{ value: 'sedentary',  label: 'Sedentary (little or no exercise)' },
-	{ value: 'light',      label: 'Lightly Active (1–3 days/week)' },
-	{ value: 'moderate',   label: 'Moderately Active (3–5 days/week)' },
-	{ value: 'active',     label: 'Very Active (6–7 days/week)' },
-	{ value: 'veryActive', label: 'Extra Active (physical job or 2× training)' },
 ];
 
 @Component({
@@ -31,7 +15,6 @@ const ACTIVITY_OPTIONS: SelectOption[] = [
 })
 export class GlobalSettingsComponent implements OnInit {
 	readonly genderOptions = GENDER_OPTIONS;
-	readonly activityOptions = ACTIVITY_OPTIONS;
 	form!: FormGroup;
 	loading = false;
 	saving = false;
@@ -57,11 +40,10 @@ export class GlobalSettingsComponent implements OnInit {
 		});
 
 		this.bmrForm = this.fb.group({
-			gender:        ['male'],
-			age:           [null, [Validators.min(1), Validators.max(120)]],
-			weight:        [null, [Validators.min(1)]],
-			height:        [null, [Validators.min(1)]],
-			activityLevel: ['sedentary'],
+			gender: ['male'],
+			age:    [null, [Validators.min(1), Validators.max(120)]],
+			weight: [null, [Validators.min(1)]],
+			height: [null, [Validators.min(1)]],
 		});
 
 		this.bmrForm.valueChanges.subscribe(() => this.recalcBmr());
@@ -83,15 +65,16 @@ export class GlobalSettingsComponent implements OnInit {
 	}
 
 	recalcBmr(): void {
-		const { gender, age, weight, height, activityLevel } = this.bmrForm.value;
+		const { gender, age, weight, height } = this.bmrForm.value;
 		if (!age || !weight || !height) {
 			this.calculatedBmr = null;
 			return;
 		}
-		const base = gender === 'male'
-			? 10 * weight + 6.25 * height - 5 * age + 5
-			: 10 * weight + 6.25 * height - 5 * age - 161;
-		this.calculatedBmr = Math.round(base * (ACTIVITY_MULTIPLIERS[activityLevel] ?? 1.2));
+		this.calculatedBmr = Math.round(
+			gender === 'male'
+				? 10 * weight + 6.25 * height - 5 * age + 5
+				: 10 * weight + 6.25 * height - 5 * age - 161
+		);
 	}
 
 	useBmrAsGoal(): void {
