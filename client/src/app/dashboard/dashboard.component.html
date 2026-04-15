@@ -155,6 +155,22 @@
 						<p class="text-xl font-semibold text-zinc-600 leading-none">—</p>
 						<p class="text-xs text-zinc-600 mt-1.5">Not set</p>
 					}
+					@if (user?.bmr) {
+						<div class="mt-3 space-y-2">
+							<p class="text-xs text-zinc-500">Maint. {{ user!.bmr | number:'1.0-0' }} kcal</p>
+							@if (goalVsMaintenance; as gvm) {
+								<span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg"
+									[class]="gvm.type === 'deficit'  ? 'bg-emerald-950 text-emerald-400' :
+											 gvm.type === 'surplus'  ? 'bg-amber-950 text-amber-400' :
+																		 'bg-zinc-800 text-zinc-400'">
+									@if (gvm.type === 'deficit') { <i class="fa-sharp fa-solid fa-arrow-down text-[10px]"></i> }
+									@if (gvm.type === 'surplus') { <i class="fa-sharp fa-solid fa-arrow-up text-[10px]"></i> }
+									@if (gvm.type === 'on-track') { <i class="fa-sharp fa-solid fa-minus text-[10px]"></i> }
+									{{ gvm.type === 'on-track' ? 'On track' : (gvm.diff | number:'1.0-0') + ' kcal ' + gvm.type }}
+								</span>
+							}
+						</div>
+					}
 				</div>
 				<div>
 					<p class="text-sm text-zinc-400 mb-1.5">Balance</p>
