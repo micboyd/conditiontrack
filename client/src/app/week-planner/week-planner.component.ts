@@ -24,6 +24,11 @@ export class WeekPlannerComponent implements OnInit {
 	saved = false;
 	saveError = false;
 	loadError = false;
+	isEditMode = true;
+
+	toggleMode() {
+		this.isEditMode = !this.isEditMode;
+	}
 
 	private _selectedDay: DayPlan | null = null;
 	private _selectedBlock: BlockSelection = 'overarching';

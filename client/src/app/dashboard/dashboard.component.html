@@ -535,18 +535,20 @@
 
 					<!-- Planned (future days only, nothing logged yet) -->
 					@if (day.workouts.length === 0 && day.cardio.length === 0 && day.planned) {
-						@for (workout of allPlannedWorkouts(day.planned); track workout._id) {
-							<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-zinc-100 text-zinc-400 border border-dashed border-zinc-200">
-								<i class="fa-sharp fa-solid fa-dumbbell text-[9px]"></i>
-								{{ workout.name }}
-							</span>
-						}
-						@for (session of allPlannedConditioning(day.planned); track session._id) {
-							<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-zinc-100 text-zinc-400 border border-dashed border-zinc-200">
-								<i class="fa-sharp fa-solid fa-person-running text-[9px]"></i>
-								{{ session.name }}
-							</span>
-						}
+						<div class="flex flex-wrap gap-1.5">
+							@for (workout of allPlannedWorkouts(day.planned); track workout._id) {
+								<a routerLink="/week-planner" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-zinc-100 text-zinc-400 border border-dashed border-zinc-200 hover:bg-zinc-200 hover:text-zinc-600 hover:border-zinc-300 transition-colors cursor-pointer">
+									<i class="fa-sharp fa-solid fa-dumbbell text-[9px]"></i>
+									{{ workout.name }}
+								</a>
+							}
+							@for (session of allPlannedConditioning(day.planned); track session._id) {
+								<a routerLink="/week-planner" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-zinc-100 text-zinc-400 border border-dashed border-zinc-200 hover:bg-zinc-200 hover:text-zinc-600 hover:border-zinc-300 transition-colors cursor-pointer">
+									<i class="fa-sharp fa-solid fa-person-running text-[9px]"></i>
+									{{ session.name }}
+								</a>
+							}
+						</div>
 					}
 				</div>
 

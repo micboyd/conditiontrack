@@ -3,25 +3,46 @@
 <app-container [noPadding]="true"><div class="py-6 sm:py-8 flex items-center justify-between gap-3 sm:gap-6">
 	<div>
 		<h1 class="text-2xl sm:text-3xl font-bold text-zinc-900 mb-1">Week Planner</h1>
-		<p class="text-sm text-zinc-400">Changes save automatically</p>
-	</div>
-	<div class="flex-shrink-0 h-6 flex items-center">
-		@if (saving) {
-			<span class="flex items-center gap-1.5 text-sm text-zinc-400">
-				<i class="fa-sharp fa-solid fa-spinner fa-spin text-xs"></i>
-				Saving...
-			</span>
-		} @else if (saved) {
-			<span class="flex items-center gap-1.5 text-sm text-emerald-500">
-				<i class="fa-sharp fa-solid fa-check text-xs"></i>
-				Saved
-			</span>
-		} @else if (saveError) {
-			<span class="flex items-center gap-1.5 text-sm text-red-500">
-				<i class="fa-sharp fa-solid fa-triangle-exclamation text-xs"></i>
-				Save failed
-			</span>
+		@if (isEditMode) {
+			<p class="text-sm text-zinc-400">Changes save automatically</p>
+		} @else {
+			<p class="text-sm text-zinc-400">View mode</p>
 		}
+	</div>
+	<div class="flex items-center gap-3 flex-shrink-0">
+		<div class="h-6 flex items-center">
+			@if (isEditMode) {
+				@if (saving) {
+					<span class="flex items-center gap-1.5 text-sm text-zinc-400">
+						<i class="fa-sharp fa-solid fa-spinner fa-spin text-xs"></i>
+						Saving...
+					</span>
+				} @else if (saved) {
+					<span class="flex items-center gap-1.5 text-sm text-emerald-500">
+						<i class="fa-sharp fa-solid fa-check text-xs"></i>
+						Saved
+					</span>
+				} @else if (saveError) {
+					<span class="flex items-center gap-1.5 text-sm text-red-500">
+						<i class="fa-sharp fa-solid fa-triangle-exclamation text-xs"></i>
+						Save failed
+					</span>
+				}
+			}
+		</div>
+		<button (click)="toggleMode()"
+			class="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border transition cursor-pointer"
+			[ngClass]="isEditMode
+				? 'border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50'
+				: 'border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-700'">
+			@if (isEditMode) {
+				<i class="fa-sharp fa-solid fa-eye text-xs"></i>
+				View
+			} @else {
+				<i class="fa-sharp fa-solid fa-pen text-xs"></i>
+				Edit
+			}
+		</button>
 	</div>
 </div></app-container>
 </div>
@@ -56,21 +77,26 @@
 			</div>
 
 			@if (!hasAnyContent(day)) {
-				<p class="px-5 py-4 text-sm text-zinc-300 italic">Rest day — add sessions below</p>
+				<p class="px-5 py-4 text-sm text-zinc-300 italic">
+					{{ isEditMode ? 'Rest day — add sessions below' : 'Rest day' }}
+				</p>
 			}
 
 			<!-- ── All Day (overarching) ────────────────────────── -->
+			@if (isEditMode || day.workouts.length > 0 || day.conditioning.length > 0) {
 			<div class="px-4 py-3 border-b border-zinc-50">
 				<div class="flex items-center justify-between mb-2">
 					<span class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-zinc-400">
 						<i class="fa-sharp fa-solid fa-calendar-day text-xs"></i>
 						All Day
 					</span>
+					@if (isEditMode) {
 					<button (click)="openDrawer(day, 'overarching')"
 						class="flex items-center gap-1 text-xs font-medium text-zinc-400 hover:text-zinc-700 cursor-pointer transition hover:bg-zinc-100 px-3 py-1.5 rounded-full min-h-[36px]">
 						<i class="fa-sharp fa-solid fa-plus text-xs"></i>
 						Add
 					</button>
+					}
 				</div>
 				<div class="space-y-1.5">
 					@for (workout of day.workouts; track workout._id) {
@@ -79,10 +105,12 @@
 							<p class="text-sm font-medium text-blue-900 truncate">{{ workout.name }}</p>
 							<p class="text-xs text-blue-400 uppercase tracking-wide">Strength</p>
 						</div>
+						@if (isEditMode) {
 						<button (click)="removeWorkout(day.dayName, workout)"
 							class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
 							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
 						</button>
+						}
 					</div>
 					}
 					@for (session of day.conditioning; track session._id) {
@@ -91,128 +119,155 @@
 							<p class="text-sm font-medium text-green-900 truncate">{{ session.name }}</p>
 							<p class="text-xs text-green-400 uppercase tracking-wide">Cardio</p>
 						</div>
+						@if (isEditMode) {
 						<button (click)="removeConditioning(day.dayName, session)"
 							class="text-green-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
 							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
 						</button>
+						}
 					</div>
 					}
 				</div>
 			</div>
+			}
 
 			<!-- ── Morning ──────────────────────────────────────── -->
+			@if (isEditMode || day.morning.workouts.length > 0 || day.morning.conditioning.length > 0) {
 			<div class="px-4 py-3 border-b border-zinc-50">
 				<div class="flex items-center justify-between mb-2">
 					<span class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-amber-500">
 						<i class="fa-sharp fa-solid fa-sun text-xs"></i>
 						Morning
 					</span>
+					@if (isEditMode) {
 					<button (click)="openDrawer(day, 'morning')"
 						class="flex items-center gap-1 text-xs font-medium text-zinc-400 hover:text-zinc-700 cursor-pointer transition hover:bg-zinc-100 px-3 py-1.5 rounded-full min-h-[36px]">
 						<i class="fa-sharp fa-solid fa-plus text-xs"></i>
 						Add
 					</button>
+					}
 				</div>
 				<div class="space-y-1.5">
 					@for (workout of day.morning.workouts; track workout._id) {
 					<div class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
 						<p class="text-sm font-medium text-blue-900 truncate">{{ workout.name }}</p>
+						@if (isEditMode) {
 						<button (click)="removeWorkoutFromBlock(day.dayName, 'morning', workout)"
 							class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
 							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
 						</button>
+						}
 					</div>
 					}
 					@for (session of day.morning.conditioning; track session._id) {
 					<div class="flex items-center justify-between gap-2 py-2 px-3 bg-green-50 rounded-xl">
 						<p class="text-sm font-medium text-green-900 truncate">{{ session.name }}</p>
+						@if (isEditMode) {
 						<button (click)="removeConditioningFromBlock(day.dayName, 'morning', session)"
 							class="text-green-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
 							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
 						</button>
+						}
 					</div>
 					}
-					@if (day.morning.workouts.length === 0 && day.morning.conditioning.length === 0) {
+					@if (isEditMode && day.morning.workouts.length === 0 && day.morning.conditioning.length === 0) {
 						<p class="text-xs text-zinc-300 italic">Empty</p>
 					}
 				</div>
 			</div>
+			}
 
 			<!-- ── Afternoon ─────────────────────────────────────── -->
+			@if (isEditMode || day.afternoon.workouts.length > 0 || day.afternoon.conditioning.length > 0) {
 			<div class="px-4 py-3 border-b border-zinc-50">
 				<div class="flex items-center justify-between mb-2">
 					<span class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-blue-400">
 						<i class="fa-sharp fa-solid fa-cloud-sun text-xs"></i>
 						Afternoon
 					</span>
+					@if (isEditMode) {
 					<button (click)="openDrawer(day, 'afternoon')"
 						class="flex items-center gap-1 text-xs font-medium text-zinc-400 hover:text-zinc-700 cursor-pointer transition hover:bg-zinc-100 px-3 py-1.5 rounded-full min-h-[36px]">
 						<i class="fa-sharp fa-solid fa-plus text-xs"></i>
 						Add
 					</button>
+					}
 				</div>
 				<div class="space-y-1.5">
 					@for (workout of day.afternoon.workouts; track workout._id) {
 					<div class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
 						<p class="text-sm font-medium text-blue-900 truncate">{{ workout.name }}</p>
+						@if (isEditMode) {
 						<button (click)="removeWorkoutFromBlock(day.dayName, 'afternoon', workout)"
 							class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
 							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
 						</button>
+						}
 					</div>
 					}
 					@for (session of day.afternoon.conditioning; track session._id) {
 					<div class="flex items-center justify-between gap-2 py-2 px-3 bg-green-50 rounded-xl">
 						<p class="text-sm font-medium text-green-900 truncate">{{ session.name }}</p>
+						@if (isEditMode) {
 						<button (click)="removeConditioningFromBlock(day.dayName, 'afternoon', session)"
 							class="text-green-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
 							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
 						</button>
+						}
 					</div>
 					}
-					@if (day.afternoon.workouts.length === 0 && day.afternoon.conditioning.length === 0) {
+					@if (isEditMode && day.afternoon.workouts.length === 0 && day.afternoon.conditioning.length === 0) {
 						<p class="text-xs text-zinc-300 italic">Empty</p>
 					}
 				</div>
 			</div>
+			}
 
 			<!-- ── Evening ───────────────────────────────────────── -->
+			@if (isEditMode || day.evening.workouts.length > 0 || day.evening.conditioning.length > 0) {
 			<div class="px-4 py-3">
 				<div class="flex items-center justify-between mb-2">
 					<span class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-400">
 						<i class="fa-sharp fa-solid fa-moon text-xs"></i>
 						Evening
 					</span>
+					@if (isEditMode) {
 					<button (click)="openDrawer(day, 'evening')"
 						class="flex items-center gap-1 text-xs font-medium text-zinc-400 hover:text-zinc-700 cursor-pointer transition hover:bg-zinc-100 px-3 py-1.5 rounded-full min-h-[36px]">
 						<i class="fa-sharp fa-solid fa-plus text-xs"></i>
 						Add
 					</button>
+					}
 				</div>
 				<div class="space-y-1.5">
 					@for (workout of day.evening.workouts; track workout._id) {
 					<div class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
 						<p class="text-sm font-medium text-blue-900 truncate">{{ workout.name }}</p>
+						@if (isEditMode) {
 						<button (click)="removeWorkoutFromBlock(day.dayName, 'evening', workout)"
 							class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
 							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
 						</button>
+						}
 					</div>
 					}
 					@for (session of day.evening.conditioning; track session._id) {
 					<div class="flex items-center justify-between gap-2 py-2 px-3 bg-green-50 rounded-xl">
 						<p class="text-sm font-medium text-green-900 truncate">{{ session.name }}</p>
+						@if (isEditMode) {
 						<button (click)="removeConditioningFromBlock(day.dayName, 'evening', session)"
 							class="text-green-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
 							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
 						</button>
+						}
 					</div>
 					}
-					@if (day.evening.workouts.length === 0 && day.evening.conditioning.length === 0) {
+					@if (isEditMode && day.evening.workouts.length === 0 && day.evening.conditioning.length === 0) {
 						<p class="text-xs text-zinc-300 italic">Empty</p>
 					}
 				</div>
 			</div>
+			}
 
 		</div>
 		}
