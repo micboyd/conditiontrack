@@ -409,8 +409,10 @@ export class DashboardComponent implements OnInit {
 		return this.viewDayCardio.reduce((sum, r) => sum + (r.caloriesBurned ?? 0), 0);
 	}
 
+	/** Net energy balance: eaten − burned − maintenance. Negative = deficit, positive = surplus. */
 	get dailyCalorieBalance(): number {
-		return this.totalCaloriesEaten - this.totalCaloriesBurned;
+		const maintenance = this.user?.bmr ?? 0;
+		return this.totalCaloriesEaten - this.totalCaloriesBurned - maintenance;
 	}
 
 	get goalVsMaintenance(): { diff: number; type: 'deficit' | 'surplus' | 'on-track' } | null {
@@ -423,11 +425,11 @@ export class DashboardComponent implements OnInit {
 	}
 
 	get calorieBudgetStatus(): 'deficit' | 'maintenance' | 'surplus' {
-		const goal = this.user?.macroGoals?.calories;
-		if (!goal) return 'maintenance';
+		const maintenance = this.user?.bmr;
+		if (!maintenance) return 'maintenance';
 		const balance = this.dailyCalorieBalance;
-		if (balance > goal + 100) return 'surplus';
-		if (balance < goal - 100) return 'deficit';
+		if (balance > 100) return 'surplus';
+		if (balance < -100) return 'deficit';
 		return 'maintenance';
 	}
 
