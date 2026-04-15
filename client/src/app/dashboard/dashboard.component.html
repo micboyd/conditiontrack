@@ -492,27 +492,27 @@
 				</div>
 
 				<!-- Activities -->
-				<div class="flex-1 pt-0.5 space-y-1.5">
+				<div class="flex-1 pt-0.5 space-y-2">
 					@if (day.workouts.length === 0 && day.cardio.length === 0 && allPlannedWorkouts(day.planned).length === 0 && allPlannedConditioning(day.planned).length === 0) {
 						<p class="text-xs" [class]="day.isToday ? 'text-zinc-400' : 'text-zinc-300'">Rest day</p>
 					}
 
 					@for (record of day.workouts; track record._id) {
 						<div class="flex items-center gap-2">
-							<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700">
+							<a routerLink="/strength/workout-records" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors cursor-pointer">
 								<i class="fa-sharp fa-solid fa-dumbbell text-[9px]"></i>
 								{{ getWorkoutName(record.workoutId) }}
-							</span>
+							</a>
 							<span class="text-[10px] text-zinc-400">{{ record.duration }} min</span>
 						</div>
 					}
 
 					@for (record of day.cardio; track record._id) {
 						<div class="flex items-center gap-2">
-							<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-green-50 text-green-700">
+							<a routerLink="/conditioning/conditioning-records" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-green-50 text-green-700 hover:bg-green-100 transition-colors cursor-pointer">
 								<i class="fa-sharp fa-solid fa-person-running text-[9px]"></i>
 								{{ getCardioName(record.sessionId) }}
-							</span>
+							</a>
 							<span class="text-[10px] text-zinc-400">{{ record.duration }} min</span>
 						</div>
 					}
