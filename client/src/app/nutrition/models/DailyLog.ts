@@ -3,4 +3,5 @@ export interface DailyLog {
 	userId: string;
 	date: string; // 'YYYY-MM-DD'
 	meals: string[]; // array of Meal._id strings
+	extraCaloriesBurned?: number;
 }

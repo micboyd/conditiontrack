@@ -5,6 +5,7 @@ const dailyLogSchema = new mongoose.Schema(
 		userId: { type: String, required: true },
 		date: { type: String, required: true }, // stored as 'YYYY-MM-DD'
 		meals: [{ type: String }], // array of Meal _id strings
+		extraCaloriesBurned: { type: Number, default: 0 },
 	},
 	{ timestamps: true },
 );

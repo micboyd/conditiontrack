@@ -50,6 +50,11 @@ export class DashboardComponent implements OnInit {
 	viewDate: Date = new Date();
 	viewDateLog: DailyLog | null = null;
 
+	// Extra (manual) burned calories
+	showExtraCalInput = false;
+	extraCalInput: number | null = null;
+	extraCaloriesSaving = false;
+
 	mealSearchQuery = '';
 
 
@@ -212,6 +217,33 @@ export class DashboardComponent implements OnInit {
 		const userId = localStorage.getItem('id') ?? '';
 		this.dailyLogService.getLog(userId, this.viewDateStr).subscribe((log) => {
 			this.viewDateLog = log;
+			this.showExtraCalInput = false;
+		});
+	}
+
+	openExtraCalInput(): void {
+		this.extraCalInput = this.viewDateLog?.extraCaloriesBurned ?? null;
+		this.showExtraCalInput = true;
+	}
+
+	saveExtraCalories(): void {
+		const userId = localStorage.getItem('id') ?? '';
+		const calories = this.extraCalInput ?? 0;
+		this.extraCaloriesSaving = true;
+
+		const update = { extraCaloriesBurned: calories };
+
+		const obs = this.viewDateLog?._id
+			? this.dailyLogService.updateLog(this.viewDateLog._id, update)
+			: this.dailyLogService.createLog({ userId, date: this.viewDateStr, meals: [], ...update });
+
+		obs.subscribe({
+			next: (log) => {
+				this.viewDateLog = log;
+				this.showExtraCalInput = false;
+				this.extraCaloriesSaving = false;
+			},
+			error: () => { this.extraCaloriesSaving = false; },
 		});
 	}
 
@@ -406,7 +438,9 @@ export class DashboardComponent implements OnInit {
 	}
 
 	get totalCaloriesBurned(): number {
-		return this.viewDayCardio.reduce((sum, r) => sum + (r.caloriesBurned ?? 0), 0);
+		const cardio = this.viewDayCardio.reduce((sum, r) => sum + (r.caloriesBurned ?? 0), 0);
+		const extra = this.viewDateLog?.extraCaloriesBurned ?? 0;
+		return cardio + extra;
 	}
 
 	/** Net energy balance: eaten − burned − maintenance. Negative = deficit, positive = surplus. */
