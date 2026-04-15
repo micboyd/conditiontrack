@@ -164,11 +164,16 @@
 					</div>
 					}
 					@for (session of day.morning.conditioning; track session._id) {
-					<div class="flex items-center justify-between gap-2 py-2 px-3 bg-green-50 rounded-xl">
-						<p class="text-sm font-medium text-green-900 truncate">{{ session.name }}</p>
+					<div class="flex items-center justify-between gap-2 py-2 px-3 rounded-xl"
+						[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'bg-purple-50' : 'bg-green-50'">
+						<div class="min-w-0">
+							<p class="text-sm font-medium truncate" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-900' : 'text-green-900'">{{ session.name }}</p>
+							<p class="text-xs uppercase tracking-wide" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-400' : 'text-green-400'">{{ session.category?.toLowerCase() === 'recovery' ? 'Recovery' : 'Cardio' }}</p>
+						</div>
 						@if (isEditMode) {
 						<button (click)="removeConditioningFromBlock(day.dayName, 'morning', session)"
-							class="text-green-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
+							class="transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center hover:text-red-400"
+							[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-300' : 'text-green-300'">
 							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
 						</button>
 						}
@@ -210,11 +215,16 @@
 					</div>
 					}
 					@for (session of day.afternoon.conditioning; track session._id) {
-					<div class="flex items-center justify-between gap-2 py-2 px-3 bg-green-50 rounded-xl">
-						<p class="text-sm font-medium text-green-900 truncate">{{ session.name }}</p>
+					<div class="flex items-center justify-between gap-2 py-2 px-3 rounded-xl"
+						[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'bg-purple-50' : 'bg-green-50'">
+						<div class="min-w-0">
+							<p class="text-sm font-medium truncate" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-900' : 'text-green-900'">{{ session.name }}</p>
+							<p class="text-xs uppercase tracking-wide" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-400' : 'text-green-400'">{{ session.category?.toLowerCase() === 'recovery' ? 'Recovery' : 'Cardio' }}</p>
+						</div>
 						@if (isEditMode) {
 						<button (click)="removeConditioningFromBlock(day.dayName, 'afternoon', session)"
-							class="text-green-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
+							class="transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center hover:text-red-400"
+							[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-300' : 'text-green-300'">
 							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
 						</button>
 						}
@@ -256,11 +266,16 @@
 					</div>
 					}
 					@for (session of day.evening.conditioning; track session._id) {
-					<div class="flex items-center justify-between gap-2 py-2 px-3 bg-green-50 rounded-xl">
-						<p class="text-sm font-medium text-green-900 truncate">{{ session.name }}</p>
+					<div class="flex items-center justify-between gap-2 py-2 px-3 rounded-xl"
+						[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'bg-purple-50' : 'bg-green-50'">
+						<div class="min-w-0">
+							<p class="text-sm font-medium truncate" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-900' : 'text-green-900'">{{ session.name }}</p>
+							<p class="text-xs uppercase tracking-wide" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-400' : 'text-green-400'">{{ session.category?.toLowerCase() === 'recovery' ? 'Recovery' : 'Cardio' }}</p>
+						</div>
 						@if (isEditMode) {
 						<button (click)="removeConditioningFromBlock(day.dayName, 'evening', session)"
-							class="text-green-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
+							class="transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center hover:text-red-400"
+							[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-300' : 'text-green-300'">
 							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
 						</button>
 						}
