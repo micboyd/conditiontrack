@@ -6,5 +6,5 @@ import { Component } from '@angular/core';
 	standalone: false,
 })
 export class FooterComponent {
-	constructor() {}
+	readonly year = new Date().getFullYear();
 }

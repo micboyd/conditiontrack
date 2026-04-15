@@ -1,5 +1,5 @@
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { format, parseISO } from 'date-fns';
+import { differenceInDays, format, parseISO } from 'date-fns';
 
 export class TrainingBlock {
 	_id: string;
@@ -36,6 +36,13 @@ export class TrainingBlock {
 		const start = this.startDate ? format(parseISO(this.startDate), 'd MMM yyyy') : '—';
 		const end   = this.endDate   ? format(parseISO(this.endDate),   'd MMM yyyy') : 'ongoing';
 		return `${start} → ${end}`;
+	}
+
+	/** Total weeks between start and end, rounded up. Null if either date is missing. */
+	get durationWeeks(): number | null {
+		if (!this.startDate || !this.endDate) return null;
+		const days = differenceInDays(parseISO(this.endDate), parseISO(this.startDate)) + 1;
+		return Math.ceil(days / 7);
 	}
 
 	static toFormGroup(block: TrainingBlock | null, fb: FormBuilder): FormGroup {

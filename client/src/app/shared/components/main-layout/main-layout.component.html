@@ -9,6 +9,10 @@
 			<span class="text-sm font-semibold text-white">{{ activeBlock.name }}</span>
 			<span class="text-violet-300 text-sm hidden sm:inline">·</span>
 			<span class="text-sm text-violet-200 hidden sm:inline">{{ activeBlock.dateRangeLabel }}</span>
+			@if (activeBlock.durationWeeks) {
+				<span class="text-violet-300 text-sm hidden sm:inline">·</span>
+				<span class="text-sm text-violet-200 hidden sm:inline">{{ activeBlock.durationWeeks }} {{ activeBlock.durationWeeks === 1 ? 'week' : 'weeks' }}</span>
+			}
 		</div></app-container>
 	</div>
 	}
@@ -65,4 +69,6 @@
 	<main>
 		<router-outlet></router-outlet>
 	</main>
+
+	<app-footer></app-footer>
 </div>

@@ -1,0 +1,39 @@
+<footer class="bg-zinc-900">
+	<app-container [noPadding]="true">
+
+		<!-- Main footer content -->
+		<div class="py-10 lg:py-12 flex flex-col sm:flex-row sm:items-start justify-between gap-8">
+
+			<!-- Brand -->
+			<div class="flex-shrink-0">
+				<div class="flex items-center gap-2.5 mb-3">
+					<div class="w-7 h-7 bg-white rounded flex items-center justify-center flex-shrink-0">
+						<i class="fa-sharp fa-solid fa-bolt text-zinc-900 text-xs"></i>
+					</div>
+					<span class="font-semibold text-white tracking-tight">ConditionTrack</span>
+				</div>
+				<p class="text-sm text-zinc-500">Track your fitness, your way.</p>
+			</div>
+
+			<!-- Nav links -->
+			<div class="grid grid-cols-2 sm:grid-cols-3 gap-x-10 gap-y-2.5">
+				<a routerLink="/dashboard" class="text-sm text-zinc-400 hover:text-white transition">Dashboard</a>
+				<a routerLink="/strength/workout-records" class="text-sm text-zinc-400 hover:text-white transition">Strength</a>
+				<a routerLink="/conditioning/conditioning-records" class="text-sm text-zinc-400 hover:text-white transition">Cardio</a>
+				<a routerLink="/nutrition/meal-library" class="text-sm text-zinc-400 hover:text-white transition">Nutrition</a>
+				<a routerLink="/week-planner" class="text-sm text-zinc-400 hover:text-white transition">Week Planner</a>
+				<a routerLink="/progress" class="text-sm text-zinc-400 hover:text-white transition">Body Composition</a>
+				<a routerLink="/goals" class="text-sm text-zinc-400 hover:text-white transition">Goals</a>
+				<a routerLink="/training-blocks" class="text-sm text-zinc-400 hover:text-white transition">Training Blocks</a>
+				<a routerLink="/stats-centre" class="text-sm text-zinc-400 hover:text-white transition">Stats Centre</a>
+			</div>
+
+		</div>
+
+		<!-- Bottom bar -->
+		<div class="py-5 border-t border-white/10">
+			<p class="text-xs text-zinc-600">&copy; {{ year }} ConditionTrack. All rights reserved.</p>
+		</div>
+
+	</app-container>
+</footer>

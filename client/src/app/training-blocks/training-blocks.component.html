@@ -51,6 +51,11 @@
 						<p class="text-sm mt-0.5 text-zinc-400">
 							{{ block.dateRangeLabel }}
 						</p>
+						@if (block.durationWeeks) {
+							<p class="text-xs mt-1.5" [ngClass]="block.isActive ? 'text-zinc-500' : 'text-zinc-400'">
+								<i class="fa-sharp fa-solid fa-clock text-[10px] mr-1"></i>{{ block.durationWeeks }} {{ block.durationWeeks === 1 ? 'week' : 'weeks' }}
+							</p>
+						}
 					</div>
 					<!-- Status badge -->
 					<span class="text-xs font-medium px-2.5 py-1 rounded-full flex-shrink-0"
