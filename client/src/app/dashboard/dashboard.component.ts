@@ -449,6 +449,11 @@ export class DashboardComponent implements OnInit {
 		return this.totalCaloriesEaten - this.totalCaloriesBurned - maintenance;
 	}
 
+	/** Total energy out for the day: maintenance + all burned calories. */
+	get totalEnergyOut(): number {
+		return (this.user?.bmr ?? 0) + this.totalCaloriesBurned;
+	}
+
 	get goalVsMaintenance(): { diff: number; type: 'deficit' | 'surplus' | 'on-track' } | null {
 		const goal = this.user?.macroGoals?.calories;
 		const bmr = this.user?.bmr;

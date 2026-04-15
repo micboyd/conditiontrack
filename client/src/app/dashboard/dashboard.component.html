@@ -215,15 +215,28 @@
 						[class.text-rose-400]="calorieBudgetStatus === 'surplus'">
 						{{ dailyCalorieBalance > 0 ? '+' : '' }}{{ dailyCalorieBalance | number:'1.0-0' }}
 					</p>
-					<span class="inline-block mt-1.5 text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded"
-						[class.bg-emerald-900]="calorieBudgetStatus === 'deficit'"
-						[class.text-emerald-400]="calorieBudgetStatus === 'deficit'"
-						[class.bg-amber-900]="calorieBudgetStatus === 'maintenance'"
-						[class.text-amber-400]="calorieBudgetStatus === 'maintenance'"
-						[class.bg-rose-900]="calorieBudgetStatus === 'surplus'"
-						[class.text-rose-400]="calorieBudgetStatus === 'surplus'">
-						{{ calorieBudgetStatus }}
-					</span>
+					<div class="flex items-center gap-2 mt-1.5 flex-wrap">
+						<span class="inline-block text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded"
+							[class.bg-emerald-900]="calorieBudgetStatus === 'deficit'"
+							[class.text-emerald-400]="calorieBudgetStatus === 'deficit'"
+							[class.bg-amber-900]="calorieBudgetStatus === 'maintenance'"
+							[class.text-amber-400]="calorieBudgetStatus === 'maintenance'"
+							[class.bg-rose-900]="calorieBudgetStatus === 'surplus'"
+							[class.text-rose-400]="calorieBudgetStatus === 'surplus'">
+							{{ calorieBudgetStatus }}
+						</span>
+						@if (user?.bmr) {
+							<span class="text-[10px] text-zinc-600">vs. {{ totalEnergyOut | number:'1.0-0' }} out</span>
+						}
+					</div>
+					@if (user?.bmr) {
+						<p class="text-[10px] text-zinc-700 mt-1.5">
+							{{ user!.bmr | number:'1.0-0' }} BMR
+							@if (totalCaloriesBurned > 0) {
+								· {{ totalCaloriesBurned | number:'1.0-0' }} burned
+							}
+						</p>
+					}
 				</div>
 			</div>
 			<div class="border-t border-zinc-800 pt-5 grid grid-cols-3 gap-4">
