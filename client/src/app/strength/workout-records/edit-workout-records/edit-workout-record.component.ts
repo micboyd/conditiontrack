@@ -20,6 +20,7 @@ export class EditWorkoutRecordsComponent implements OnInit {
 
 	formLoading: boolean = false;
 	workoutsLoading: boolean = false;
+	closeOnSave = true;
 
 	workoutRecordForm!: FormGroup;
 
@@ -97,13 +98,13 @@ export class EditWorkoutRecordsComponent implements OnInit {
 
 		if (payload._id) {
 			this.workoutRecordService.updateWorkoutRecord(payload._id, payload).subscribe(() => {
-				this.closeEditMode();
 				this.formLoading = false;
+				if (this.closeOnSave) this.closeEditMode();
 			});
 		} else {
 			this.workoutRecordService.createWorkoutRecord(payload).subscribe(() => {
-				this.closeEditMode();
 				this.formLoading = false;
+				if (this.closeOnSave) this.closeEditMode();
 			});
 		}
 	}

@@ -64,7 +64,6 @@ export class DashboardComponent implements OnInit {
 	// Workout logging state
 	logWorkoutStep: 1 | 2 = 1;
 	logWorkoutSelectedWorkout: Workout | null = null;
-	workoutCloseOnSave = true;
 	workoutLogForm!: FormGroup;
 	workoutLogErrors: string[] = [];
 	workoutLogLoading = false;
@@ -653,9 +652,7 @@ export class DashboardComponent implements OnInit {
 		this.workoutRecordService.createWorkoutRecord(payload).subscribe((record) => {
 			this.workoutRecords = [...this.workoutRecords, record];
 			this.workoutLogLoading = false;
-			if (this.workoutCloseOnSave) {
-				this.logWorkoutDrawer.close();
-			}
+			this.logWorkoutDrawer.close();
 		});
 	}
 
