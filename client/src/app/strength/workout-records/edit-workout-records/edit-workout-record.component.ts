@@ -102,7 +102,8 @@ export class EditWorkoutRecordsComponent implements OnInit {
 				if (this.closeOnSave) this.closeEditMode();
 			});
 		} else {
-			this.workoutRecordService.createWorkoutRecord(payload).subscribe(() => {
+			this.workoutRecordService.createWorkoutRecord(payload).subscribe((record) => {
+				this.workoutRecordForm.patchValue({ _id: record._id }, { emitEvent: false });
 				this.formLoading = false;
 				if (this.closeOnSave) this.closeEditMode();
 			});
