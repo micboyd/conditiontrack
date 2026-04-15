@@ -650,11 +650,21 @@ export class DashboardComponent implements OnInit {
 
 		this.workoutLogLoading = true;
 		const payload = this.workoutLogForm.value as WorkoutRecord;
-		this.workoutRecordService.createWorkoutRecord(payload).subscribe((record) => {
-			this.workoutRecords = [...this.workoutRecords, record];
-			this.workoutLogLoading = false;
-			if (this.workoutCloseOnSave) this.logWorkoutDrawer.close();
-		});
+
+		if (payload._id) {
+			this.workoutRecordService.updateWorkoutRecord(payload._id, payload).subscribe((record) => {
+				this.workoutRecords = this.workoutRecords.map(r => r._id === record._id ? record : r);
+				this.workoutLogLoading = false;
+				if (this.workoutCloseOnSave) this.logWorkoutDrawer.close();
+			});
+		} else {
+			this.workoutRecordService.createWorkoutRecord(payload).subscribe((record) => {
+				this.workoutLogForm.patchValue({ _id: record._id }, { emitEvent: false });
+				this.workoutRecords = [...this.workoutRecords, record];
+				this.workoutLogLoading = false;
+				if (this.workoutCloseOnSave) this.logWorkoutDrawer.close();
+			});
+		}
 	}
 
 	// ── Cardio logging ───────────────────────────────────────────────────────
