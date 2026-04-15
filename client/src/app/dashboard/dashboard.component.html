@@ -48,7 +48,7 @@
 <div class="max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-12 pt-6">
 	<div class="flex gap-1 bg-zinc-100 rounded-xl p-1 w-fit">
 		<button (click)="activeTab = 'day'"
-			class="px-5 py-2 text-sm font-medium rounded-lg transition-all"
+			class="px-5 py-2 text-sm font-medium rounded-lg transition-all cursor-pointer"
 			[class.bg-white]="activeTab === 'day'"
 			[class.text-zinc-900]="activeTab === 'day'"
 			[class.shadow-sm]="activeTab === 'day'"
@@ -57,7 +57,7 @@
 			My Day
 		</button>
 		<button (click)="activeTab = 'week'"
-			class="px-5 py-2 text-sm font-medium rounded-lg transition-all"
+			class="px-5 py-2 text-sm font-medium rounded-lg transition-all cursor-pointer"
 			[class.bg-white]="activeTab === 'week'"
 			[class.text-zinc-900]="activeTab === 'week'"
 			[class.shadow-sm]="activeTab === 'week'"
