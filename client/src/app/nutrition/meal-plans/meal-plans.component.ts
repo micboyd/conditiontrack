@@ -134,7 +134,7 @@ export class MealPlansComponent implements OnInit {
 	}
 
 	getDayMacros(day: string): { protein: number; carbs: number; fat: number } {
-		return this.plan.entries
+		const raw = this.plan.entries
 			.filter(e => e.day === day)
 			.reduce(
 				(t, e) => {
@@ -143,6 +143,22 @@ export class MealPlansComponent implements OnInit {
 				},
 				{ protein: 0, carbs: 0, fat: 0 },
 			);
+		return {
+			protein: Math.round(raw.protein * 10) / 10,
+			carbs:   Math.round(raw.carbs   * 10) / 10,
+			fat:     Math.round(raw.fat     * 10) / 10,
+		};
+	}
+
+	copyDayToNext(dayName: string): void {
+		const idx = this.DAYS.indexOf(dayName);
+		if (idx < 0 || idx >= this.DAYS.length - 1) return;
+		const nextDay = this.DAYS[idx + 1];
+		this.plan.entries = [
+			...this.plan.entries.filter(e => e.day !== nextDay),
+			...this.plan.entries.filter(e => e.day === dayName).map(e => ({ ...e, day: nextDay })),
+		];
+		this.autoSave();
 	}
 
 	hasMealsThisWeek(): boolean {
