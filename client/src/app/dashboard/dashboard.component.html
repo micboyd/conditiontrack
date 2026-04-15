@@ -44,12 +44,37 @@
 </div>
 }
 
-<!-- ─── Two-panel body ───────────────────────────────────────────────────── -->
-<div class="max-w-screen-2xl mx-auto">
-<div class="flex flex-col lg:flex-row" style="min-height: calc(100vh - 112px)">
+<!-- ─── Tab bar ──────────────────────────────────────────────────────────── -->
+<div class="max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-12 pt-6">
+	<div class="flex gap-1 bg-zinc-100 rounded-xl p-1 w-fit">
+		<button (click)="activeTab = 'day'"
+			class="px-5 py-2 text-sm font-medium rounded-lg transition-all"
+			[class.bg-white]="activeTab === 'day'"
+			[class.text-zinc-900]="activeTab === 'day'"
+			[class.shadow-sm]="activeTab === 'day'"
+			[class.text-zinc-500]="activeTab !== 'day'"
+			[class.hover:text-zinc-700]="activeTab !== 'day'">
+			My Day
+		</button>
+		<button (click)="activeTab = 'week'"
+			class="px-5 py-2 text-sm font-medium rounded-lg transition-all"
+			[class.bg-white]="activeTab === 'week'"
+			[class.text-zinc-900]="activeTab === 'week'"
+			[class.shadow-sm]="activeTab === 'week'"
+			[class.text-zinc-500]="activeTab !== 'week'"
+			[class.hover:text-zinc-700]="activeTab !== 'week'">
+			My Week
+		</button>
+	</div>
+</div>
 
-	<!-- ══ LEFT PANEL — My Day ══════════════════════════════════════════════ -->
-	<div class="lg:w-1/2 lg:border-r border-zinc-100 flex flex-col bg-zinc-50">
+<!-- ─── Tab panels ────────────────────────────────────────────────────────── -->
+<div class="max-w-screen-2xl mx-auto">
+<div style="min-height: calc(100vh - 112px)">
+
+@if (activeTab === 'day') {
+	<!-- ══ My Day panel ═════════════════════════════════════════════════════ -->
+	<div class="flex flex-col bg-zinc-50">
 
 		<!-- Panel header + date nav -->
 		<div class="flex items-end justify-between px-4 sm:px-8 lg:px-12 pt-6 pb-5 lg:pt-10 lg:pb-8">
@@ -445,9 +470,11 @@
 
 		</div>
 	</div>
+}
 
-	<!-- ══ RIGHT PANEL — My Week ════════════════════════════════════════════ -->
-	<div class="lg:w-1/2 bg-zinc-50 flex flex-col">
+@if (activeTab === 'week') {
+	<!-- ══ My Week panel ════════════════════════════════════════════════════ -->
+	<div class="flex flex-col bg-zinc-50">
 
 		<!-- Panel header + weekly summary -->
 		<div class="px-4 sm:px-8 lg:px-12 pt-6 pb-5 lg:pt-10 lg:pb-8">
@@ -613,6 +640,7 @@
 		</div>
 
 	</div>
+}
 
 </div>
 </div>

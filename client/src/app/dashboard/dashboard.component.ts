@@ -46,6 +46,9 @@ export class DashboardComponent implements OnInit {
 	loading = true;
 	readonly todayStr = format(new Date(), 'yyyy-MM-dd');
 
+	// Dashboard tab
+	activeTab: 'day' | 'week' = 'day';
+
 	// Day navigation
 	viewDate: Date = new Date();
 	viewDateLog: DailyLog | null = null;
