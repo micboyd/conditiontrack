@@ -48,8 +48,16 @@
 		<i class="fa-sharp fa-solid fa-chevron-right text-sm"></i>
 	</button>
 
+	<div class="w-px h-5 bg-zinc-200"></div>
+
+	<app-date-picker
+		displayMode="icon"
+		[value]="weekStartStr"
+		(valueChange)="goToWeek($event)">
+	</app-date-picker>
+
 	@if (!isCurrentWeek) {
-	<div class="w-px h-5 bg-zinc-200 mx-1"></div>
+	<div class="w-px h-5 bg-zinc-200"></div>
 	<button (click)="goToCurrentWeek()"
 		class="text-sm font-medium text-zinc-500 hover:text-zinc-900 transition cursor-pointer px-3 py-1.5 rounded-lg hover:bg-zinc-100 whitespace-nowrap">
 		This week

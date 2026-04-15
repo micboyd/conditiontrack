@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { addDays, addWeeks, format, isToday, startOfWeek, subWeeks } from 'date-fns';
+import { addDays, addWeeks, format, isToday, parseISO, startOfWeek, subWeeks } from 'date-fns';
 import { Meal } from '../models/Meal';
 import { MacroGoals, UserService } from '../../shared/services/user.service';
 import { MealPlan } from '../models/MealPlan';
@@ -108,6 +108,12 @@ export class MealPlansComponent implements OnInit {
 
 	goToCurrentWeek(): void {
 		this.currentWeekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
+		this.selectedMobileDay = 'Monday';
+		this.loadPlan();
+	}
+
+	goToWeek(dateStr: string): void {
+		this.currentWeekStart = startOfWeek(parseISO(dateStr), { weekStartsOn: 1 });
 		this.selectedMobileDay = 'Monday';
 		this.loadPlan();
 	}
