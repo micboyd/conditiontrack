@@ -1,3 +1,4 @@
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DayPlan, TimeBlockKey, WeekPlan } from './models/WeekPlan';
 import { addDays, addWeeks, format, startOfWeek, subWeeks, parseISO } from 'date-fns';
@@ -213,6 +214,24 @@ export class WeekPlannerComponent implements OnInit {
 
 	removeConditioningFromBlock(day: string, block: TimeBlockKey, session: ConditioningSession) {
 		this._weekPlan.removeConditioningFromBlock(day, block, session);
+		this.autoSave();
+	}
+
+	dropWorkout(event: CdkDragDrop<any[]>, dayName: string, block: 'overarching' | TimeBlockKey) {
+		if (event.previousIndex === event.currentIndex) return;
+		const day = this._weekPlan.days.find(d => d.dayName === dayName);
+		if (!day) return;
+		const arr = block === 'overarching' ? day.workouts : day[block].workouts;
+		moveItemInArray(arr, event.previousIndex, event.currentIndex);
+		this.autoSave();
+	}
+
+	dropConditioning(event: CdkDragDrop<any[]>, dayName: string, block: 'overarching' | TimeBlockKey) {
+		if (event.previousIndex === event.currentIndex) return;
+		const day = this._weekPlan.days.find(d => d.dayName === dayName);
+		if (!day) return;
+		const arr = block === 'overarching' ? day.conditioning : day[block].conditioning;
+		moveItemInArray(arr, event.previousIndex, event.currentIndex);
 		this.autoSave();
 	}
 

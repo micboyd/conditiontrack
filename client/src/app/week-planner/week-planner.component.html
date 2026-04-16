@@ -130,38 +130,53 @@
 					}
 				</div>
 				<div class="space-y-1.5">
-					@for (workout of day.workouts; track workout._id) {
-					<div class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
-						<div class="min-w-0">
-							<p class="text-sm font-medium text-blue-900 truncate">{{ workout.name }}</p>
-							<p class="text-xs text-blue-400 uppercase tracking-wide">Strength</p>
+					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropWorkout($event, day.dayName, 'overarching')"
+						class="space-y-1.5">
+						@for (workout of day.workouts; track workout._id) {
+						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
+							@if (isEditMode) {
+							<i cdkDragHandle class="fa-sharp fa-solid fa-grip-dots-vertical text-blue-200 cursor-grab text-xs flex-shrink-0"></i>
+							}
+							<div class="min-w-0 flex-1">
+								<p class="text-sm font-medium text-blue-900 truncate">{{ workout.name }}</p>
+								<p class="text-xs text-blue-400 uppercase tracking-wide">Strength</p>
+							</div>
+							@if (isEditMode) {
+							<button (click)="removeWorkout(day.dayName, workout)"
+								class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
+								<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
+							</button>
+							}
 						</div>
-						@if (isEditMode) {
-						<button (click)="removeWorkout(day.dayName, workout)"
-							class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
-							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
-						</button>
 						}
 					</div>
-					}
-					@for (session of day.conditioning; track session._id) {
-					<div class="flex items-center justify-between gap-2 py-2 px-3 rounded-xl"
-						[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'bg-purple-50' : 'bg-green-50'">
-						<div class="min-w-0">
-							<p class="text-sm font-medium truncate" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-900' : 'text-green-900'">{{ session.name }}</p>
-							<p class="text-xs uppercase tracking-wide" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-400' : 'text-green-400'">
-								{{ session.category?.toLowerCase() === 'recovery' ? 'Recovery' : 'Cardio' }}
-							</p>
+					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropConditioning($event, day.dayName, 'overarching')"
+						class="space-y-1.5">
+						@for (session of day.conditioning; track session._id) {
+						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 rounded-xl"
+							[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'bg-purple-50' : 'bg-green-50'">
+							@if (isEditMode) {
+							<i cdkDragHandle class="fa-sharp fa-solid fa-grip-dots-vertical cursor-grab text-xs flex-shrink-0"
+								[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-200' : 'text-green-200'"></i>
+							}
+							<div class="min-w-0 flex-1">
+								<p class="text-sm font-medium truncate" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-900' : 'text-green-900'">{{ session.name }}</p>
+								<p class="text-xs uppercase tracking-wide" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-400' : 'text-green-400'">
+									{{ session.category?.toLowerCase() === 'recovery' ? 'Recovery' : 'Cardio' }}
+								</p>
+							</div>
+							@if (isEditMode) {
+							<button (click)="removeConditioning(day.dayName, session)"
+								class="transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center hover:text-red-400"
+								[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-300' : 'text-green-300'">
+								<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
+							</button>
+							}
 						</div>
-						@if (isEditMode) {
-						<button (click)="removeConditioning(day.dayName, session)"
-							class="transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center hover:text-red-400"
-							[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-300' : 'text-green-300'">
-							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
-						</button>
 						}
 					</div>
-					}
 				</div>
 			</div>
 			}
@@ -183,33 +198,48 @@
 					}
 				</div>
 				<div class="space-y-1.5">
-					@for (workout of day.morning.workouts; track workout._id) {
-					<div class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
-						<p class="text-sm font-medium text-blue-900 truncate">{{ workout.name }}</p>
-						@if (isEditMode) {
-						<button (click)="removeWorkoutFromBlock(day.dayName, 'morning', workout)"
-							class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
-							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
-						</button>
-						}
-					</div>
-					}
-					@for (session of day.morning.conditioning; track session._id) {
-					<div class="flex items-center justify-between gap-2 py-2 px-3 rounded-xl"
-						[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'bg-purple-50' : 'bg-green-50'">
-						<div class="min-w-0">
-							<p class="text-sm font-medium truncate" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-900' : 'text-green-900'">{{ session.name }}</p>
-							<p class="text-xs uppercase tracking-wide" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-400' : 'text-green-400'">{{ session.category?.toLowerCase() === 'recovery' ? 'Recovery' : 'Cardio' }}</p>
+					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropWorkout($event, day.dayName, 'morning')"
+						class="space-y-1.5">
+						@for (workout of day.morning.workouts; track workout._id) {
+						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
+							@if (isEditMode) {
+							<i cdkDragHandle class="fa-sharp fa-solid fa-grip-dots-vertical text-blue-200 cursor-grab text-xs flex-shrink-0"></i>
+							}
+							<p class="text-sm font-medium text-blue-900 truncate flex-1">{{ workout.name }}</p>
+							@if (isEditMode) {
+							<button (click)="removeWorkoutFromBlock(day.dayName, 'morning', workout)"
+								class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
+								<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
+							</button>
+							}
 						</div>
-						@if (isEditMode) {
-						<button (click)="removeConditioningFromBlock(day.dayName, 'morning', session)"
-							class="transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center hover:text-red-400"
-							[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-300' : 'text-green-300'">
-							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
-						</button>
 						}
 					</div>
-					}
+					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropConditioning($event, day.dayName, 'morning')"
+						class="space-y-1.5">
+						@for (session of day.morning.conditioning; track session._id) {
+						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 rounded-xl"
+							[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'bg-purple-50' : 'bg-green-50'">
+							@if (isEditMode) {
+							<i cdkDragHandle class="fa-sharp fa-solid fa-grip-dots-vertical cursor-grab text-xs flex-shrink-0"
+								[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-200' : 'text-green-200'"></i>
+							}
+							<div class="min-w-0 flex-1">
+								<p class="text-sm font-medium truncate" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-900' : 'text-green-900'">{{ session.name }}</p>
+								<p class="text-xs uppercase tracking-wide" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-400' : 'text-green-400'">{{ session.category?.toLowerCase() === 'recovery' ? 'Recovery' : 'Cardio' }}</p>
+							</div>
+							@if (isEditMode) {
+							<button (click)="removeConditioningFromBlock(day.dayName, 'morning', session)"
+								class="transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center hover:text-red-400"
+								[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-300' : 'text-green-300'">
+								<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
+							</button>
+							}
+						</div>
+						}
+					</div>
 					@if (isEditMode && day.morning.workouts.length === 0 && day.morning.conditioning.length === 0) {
 						<p class="text-xs text-zinc-300 italic">Empty</p>
 					}
@@ -234,33 +264,48 @@
 					}
 				</div>
 				<div class="space-y-1.5">
-					@for (workout of day.afternoon.workouts; track workout._id) {
-					<div class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
-						<p class="text-sm font-medium text-blue-900 truncate">{{ workout.name }}</p>
-						@if (isEditMode) {
-						<button (click)="removeWorkoutFromBlock(day.dayName, 'afternoon', workout)"
-							class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
-							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
-						</button>
-						}
-					</div>
-					}
-					@for (session of day.afternoon.conditioning; track session._id) {
-					<div class="flex items-center justify-between gap-2 py-2 px-3 rounded-xl"
-						[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'bg-purple-50' : 'bg-green-50'">
-						<div class="min-w-0">
-							<p class="text-sm font-medium truncate" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-900' : 'text-green-900'">{{ session.name }}</p>
-							<p class="text-xs uppercase tracking-wide" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-400' : 'text-green-400'">{{ session.category?.toLowerCase() === 'recovery' ? 'Recovery' : 'Cardio' }}</p>
+					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropWorkout($event, day.dayName, 'afternoon')"
+						class="space-y-1.5">
+						@for (workout of day.afternoon.workouts; track workout._id) {
+						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
+							@if (isEditMode) {
+							<i cdkDragHandle class="fa-sharp fa-solid fa-grip-dots-vertical text-blue-200 cursor-grab text-xs flex-shrink-0"></i>
+							}
+							<p class="text-sm font-medium text-blue-900 truncate flex-1">{{ workout.name }}</p>
+							@if (isEditMode) {
+							<button (click)="removeWorkoutFromBlock(day.dayName, 'afternoon', workout)"
+								class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
+								<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
+							</button>
+							}
 						</div>
-						@if (isEditMode) {
-						<button (click)="removeConditioningFromBlock(day.dayName, 'afternoon', session)"
-							class="transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center hover:text-red-400"
-							[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-300' : 'text-green-300'">
-							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
-						</button>
 						}
 					</div>
-					}
+					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropConditioning($event, day.dayName, 'afternoon')"
+						class="space-y-1.5">
+						@for (session of day.afternoon.conditioning; track session._id) {
+						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 rounded-xl"
+							[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'bg-purple-50' : 'bg-green-50'">
+							@if (isEditMode) {
+							<i cdkDragHandle class="fa-sharp fa-solid fa-grip-dots-vertical cursor-grab text-xs flex-shrink-0"
+								[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-200' : 'text-green-200'"></i>
+							}
+							<div class="min-w-0 flex-1">
+								<p class="text-sm font-medium truncate" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-900' : 'text-green-900'">{{ session.name }}</p>
+								<p class="text-xs uppercase tracking-wide" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-400' : 'text-green-400'">{{ session.category?.toLowerCase() === 'recovery' ? 'Recovery' : 'Cardio' }}</p>
+							</div>
+							@if (isEditMode) {
+							<button (click)="removeConditioningFromBlock(day.dayName, 'afternoon', session)"
+								class="transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center hover:text-red-400"
+								[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-300' : 'text-green-300'">
+								<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
+							</button>
+							}
+						</div>
+						}
+					</div>
 					@if (isEditMode && day.afternoon.workouts.length === 0 && day.afternoon.conditioning.length === 0) {
 						<p class="text-xs text-zinc-300 italic">Empty</p>
 					}
@@ -285,33 +330,48 @@
 					}
 				</div>
 				<div class="space-y-1.5">
-					@for (workout of day.evening.workouts; track workout._id) {
-					<div class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
-						<p class="text-sm font-medium text-blue-900 truncate">{{ workout.name }}</p>
-						@if (isEditMode) {
-						<button (click)="removeWorkoutFromBlock(day.dayName, 'evening', workout)"
-							class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
-							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
-						</button>
-						}
-					</div>
-					}
-					@for (session of day.evening.conditioning; track session._id) {
-					<div class="flex items-center justify-between gap-2 py-2 px-3 rounded-xl"
-						[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'bg-purple-50' : 'bg-green-50'">
-						<div class="min-w-0">
-							<p class="text-sm font-medium truncate" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-900' : 'text-green-900'">{{ session.name }}</p>
-							<p class="text-xs uppercase tracking-wide" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-400' : 'text-green-400'">{{ session.category?.toLowerCase() === 'recovery' ? 'Recovery' : 'Cardio' }}</p>
+					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropWorkout($event, day.dayName, 'evening')"
+						class="space-y-1.5">
+						@for (workout of day.evening.workouts; track workout._id) {
+						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
+							@if (isEditMode) {
+							<i cdkDragHandle class="fa-sharp fa-solid fa-grip-dots-vertical text-blue-200 cursor-grab text-xs flex-shrink-0"></i>
+							}
+							<p class="text-sm font-medium text-blue-900 truncate flex-1">{{ workout.name }}</p>
+							@if (isEditMode) {
+							<button (click)="removeWorkoutFromBlock(day.dayName, 'evening', workout)"
+								class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
+								<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
+							</button>
+							}
 						</div>
-						@if (isEditMode) {
-						<button (click)="removeConditioningFromBlock(day.dayName, 'evening', session)"
-							class="transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center hover:text-red-400"
-							[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-300' : 'text-green-300'">
-							<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
-						</button>
 						}
 					</div>
-					}
+					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropConditioning($event, day.dayName, 'evening')"
+						class="space-y-1.5">
+						@for (session of day.evening.conditioning; track session._id) {
+						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 rounded-xl"
+							[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'bg-purple-50' : 'bg-green-50'">
+							@if (isEditMode) {
+							<i cdkDragHandle class="fa-sharp fa-solid fa-grip-dots-vertical cursor-grab text-xs flex-shrink-0"
+								[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-200' : 'text-green-200'"></i>
+							}
+							<div class="min-w-0 flex-1">
+								<p class="text-sm font-medium truncate" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-900' : 'text-green-900'">{{ session.name }}</p>
+								<p class="text-xs uppercase tracking-wide" [ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-400' : 'text-green-400'">{{ session.category?.toLowerCase() === 'recovery' ? 'Recovery' : 'Cardio' }}</p>
+							</div>
+							@if (isEditMode) {
+							<button (click)="removeConditioningFromBlock(day.dayName, 'evening', session)"
+								class="transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center hover:text-red-400"
+								[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'text-purple-300' : 'text-green-300'">
+								<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
+							</button>
+							}
+						</div>
+						}
+					</div>
 					@if (isEditMode && day.evening.workouts.length === 0 && day.evening.conditioning.length === 0) {
 						<p class="text-xs text-zinc-300 italic">Empty</p>
 					}
