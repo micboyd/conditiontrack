@@ -1,49 +1,80 @@
 <!-- Page header -->
 <div class="bg-white border-b border-zinc-100">
-<app-container [noPadding]="true"><div class="py-6 sm:py-8 flex items-center justify-between gap-3 sm:gap-6">
-	<div>
-		<h1 class="text-2xl sm:text-3xl font-bold text-zinc-900 mb-1">Week Planner</h1>
-		@if (isEditMode) {
-			<p class="text-sm text-zinc-400">Changes save automatically</p>
-		} @else {
-			<p class="text-sm text-zinc-400">View mode</p>
-		}
-	</div>
-	<div class="flex items-center gap-3 flex-shrink-0">
-		<div class="h-6 flex items-center">
-			@if (isEditMode) {
-				@if (saving) {
-					<span class="flex items-center gap-1.5 text-sm text-zinc-400">
-						<i class="fa-sharp fa-solid fa-spinner fa-spin text-xs"></i>
-						Saving...
-					</span>
-				} @else if (saved) {
-					<span class="flex items-center gap-1.5 text-sm text-emerald-500">
-						<i class="fa-sharp fa-solid fa-check text-xs"></i>
-						Saved
-					</span>
-				} @else if (saveError) {
-					<span class="flex items-center gap-1.5 text-sm text-red-500">
-						<i class="fa-sharp fa-solid fa-triangle-exclamation text-xs"></i>
-						Save failed
-					</span>
+<app-container [noPadding]="true"><div class="py-6 sm:py-8 flex flex-col gap-4">
+
+	<!-- Top row: title + edit toggle -->
+	<div class="flex items-center justify-between gap-3">
+		<h1 class="text-2xl sm:text-3xl font-bold text-zinc-900">Week Planner</h1>
+		<div class="flex items-center gap-3 flex-shrink-0">
+			<div class="h-6 flex items-center">
+				@if (isEditMode) {
+					@if (saving) {
+						<span class="flex items-center gap-1.5 text-sm text-zinc-400">
+							<i class="fa-sharp fa-solid fa-spinner fa-spin text-xs"></i>
+							Saving...
+						</span>
+					} @else if (saved) {
+						<span class="flex items-center gap-1.5 text-sm text-emerald-500">
+							<i class="fa-sharp fa-solid fa-check text-xs"></i>
+							Saved
+						</span>
+					} @else if (saveError) {
+						<span class="flex items-center gap-1.5 text-sm text-red-500">
+							<i class="fa-sharp fa-solid fa-triangle-exclamation text-xs"></i>
+							Save failed
+						</span>
+					}
 				}
+			</div>
+			<button (click)="toggleMode()"
+				class="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border transition cursor-pointer"
+				[ngClass]="isEditMode
+					? 'border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50'
+					: 'border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-700'">
+				@if (isEditMode) {
+					<i class="fa-sharp fa-solid fa-eye text-xs"></i>
+					View
+				} @else {
+					<i class="fa-sharp fa-solid fa-pen text-xs"></i>
+					Edit
+				}
+			</button>
+		</div>
+	</div>
+
+	<!-- Week navigation row -->
+	<div class="flex items-center justify-between gap-3 flex-wrap">
+		<div class="flex items-center gap-2">
+			<button (click)="prevWeek()"
+				class="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-100 text-zinc-500 hover:bg-zinc-200 transition cursor-pointer">
+				<i class="fa-sharp fa-solid fa-chevron-left text-xs"></i>
+			</button>
+			<span class="text-sm font-semibold text-zinc-900 min-w-[160px] text-center">{{ weekLabel }}</span>
+			<button (click)="nextWeek()"
+				class="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-100 text-zinc-500 hover:bg-zinc-200 transition cursor-pointer">
+				<i class="fa-sharp fa-solid fa-chevron-right text-xs"></i>
+			</button>
+			<app-date-picker displayMode="icon" [value]="weekStartStr" (valueChange)="goToWeek($event)"></app-date-picker>
+			@if (!isCurrentWeek) {
+				<button (click)="goToCurrentWeek()"
+					class="px-3 h-8 rounded-full text-xs font-medium border border-zinc-200 bg-white text-zinc-500 hover:bg-zinc-100 transition cursor-pointer">
+					This week
+				</button>
 			}
 		</div>
-		<button (click)="toggleMode()"
-			class="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border transition cursor-pointer"
-			[ngClass]="isEditMode
-				? 'border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50'
-				: 'border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-700'">
-			@if (isEditMode) {
-				<i class="fa-sharp fa-solid fa-eye text-xs"></i>
-				View
-			} @else {
-				<i class="fa-sharp fa-solid fa-pen text-xs"></i>
-				Edit
-			}
-		</button>
+		@if (isEditMode) {
+			<button (click)="copyToNextWeek()" [disabled]="copying"
+				class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 rounded-full transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+				@if (copying) {
+					<i class="fa-sharp fa-solid fa-spinner fa-spin text-[10px]"></i>
+				} @else {
+					<i class="fa-sharp fa-solid fa-copy text-[10px]"></i>
+				}
+				Copy to next week
+			</button>
+		}
 	</div>
+
 </div></app-container>
 </div>
 
@@ -302,14 +333,32 @@
 			<div class="mb-7">
 				<p class="text-xs font-medium uppercase tracking-widest text-zinc-400 mb-3">Strength</p>
 				<div class="space-y-2">
-					@for (workout of allWorkouts; track workout._id) {
+					@if (pinnedWorkouts.length > 0) {
+						@for (workout of pinnedWorkouts; track workout._id) {
+						<div (click)="addItem(workout)"
+							class="flex items-center justify-between px-4 py-4 bg-zinc-900 rounded-xl hover:bg-zinc-800 cursor-pointer transition">
+							<div class="min-w-0">
+								<div class="flex items-center gap-1.5 mb-0.5">
+									<i class="fa-sharp fa-solid fa-thumbtack text-zinc-400 text-[9px]"></i>
+									<p class="text-sm font-medium text-white truncate">{{ workout.name }}</p>
+								</div>
+								<p class="text-xs text-zinc-400">{{ workout.exercises.length }} exercises</p>
+							</div>
+							<span class="text-xs px-2.5 py-1 rounded-full bg-white/10 text-white font-medium flex-shrink-0 ml-3">Add</span>
+						</div>
+						}
+					}
+					@if (pinnedWorkouts.length > 0 && otherWorkouts.length > 0) {
+						<div class="border-t border-zinc-100 pt-2"></div>
+					}
+					@for (workout of otherWorkouts; track workout._id) {
 					<div (click)="addItem(workout)"
 						class="flex items-center justify-between px-4 py-4 bg-zinc-50 rounded-xl hover:bg-zinc-100 cursor-pointer transition">
-						<div>
-							<p class="text-sm font-medium text-zinc-800">{{ workout.name }}</p>
+						<div class="min-w-0">
+							<p class="text-sm font-medium text-zinc-800 truncate">{{ workout.name }}</p>
 							<p class="text-xs text-zinc-400 mt-0.5">{{ workout.exercises.length }} exercises</p>
 						</div>
-						<span class="text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-medium flex-shrink-0">Add</span>
+						<span class="text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-medium flex-shrink-0 ml-3">Add</span>
 					</div>
 					}
 				</div>

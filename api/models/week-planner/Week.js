@@ -27,7 +27,8 @@ const dayPlanSchema = new mongoose.Schema({
 
 const weekPlanSchema = new mongoose.Schema(
 	{
-		userId: { type: String, required: true },
+		userId:    { type: String, required: true },
+		weekStart: { type: String },
 		days: {
 			type: [dayPlanSchema],
 			default: () => [
@@ -43,5 +44,7 @@ const weekPlanSchema = new mongoose.Schema(
 	},
 	{ timestamps: true },
 );
+
+weekPlanSchema.index({ userId: 1, weekStart: 1 }, { unique: true, sparse: true });
 
 module.exports = mongoose.model('WeekPlan', weekPlanSchema);

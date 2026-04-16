@@ -31,6 +31,7 @@ export interface DayPlanDTO {
 
 export interface WeekPlanDTO {
 	userId: string;
+	weekStart: string;
 	days: DayPlanDTO[];
 }
 
@@ -39,11 +40,13 @@ const emptyBlock = (): TimeBlock => ({ workouts: [], conditioning: [] });
 export class WeekPlan {
 	userId: string;
 	_id: string;
+	weekStart: string;
 	days: DayPlan[];
 
 	constructor(weekPlan?: Partial<WeekPlan>) {
 		this._id = weekPlan?._id ?? '';
 		this.userId = weekPlan?.userId ?? localStorage.getItem('id') ?? '';
+		this.weekStart = weekPlan?.weekStart ?? '';
 
 		const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -128,6 +131,7 @@ export class WeekPlan {
 	payload(): WeekPlanDTO {
 		return {
 			userId: this.userId,
+			weekStart: this.weekStart,
 			days: this.days.map(d => ({
 				...(d._id && { _id: d._id }),
 				dayName:      d.dayName,

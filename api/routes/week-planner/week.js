@@ -1,6 +1,5 @@
-// routes/programming/weekPlan.js
 const express = require('express');
-const WeekPlan = require('../../models/week-planner/Week'); // adjust path if needed
+const WeekPlan = require('../../models/week-planner/Week');
 
 const router = express.Router();
 
@@ -15,7 +14,40 @@ const POPULATE_PATHS = [
 	{ path: 'days.evening.conditioning' },
 ];
 
-// Create a new WeekPlan (return populated)
+// Upsert a WeekPlan by userId + weekStart
+router.post('/upsert', async (req, res) => {
+	try {
+		const { userId, weekStart, days } = req.body;
+		const plan = await WeekPlan.findOneAndUpdate(
+			{ userId, weekStart },
+			{ userId, weekStart, days },
+			{ new: true, upsert: true, setDefaultsOnInsert: true },
+		).populate(POPULATE_PATHS);
+		res.json(plan);
+	} catch (err) {
+		res.status(400).json({ error: err.message });
+	}
+});
+
+// Copy one week's plan to another week
+router.post('/copy', async (req, res) => {
+	try {
+		const { userId, fromWeekStart, toWeekStart } = req.body;
+		const source = await WeekPlan.findOne({ userId, weekStart: fromWeekStart });
+		if (!source) return res.status(404).json({ error: 'Source week plan not found' });
+
+		const plan = await WeekPlan.findOneAndUpdate(
+			{ userId, weekStart: toWeekStart },
+			{ userId, weekStart: toWeekStart, days: source.days },
+			{ new: true, upsert: true, setDefaultsOnInsert: true },
+		).populate(POPULATE_PATHS);
+		res.json(plan);
+	} catch (err) {
+		res.status(400).json({ error: err.message });
+	}
+});
+
+// Create a new WeekPlan (legacy — kept for backwards compat)
 router.post('/', async (req, res) => {
 	try {
 		const plan = await WeekPlan.create(req.body);
@@ -26,13 +58,10 @@ router.post('/', async (req, res) => {
 	}
 });
 
-// Update an existing WeekPlan (return populated)
+// Update an existing WeekPlan by ID
 router.put('/:id', async (req, res) => {
 	try {
-		const updated = await WeekPlan.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate(
-			POPULATE_PATHS,
-		);
-
+		const updated = await WeekPlan.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate(POPULATE_PATHS);
 		if (!updated) return res.status(404).json({ error: 'WeekPlan not found' });
 		res.json(updated);
 	} catch (err) {
@@ -40,23 +69,24 @@ router.put('/:id', async (req, res) => {
 	}
 });
 
-// Read all WeekPlans for a user (always populated)
-router.get('/:userId', async (req, res) => {
+// Get a specific week's plan by userId + weekStart
+router.get('/:userId/:weekStart', async (req, res) => {
 	try {
-		const plans = await WeekPlan.find({ userId: req.params.userId }).populate(POPULATE_PATHS);
-		res.json(plans[0] ?? null); // always return valid JSON — null when no plan exists
+		const plan = await WeekPlan.findOne({
+			userId: req.params.userId,
+			weekStart: req.params.weekStart,
+		}).populate(POPULATE_PATHS);
+		res.json(plan ?? null);
 	} catch (err) {
 		res.status(500).json({ error: err.message });
 	}
 });
 
-// Read one WeekPlan by ID (always populated)
-router.get('/:id', async (req, res) => {
+// Get all plans for a user (legacy)
+router.get('/:userId', async (req, res) => {
 	try {
-		const plan = await WeekPlan.findById(req.params.id).populate(POPULATE_PATHS);
-
-		if (!plan) return res.status(404).json({ error: 'WeekPlan not found' });
-		res.json(plan);
+		const plans = await WeekPlan.find({ userId: req.params.userId }).populate(POPULATE_PATHS);
+		res.json(plans[0] ?? null);
 	} catch (err) {
 		res.status(500).json({ error: err.message });
 	}
@@ -74,4 +104,3 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
-

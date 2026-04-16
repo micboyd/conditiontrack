@@ -44,6 +44,36 @@
 </div>
 }
 
+<!-- ─── Active Goals ──────────────────────────────────────────────────────── -->
+@if (activeGoals.length > 0) {
+<div class="max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-12 pt-6">
+	<div class="flex items-center justify-between mb-3">
+		<p class="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Active Goals</p>
+		<a routerLink="/goals" class="text-[10px] font-medium text-zinc-400 hover:text-zinc-700 transition">
+			View all
+		</a>
+	</div>
+	<div class="space-y-3">
+		@for (goal of activeGoals.slice(0, 4); track goal._id) {
+			<div class="bg-white border border-zinc-100 rounded-xl px-4 py-3">
+				<div class="flex items-center justify-between mb-1.5">
+					<p class="text-xs font-semibold text-zinc-800 truncate mr-2">{{ goal.title }}</p>
+					<span class="text-[11px] font-medium text-zinc-500 flex-shrink-0">
+						{{ getGoalCurrent(goal) | number:'1.0-1' }}/{{ goal.targetValue | number:'1.0-1' }} {{ goal.unit }}
+					</span>
+				</div>
+				<div class="h-1.5 bg-zinc-200 rounded-full overflow-hidden">
+					<div class="h-full rounded-full transition-all duration-500"
+						[ngClass]="getGoalProgress(goal) >= 100 ? 'bg-green-500' : 'bg-zinc-900'"
+						[style.width.%]="getGoalProgress(goal)">
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+</div>
+}
+
 <!-- ─── Tab bar ──────────────────────────────────────────────────────────── -->
 <div class="max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-12 pt-6">
 	<div class="flex gap-1 bg-zinc-100 rounded-xl p-1 w-fit">
@@ -106,55 +136,6 @@
 					</app-date-picker>
 				</div>
 			</div>
-		</div>
-
-		<!-- Strength & Cardio Stats -->
-		<div class="mx-4 sm:mx-8 lg:mx-12 mb-5 lg:mb-6 flex flex-col gap-4">
-
-			<!-- Strength -->
-			<div class="flex-1 bg-white rounded-2xl shadow-sm px-5 py-4">
-				<div class="flex items-center gap-1.5 mb-3">
-					<i class="fa-sharp fa-solid fa-dumbbell text-blue-400 text-[10px]"></i>
-					<span class="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest">Strength</span>
-				</div>
-				@if (dayWorkoutDetails.length > 0) {
-					<div class="flex flex-col gap-2">
-						@for (w of dayWorkoutDetails; track w.name) {
-							<div class="flex items-center justify-between">
-								<span class="text-sm font-semibold text-zinc-900">{{ w.name }}</span>
-								<span class="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 uppercase tracking-wide">
-									<i class="fa-sharp fa-solid fa-circle-check text-emerald-500"></i> Done
-								</span>
-							</div>
-						}
-					</div>
-				} @else {
-					<p class="text-sm text-zinc-400">No workout logged</p>
-				}
-			</div>
-
-			<!-- Cardio -->
-			<div class="flex-1 bg-white rounded-2xl shadow-sm px-5 py-4">
-				<div class="flex items-center gap-1.5 mb-3">
-					<i class="fa-sharp fa-solid fa-person-running text-green-500 text-[10px]"></i>
-					<span class="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest">Cardio</span>
-				</div>
-				<div class="flex divide-x divide-zinc-100">
-					<div class="pr-3 flex-1">
-						<p class="text-xl font-bold text-zinc-900 leading-none">{{ dayCardioSessions }}</p>
-						<p class="text-[10px] font-medium text-zinc-400 uppercase tracking-wide mt-1">Sessions</p>
-					</div>
-					<div class="px-3 flex-1">
-						<p class="text-xl font-bold text-zinc-900 leading-none">{{ dayCardioDuration | number:'1.0-0' }}<span class="text-[10px] font-normal text-zinc-400 ml-0.5">m</span></p>
-						<p class="text-[10px] font-medium text-zinc-400 uppercase tracking-wide mt-1">Time</p>
-					</div>
-					<div class="pl-3 flex-1">
-						<p class="text-xl font-bold text-zinc-900 leading-none">{{ dayCardioCalories | number:'1.0-0' }}<span class="text-[10px] font-normal text-zinc-400 ml-0.5">kcal</span></p>
-						<p class="text-[10px] font-medium text-zinc-400 uppercase tracking-wide mt-1">Burned</p>
-					</div>
-				</div>
-			</div>
-
 		</div>
 
 		<!-- Daily totals card -->
@@ -304,66 +285,6 @@
 		<!-- Activity sections -->
 		<div class="px-4 sm:px-8 lg:px-12 pb-6 lg:pb-10 space-y-5 flex-1">
 
-			<!-- Day's Plan -->
-			@if (viewDayPlanned.workouts.length > 0 || viewDayPlanned.conditioning.length > 0) {
-			<div class="bg-white rounded-2xl overflow-hidden shadow-sm">
-				<div class="px-5 py-4 border-b border-zinc-50 flex items-center gap-2.5">
-					<div class="w-7 h-7 rounded-lg bg-violet-100 flex items-center justify-center flex-shrink-0">
-						<i class="fa-sharp fa-solid fa-calendar-day text-violet-600 text-[11px]"></i>
-					</div>
-					<span class="text-sm font-semibold text-zinc-900">Day's Plan</span>
-				</div>
-				<ul class="divide-y divide-zinc-50 px-5">
-					@for (workout of viewDayPlanned.workouts; track workout._id) {
-					<li class="flex items-center justify-between py-3 gap-3">
-						<div class="flex items-center gap-2.5 min-w-0">
-							<div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
-								[class]="isWorkoutLoggedToday(workout._id) ? 'bg-emerald-100' : 'bg-zinc-100'">
-								<i [class]="isWorkoutLoggedToday(workout._id) ? 'fa-check text-emerald-500' : 'fa-dumbbell text-zinc-400'"
-									class="fa-sharp fa-solid text-[9px]"></i>
-							</div>
-							<div class="min-w-0">
-								<p class="text-sm font-medium text-zinc-800 truncate">{{ workout.name }}</p>
-								<p class="text-xs text-blue-400 uppercase tracking-wide">Strength</p>
-							</div>
-						</div>
-						@if (!isWorkoutLoggedToday(workout._id)) {
-						<button (click)="openLogWorkoutForPlanned(workout)"
-							class="flex-shrink-0 text-xs font-medium text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 px-3 py-1.5 rounded-full transition cursor-pointer">
-							Log
-						</button>
-						} @else {
-						<span class="flex-shrink-0 text-xs font-medium text-emerald-500 bg-emerald-50 px-3 py-1.5 rounded-full">Done</span>
-						}
-					</li>
-					}
-					@for (session of viewDayPlanned.conditioning; track session._id) {
-					<li class="flex items-center justify-between py-3 gap-3">
-						<div class="flex items-center gap-2.5 min-w-0">
-							<div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
-								[class]="isCardioLoggedToday(session._id) ? 'bg-emerald-100' : 'bg-zinc-100'">
-								<i [class]="isCardioLoggedToday(session._id) ? 'fa-check text-emerald-500' : 'fa-person-running text-zinc-400'"
-									class="fa-sharp fa-solid text-[9px]"></i>
-							</div>
-							<div class="min-w-0">
-								<p class="text-sm font-medium text-zinc-800 truncate">{{ session.name }}</p>
-								<p class="text-xs text-green-400 uppercase tracking-wide">Cardio</p>
-							</div>
-						</div>
-						@if (!isCardioLoggedToday(session._id)) {
-						<button (click)="openLogCardioForPlanned(session)"
-							class="flex-shrink-0 text-xs font-medium text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 px-3 py-1.5 rounded-full transition cursor-pointer">
-							Log
-						</button>
-						} @else {
-						<span class="flex-shrink-0 text-xs font-medium text-emerald-500 bg-emerald-50 px-3 py-1.5 rounded-full">Done</span>
-						}
-					</li>
-					}
-				</ul>
-			</div>
-			}
-
 			<!-- Meals -->
 			<div class="bg-white rounded-2xl overflow-hidden shadow-sm">
 				<div class="px-5 py-4 flex items-center justify-between border-b border-zinc-50">
@@ -413,10 +334,30 @@
 						Log
 					</button>
 				</div>
-				@if (viewDayWorkouts.length === 0) {
+				@if (viewDayPlanned.workouts.length === 0 && viewDayWorkouts.length === 0) {
 					<p class="text-sm text-zinc-300 py-5 text-center">No workouts logged</p>
 				} @else {
 					<ul class="divide-y divide-zinc-50 px-5">
+						@for (workout of viewDayPlanned.workouts; track workout._id) {
+						<li class="flex items-center justify-between py-3 gap-3">
+							<div class="flex items-center gap-2 min-w-0">
+								<div class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+									[class]="isWorkoutLoggedToday(workout._id) ? 'bg-emerald-100' : 'bg-zinc-100'">
+									<i [class]="isWorkoutLoggedToday(workout._id) ? 'fa-check text-emerald-500' : 'fa-dumbbell text-zinc-400'"
+										class="fa-sharp fa-solid text-[8px]"></i>
+								</div>
+								<p class="text-sm font-medium text-zinc-800 truncate">{{ workout.name }}</p>
+							</div>
+							@if (!isWorkoutLoggedToday(workout._id)) {
+							<button (click)="openLogWorkoutForPlanned(workout)"
+								class="flex-shrink-0 text-xs font-medium text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 px-3 py-1.5 rounded-full transition cursor-pointer">
+								Log
+							</button>
+							} @else {
+							<span class="flex-shrink-0 text-xs font-medium text-emerald-500 bg-emerald-50 px-3 py-1.5 rounded-full">Done</span>
+							}
+						</li>
+						}
 						@for (record of viewDayWorkouts; track record._id) {
 						<li class="flex items-center justify-between py-3">
 							<div class="min-w-0">
@@ -447,10 +388,30 @@
 						Log
 					</button>
 				</div>
-				@if (viewDayCardio.length === 0) {
+				@if (viewDayPlanned.conditioning.length === 0 && viewDayCardio.length === 0) {
 					<p class="text-sm text-zinc-300 py-5 text-center">No cardio logged</p>
 				} @else {
 					<ul class="divide-y divide-zinc-50 px-5">
+						@for (session of viewDayPlanned.conditioning; track session._id) {
+						<li class="flex items-center justify-between py-3 gap-3">
+							<div class="flex items-center gap-2 min-w-0">
+								<div class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+									[class]="isCardioLoggedToday(session._id) ? 'bg-emerald-100' : 'bg-zinc-100'">
+									<i [class]="isCardioLoggedToday(session._id) ? 'fa-check text-emerald-500' : 'fa-person-running text-zinc-400'"
+										class="fa-sharp fa-solid text-[8px]"></i>
+								</div>
+								<p class="text-sm font-medium text-zinc-800 truncate">{{ session.name }}</p>
+							</div>
+							@if (!isCardioLoggedToday(session._id)) {
+							<button (click)="openLogCardioForPlanned(session)"
+								class="flex-shrink-0 text-xs font-medium text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 px-3 py-1.5 rounded-full transition cursor-pointer">
+								Log
+							</button>
+							} @else {
+							<span class="flex-shrink-0 text-xs font-medium text-emerald-500 bg-emerald-50 px-3 py-1.5 rounded-full">Done</span>
+							}
+						</li>
+						}
 						@for (record of viewDayCardio; track record._id) {
 						<li class="flex items-center justify-between py-3">
 							<div class="min-w-0">
@@ -597,36 +558,6 @@
 			}
 
 		</div>
-
-		<!-- Goals widget -->
-		@if (activeGoals.length > 0) {
-			<div class="px-4 sm:px-8 lg:px-12 pb-6 lg:pb-8 -mt-2">
-				<div class="flex items-center justify-between mb-3">
-					<p class="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Active Goals</p>
-					<a routerLink="/goals" class="text-[10px] font-medium text-zinc-400 hover:text-zinc-700 transition">
-						View all
-					</a>
-				</div>
-				<div class="space-y-3">
-					@for (goal of activeGoals.slice(0, 4); track goal._id) {
-						<div class="bg-white border border-zinc-100 rounded-xl px-4 py-3">
-							<div class="flex items-center justify-between mb-1.5">
-								<p class="text-xs font-semibold text-zinc-800 truncate mr-2">{{ goal.title }}</p>
-								<span class="text-[11px] font-medium text-zinc-500 flex-shrink-0">
-									{{ getGoalCurrent(goal) | number:'1.0-1' }}/{{ goal.targetValue | number:'1.0-1' }} {{ goal.unit }}
-								</span>
-							</div>
-							<div class="h-1.5 bg-zinc-200 rounded-full overflow-hidden">
-								<div class="h-full rounded-full transition-all duration-500"
-									[ngClass]="getGoalProgress(goal) >= 100 ? 'bg-green-500' : 'bg-zinc-900'"
-									[style.width.%]="getGoalProgress(goal)">
-								</div>
-							</div>
-						</div>
-					}
-				</div>
-			</div>
-		}
 
 		<!-- Mon–Sun rows -->
 		<div class="flex-1 border-t border-zinc-100">
