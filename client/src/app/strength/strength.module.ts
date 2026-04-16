@@ -1,5 +1,6 @@
 import { AppRoutingModule } from '../app-routing.module';
 import { CommonModule } from '@angular/common';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { EditExerciseComponent } from './exercise-library/edit-exercise/edit-exercise.component';
 import { EditWorkoutComponent } from './workout-library/edit-workout/edit-workout.component';
 import { EditWorkoutRecordsComponent } from './workout-records/edit-workout-records/edit-workout-record.component';
@@ -24,7 +25,7 @@ import { WorkoutService } from './workout-library/workout.service';
 		EditWorkoutComponent,
 		EditWorkoutRecordsComponent,
 	],
-	imports: [CommonModule, AppRoutingModule, FormsModule, ReactiveFormsModule, SharedModule],
+	imports: [CommonModule, AppRoutingModule, FormsModule, ReactiveFormsModule, SharedModule, DragDropModule],
 	exports: [StrengthComponent],
 	providers: [WorkoutService, ExerciseService, WorkoutRecordService],
 })

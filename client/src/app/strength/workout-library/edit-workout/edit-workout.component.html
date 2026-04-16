@@ -59,31 +59,32 @@
 				@if (selectedExercises.length > 0) {
 				<div>
 					<p class="text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-2">Selected</p>
-					<div class="space-y-2">
+					<div cdkDropList (cdkDropListDropped)="dropExercise($event)" class="space-y-2">
 						@for (exercise of selectedExercises; track exercise._id) {
-							<div class="px-3 py-2.5 bg-zinc-900 border border-zinc-900 rounded-lg text-white">
-								<div class="flex items-center justify-between mb-2">
+							<div cdkDrag class="px-3 py-3 bg-zinc-900 border border-zinc-900 rounded-lg text-white">
+								<div class="flex items-center justify-between mb-3">
+									<i cdkDragHandle class="fa-sharp fa-solid fa-grip-dots-vertical text-zinc-600 cursor-grab text-sm flex-shrink-0 mr-2.5"></i>
 									<span class="text-sm font-medium truncate flex-1 mr-2">{{ exercise.name }}</span>
 									<button type="button" (click)="removeExercise(exercise)"
 										class="text-zinc-500 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1 -mr-1">
 										<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
 									</button>
 								</div>
-								<div class="flex items-center gap-2">
-									<div class="flex items-center gap-1">
+								<div class="flex items-center gap-3 pl-5">
+									<div class="flex items-center gap-2">
 										<input type="number" min="1"
 											[value]="exercise.defaultSets"
 											(change)="updateDefaultSets(exercise, $any($event.target).value)"
-											class="w-12 text-xs text-zinc-900 bg-white rounded px-1.5 py-1.5 text-center focus:outline-none focus:ring-1 focus:ring-violet-400" />
-										<span class="text-[10px] text-zinc-400">sets</span>
+											class="w-14 text-sm text-zinc-900 bg-white rounded-lg px-2 py-2 text-center focus:outline-none focus:ring-1 focus:ring-violet-400" />
+										<span class="text-xs text-zinc-400">sets</span>
 									</div>
-									<span class="text-zinc-600 text-xs">×</span>
-									<div class="flex items-center gap-1">
+									<span class="text-zinc-500 text-sm">×</span>
+									<div class="flex items-center gap-2">
 										<input type="number" min="1"
 											[value]="exercise.defaultReps"
 											(change)="updateDefaultReps(exercise, $any($event.target).value)"
-											class="w-12 text-xs text-zinc-900 bg-white rounded px-1.5 py-1.5 text-center focus:outline-none focus:ring-1 focus:ring-violet-400" />
-										<span class="text-[10px] text-zinc-400">reps</span>
+											class="w-14 text-sm text-zinc-900 bg-white rounded-lg px-2 py-2 text-center focus:outline-none focus:ring-1 focus:ring-violet-400" />
+										<span class="text-xs text-zinc-400">reps</span>
 									</div>
 								</div>
 							</div>

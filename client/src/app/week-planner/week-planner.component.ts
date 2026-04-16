@@ -28,6 +28,7 @@ export class WeekPlannerComponent implements OnInit {
 	loadError = false;
 	isEditMode = false;
 	copying = false;
+	sessionToView: ConditioningSession | null = null;
 
 	currentWeekStart: Date = startOfWeek(new Date(), { weekStartsOn: 1 });
 

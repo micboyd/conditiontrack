@@ -1,3 +1,4 @@
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
@@ -58,24 +59,22 @@ export class EditWorkoutComponent implements OnInit, OnChanges {
 		this.exerciseService.getAllExercises().subscribe(exercises => {
 			this.allExercises = exercises.map(e => new Exercise(e));
 
-			const selectedIds = this.selectedWorkout?.exercises?.map(e => e._id) ?? [];
+			if (this.selectedWorkout?.exercises?.length) {
+				// Rebuild in saved order so drag ordering is preserved
+				this.selectedExercises = this.selectedWorkout.exercises
+					.map(saved => {
+						const ex = this.allExercises.find(e => e._id === saved._id);
+						if (!ex) return null;
+						return { _id: saved._id, name: ex.name, defaultSets: saved.defaultSets ?? 3, defaultReps: saved.defaultReps ?? 10 };
+					})
+					.filter(Boolean) as WorkoutExerciseTemplate[];
 
-			this.selectedExercises = [];
-			this.avalibleExercises = [];
-
-			this.allExercises.forEach(ex => {
-				if (selectedIds.includes(ex._id)) {
-					const existing = this.selectedWorkout!.exercises.find(e => e._id === ex._id);
-					this.selectedExercises.push({
-						_id: ex._id,
-						name: ex.name,
-						defaultSets: existing?.defaultSets ?? 3,
-						defaultReps: existing?.defaultReps ?? 10,
-					});
-				} else {
-					this.avalibleExercises.push(ex);
-				}
-			});
+				const selectedIds = new Set(this.selectedExercises.map(e => e._id));
+				this.avalibleExercises = this.allExercises.filter(e => !selectedIds.has(e._id));
+			} else {
+				this.selectedExercises = [];
+				this.avalibleExercises = [...this.allExercises];
+			}
 
 			this.exercisesLoading = false;
 		});
@@ -101,6 +100,11 @@ export class EditWorkoutComponent implements OnInit, OnChanges {
 			const ex = this.allExercises.find(e => e._id === template._id);
 			if (ex) this.avalibleExercises.push(ex);
 		}
+	}
+
+	dropExercise(event: CdkDragDrop<WorkoutExerciseTemplate[]>): void {
+		if (event.previousIndex === event.currentIndex) return;
+		moveItemInArray(this.selectedExercises, event.previousIndex, event.currentIndex);
 	}
 
 	updateDefaultSets(exercise: WorkoutExerciseTemplate, value: string): void {

@@ -9,3 +9,33 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+
+/* ── Drag & drop ──────────────────────────────────────────── */
+
+/* Floating preview that follows the cursor */
+.cdk-drag-preview {
+    border-radius: 12px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.08);
+    opacity: 0.96;
+    cursor: grabbing !important;
+}
+
+/* Ghost placeholder left in the list */
+.cdk-drag-placeholder {
+    background: rgba(0, 0, 0, 0.04);
+    border: 1.5px dashed rgba(0, 0, 0, 0.12);
+    border-radius: 12px;
+    opacity: 1;
+    /* hide original content in the placeholder */
+    & > * { opacity: 0; }
+}
+
+/* Surrounding items slide smoothly to make room */
+.cdk-drop-list-dragging .cdk-drag:not(.cdk-drag-placeholder) {
+    transition: transform 220ms cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Item animates smoothly when dropped */
+.cdk-drag-animating {
+    transition: transform 260ms cubic-bezier(0.25, 0.8, 0.25, 1);
+}
