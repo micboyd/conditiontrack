@@ -116,7 +116,7 @@ export class DashboardComponent implements OnInit {
 			conditioningRecords: this.conditioningRecordService.getAllConditioningRecords(),
 			workouts: this.workoutService.getAllWorkouts(),
 			conditioningSessions: this.conditioningLibraryService.getAllConditioningSessions(),
-			weekPlan: this.weekPlannerService.getAllWeekPlans(),
+			weekPlan: this.weekPlannerService.getWeekPlanByWeek(id, format(weekStart, 'yyyy-MM-dd')),
 			mealLibrary: this.mealLibraryService.getAllMeals(),
 			dailyLog: this.dailyLogService.getLog(id, this.todayStr),
 			goals: this.goalsService.getAllGoals(),

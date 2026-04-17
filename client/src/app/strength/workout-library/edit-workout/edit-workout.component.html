@@ -35,77 +35,89 @@
 			}
 		</div>
 
+		<div class="flex items-center justify-between py-1">
+			<div>
+				<p class="text-xs font-medium text-zinc-700">Show in Week Planner</p>
+				<p class="text-[11px] text-zinc-400 mt-0.5">Pin this workout to the top of the planner</p>
+			</div>
+			<button type="button"
+				(click)="workoutForm.get('showInWeekPlanner')!.setValue(!workoutForm.get('showInWeekPlanner')!.value)"
+				class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none"
+				[class]="workoutForm.get('showInWeekPlanner')!.value ? 'bg-zinc-900' : 'bg-zinc-200'">
+				<span class="pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow transform transition duration-200"
+					[class]="workoutForm.get('showInWeekPlanner')!.value ? 'translate-x-4' : 'translate-x-0'"></span>
+			</button>
+		</div>
+
 		@if (exercisesLoading) {
 			<app-loading-indicator [loading]="true"></app-loading-indicator>
 		} @else {
-			<div>
-				<p class="text-xs font-medium text-zinc-500 mb-2">Exercises</p>
-				<div class="grid grid-cols-2 gap-4">
-					<div>
-						<p class="text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-2">Available</p>
+			<div class="space-y-4">
+				<p class="text-xs font-medium text-zinc-500">Exercises</p>
 
-						<!-- Search -->
-						<div class="relative mb-2">
-							<i class="fa-sharp fa-solid fa-magnifying-glass absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400 text-[11px] pointer-events-none"></i>
-							<input
-								type="text"
-								placeholder="Search..."
-								[value]="exerciseSearch"
-								(input)="exerciseSearch = $any($event.target).value"
-								class="w-full pl-7 pr-3 py-1.5 text-xs border border-zinc-200 rounded-lg bg-zinc-50 text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition" />
-						</div>
-
-						<div class="space-y-1.5 max-h-56 overflow-y-auto">
-							@for (exercise of filteredAvailableExercises; track exercise._id) {
-								<div (click)="selectExercise(exercise)"
-									class="flex items-center justify-between px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm text-zinc-700 hover:border-zinc-400 hover:bg-zinc-100 cursor-pointer transition-colors">
-									<span>{{ exercise.name }}</span>
-									<i class="fa-sharp fa-solid fa-plus text-zinc-400 text-xs"></i>
+				<!-- Selected exercises -->
+				@if (selectedExercises.length > 0) {
+				<div>
+					<p class="text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-2">Selected</p>
+					<div cdkDropList (cdkDropListDropped)="dropExercise($event)" class="space-y-2">
+						@for (exercise of selectedExercises; track exercise._id) {
+							<div cdkDrag class="px-3 py-3 bg-zinc-900 border border-zinc-900 rounded-lg text-white">
+								<div class="flex items-center justify-between mb-3">
+									<i cdkDragHandle class="fa-sharp fa-solid fa-grip-dots-vertical text-zinc-600 cursor-grab text-sm flex-shrink-0 mr-2.5"></i>
+									<span class="text-sm font-medium truncate flex-1 mr-2">{{ exercise.name }}</span>
+									<button type="button" (click)="removeExercise(exercise)"
+										class="text-zinc-500 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1 -mr-1">
+										<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
+									</button>
 								</div>
-							}
-							@if (filteredAvailableExercises.length === 0) {
-								<p class="text-xs text-zinc-300 italic px-1">
-									{{ exerciseSearch ? 'No matches found' : 'All exercises selected' }}
-								</p>
-							}
-						</div>
-					</div>
-
-					<div>
-						<p class="text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-2">Selected</p>
-						<div class="space-y-1.5 max-h-64 overflow-y-auto">
-							@for (exercise of selectedExercises; track exercise._id) {
-								<div class="px-3 py-2.5 bg-zinc-900 border border-zinc-900 rounded-lg text-white">
-									<div class="flex items-center justify-between mb-2">
-										<span class="text-sm font-medium truncate flex-1 mr-2">{{ exercise.name }}</span>
-										<button type="button" (click)="removeExercise(exercise)"
-											class="text-zinc-500 hover:text-red-400 transition cursor-pointer flex-shrink-0">
-											<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
-										</button>
-									</div>
+								<div class="flex items-center gap-3 pl-5">
 									<div class="flex items-center gap-2">
-										<div class="flex items-center gap-1">
-											<input type="number" min="1"
-												[value]="exercise.defaultSets"
-												(change)="updateDefaultSets(exercise, $any($event.target).value)"
-												class="w-10 text-xs text-zinc-900 bg-white rounded px-1.5 py-1 text-center focus:outline-none focus:ring-1 focus:ring-violet-400" />
-											<span class="text-[10px] text-zinc-400">sets</span>
-										</div>
-										<span class="text-zinc-600 text-xs">×</span>
-										<div class="flex items-center gap-1">
-											<input type="number" min="1"
-												[value]="exercise.defaultReps"
-												(change)="updateDefaultReps(exercise, $any($event.target).value)"
-												class="w-10 text-xs text-zinc-900 bg-white rounded px-1.5 py-1 text-center focus:outline-none focus:ring-1 focus:ring-violet-400" />
-											<span class="text-[10px] text-zinc-400">reps</span>
-										</div>
+										<input type="number" min="1"
+											[value]="exercise.defaultSets"
+											(change)="updateDefaultSets(exercise, $any($event.target).value)"
+											class="w-14 text-sm text-zinc-900 bg-white rounded-lg px-2 py-2 text-center focus:outline-none focus:ring-1 focus:ring-violet-400" />
+										<span class="text-xs text-zinc-400">sets</span>
+									</div>
+									<span class="text-zinc-500 text-sm">×</span>
+									<div class="flex items-center gap-2">
+										<input type="number" min="1"
+											[value]="exercise.defaultReps"
+											(change)="updateDefaultReps(exercise, $any($event.target).value)"
+											class="w-14 text-sm text-zinc-900 bg-white rounded-lg px-2 py-2 text-center focus:outline-none focus:ring-1 focus:ring-violet-400" />
+										<span class="text-xs text-zinc-400">reps</span>
 									</div>
 								</div>
-							}
-							@if (selectedExercises.length === 0) {
-								<p class="text-xs text-zinc-300 italic px-1">None selected</p>
-							}
-						</div>
+							</div>
+						}
+					</div>
+				</div>
+				}
+
+				<!-- Available exercises -->
+				<div>
+					<p class="text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-2">Add exercises</p>
+					<div class="relative mb-2">
+						<i class="fa-sharp fa-solid fa-magnifying-glass absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400 text-[11px] pointer-events-none"></i>
+						<input
+							type="text"
+							placeholder="Search..."
+							[value]="exerciseSearch"
+							(input)="exerciseSearch = $any($event.target).value"
+							class="w-full pl-7 pr-3 py-2 text-sm border border-zinc-200 rounded-lg bg-zinc-50 text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition" />
+					</div>
+					<div class="space-y-1.5 max-h-60 overflow-y-auto">
+						@for (exercise of filteredAvailableExercises; track exercise._id) {
+							<div (click)="selectExercise(exercise)"
+								class="flex items-center justify-between px-3 py-3 bg-zinc-50 border border-zinc-200 rounded-lg text-sm text-zinc-700 hover:border-zinc-400 hover:bg-zinc-100 cursor-pointer transition-colors active:bg-zinc-200">
+								<span>{{ exercise.name }}</span>
+								<i class="fa-sharp fa-solid fa-plus text-zinc-400 text-xs flex-shrink-0 ml-2"></i>
+							</div>
+						}
+						@if (filteredAvailableExercises.length === 0) {
+							<p class="text-xs text-zinc-300 italic px-1 py-2">
+								{{ exerciseSearch ? 'No matches found' : 'All exercises selected' }}
+							</p>
+						}
 					</div>
 				</div>
 			</div>

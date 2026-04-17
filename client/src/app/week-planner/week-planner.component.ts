@@ -1,5 +1,7 @@
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DayPlan, TimeBlockKey, WeekPlan } from './models/WeekPlan';
+import { addDays, addWeeks, format, startOfWeek, subWeeks, parseISO } from 'date-fns';
 
 import { ConditioningLibraryService } from '../conditioning/conditioning-library/conditioning-library.service';
 import { ConditioningSession } from '../conditioning/models/ConditioningSession';
@@ -25,6 +27,10 @@ export class WeekPlannerComponent implements OnInit {
 	saveError = false;
 	loadError = false;
 	isEditMode = false;
+	copying = false;
+	sessionToView: ConditioningSession | null = null;
+
+	currentWeekStart: Date = startOfWeek(new Date(), { weekStartsOn: 1 });
 
 	toggleMode() {
 		this.isEditMode = !this.isEditMode;
@@ -49,10 +55,25 @@ export class WeekPlannerComponent implements OnInit {
 		private conditioningLibraryService: ConditioningLibraryService,
 	) {}
 
+	get weekStartStr(): string {
+		return format(this.currentWeekStart, 'yyyy-MM-dd');
+	}
+
+	get weekLabel(): string {
+		const end = addDays(this.currentWeekStart, 6);
+		return `${format(this.currentWeekStart, 'd MMM')} – ${format(end, 'd MMM yyyy')}`;
+	}
+
+	get isCurrentWeek(): boolean {
+		return format(startOfWeek(new Date(), { weekStartsOn: 1 }), 'yyyy-MM-dd') === this.weekStartStr;
+	}
+
 	get weekPlan(): WeekPlan { return this._weekPlan; }
 	get selectedDay(): DayPlan | null { return this._selectedDay; }
 	get selectedBlock(): BlockSelection { return this._selectedBlock; }
 	get allWorkouts(): Workout[] { return this._allWorkouts; }
+	get pinnedWorkouts(): Workout[] { return this._allWorkouts.filter(w => w.showInWeekPlanner); }
+	get otherWorkouts(): Workout[] { return this._allWorkouts.filter(w => !w.showInWeekPlanner); }
 	get allConditioningSessions(): ConditioningSession[] { return this._allConditioningSessions; }
 
 	get drawerTitle(): string {
@@ -81,28 +102,52 @@ export class WeekPlannerComponent implements OnInit {
 		});
 	}
 
+	prevWeek(): void {
+		this.currentWeekStart = subWeeks(this.currentWeekStart, 1);
+		this.getWeekPlan();
+	}
+
+	nextWeek(): void {
+		this.currentWeekStart = addWeeks(this.currentWeekStart, 1);
+		this.getWeekPlan();
+	}
+
+	goToCurrentWeek(): void {
+		this.currentWeekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
+		this.getWeekPlan();
+	}
+
+	goToWeek(dateStr: string): void {
+		this.currentWeekStart = startOfWeek(parseISO(dateStr), { weekStartsOn: 1 });
+		this.getWeekPlan();
+	}
+
+	copyToNextWeek(): void {
+		const userId = localStorage.getItem('id') ?? '';
+		const fromWeekStart = this.weekStartStr;
+		const toWeekStart = format(addWeeks(this.currentWeekStart, 1), 'yyyy-MM-dd');
+		this.copying = true;
+		this.weekPlannerService.copyWeek(userId, fromWeekStart, toWeekStart).subscribe({
+			next: () => {
+				this.copying = false;
+				this.nextWeek();
+			},
+			error: () => { this.copying = false; },
+		});
+	}
+
 	getWeekPlan() {
-		this.weekPlannerService.getAllWeekPlans().subscribe({
+		this.resourcesLoading = true;
+		this.loadError = false;
+		const userId = localStorage.getItem('id') ?? '';
+
+		this.weekPlannerService.getWeekPlanByWeek(userId, this.weekStartStr).subscribe({
 			next: weekPlan => {
-				if (weekPlan) {
-					this._weekPlan = new WeekPlan(weekPlan);
-					this.resourcesLoading = false;
-				} else {
-					this.weekPlannerService.createWeekPlan(new WeekPlan().payload()).subscribe({
-						next: created => {
-							this._weekPlan = new WeekPlan(created);
-							this.resourcesLoading = false;
-						},
-						error: () => {
-							this._weekPlan = new WeekPlan();
-							this.resourcesLoading = false;
-							this.loadError = true;
-						},
-					});
-				}
+				this._weekPlan = weekPlan ? new WeekPlan(weekPlan) : new WeekPlan({ weekStart: this.weekStartStr });
+				this.resourcesLoading = false;
 			},
 			error: () => {
-				this._weekPlan = new WeekPlan();
+				this._weekPlan = new WeekPlan({ weekStart: this.weekStartStr });
 				this.resourcesLoading = false;
 				this.loadError = true;
 			},
@@ -114,11 +159,10 @@ export class WeekPlannerComponent implements OnInit {
 		this.saved = false;
 		this.saveError = false;
 
-		const obs = this._weekPlan._id
-			? this.weekPlannerService.updateWeekPlan(this._weekPlan._id, this._weekPlan.payload())
-			: this.weekPlannerService.createWeekPlan(this._weekPlan.payload());
+		this._weekPlan.weekStart = this.weekStartStr;
+		const payload = this._weekPlan.payload();
 
-		obs.subscribe({
+		this.weekPlannerService.upsertWeekPlan(payload).subscribe({
 			next: (saved) => {
 				this._weekPlan = new WeekPlan(saved);
 				this.saving = false;
@@ -174,6 +218,24 @@ export class WeekPlannerComponent implements OnInit {
 		this.autoSave();
 	}
 
+	dropWorkout(event: CdkDragDrop<any[]>, dayName: string, block: 'overarching' | TimeBlockKey) {
+		if (event.previousIndex === event.currentIndex) return;
+		const day = this._weekPlan.days.find(d => d.dayName === dayName);
+		if (!day) return;
+		const arr = block === 'overarching' ? day.workouts : day[block].workouts;
+		moveItemInArray(arr, event.previousIndex, event.currentIndex);
+		this.autoSave();
+	}
+
+	dropConditioning(event: CdkDragDrop<any[]>, dayName: string, block: 'overarching' | TimeBlockKey) {
+		if (event.previousIndex === event.currentIndex) return;
+		const day = this._weekPlan.days.find(d => d.dayName === dayName);
+		if (!day) return;
+		const arr = block === 'overarching' ? day.conditioning : day[block].conditioning;
+		moveItemInArray(arr, event.previousIndex, event.currentIndex);
+		this.autoSave();
+	}
+
 	hasAnyContent(day: DayPlan): boolean {
 		return (
 			day.workouts.length > 0 ||
@@ -189,6 +251,6 @@ export class WeekPlannerComponent implements OnInit {
 
 	retryLoad() {
 		this.loadError = false;
-		this.ngOnInit();
+		this.getWeekPlan();
 	}
 }

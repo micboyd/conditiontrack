@@ -12,6 +12,7 @@ const workoutSchema = new mongoose.Schema(
 				defaultReps: { type: Number, default: 10 },
 			},
 		],
+		showInWeekPlanner: { type: Boolean, default: false },
 	},
 	{ timestamps: true },
 );

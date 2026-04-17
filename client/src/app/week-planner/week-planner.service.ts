@@ -5,11 +5,21 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
-WeekPlan;
-
 @Injectable()
 export class WeekPlannerService {
 	constructor(private http: HttpClient) {}
+
+	getWeekPlanByWeek(userId: string, weekStart: string): Observable<WeekPlan | null> {
+		return this.http.get<WeekPlan | null>(`${environment.baseApiUrl}/week-planner/week/${userId}/${weekStart}`);
+	}
+
+	upsertWeekPlan(plan: WeekPlanDTO): Observable<WeekPlan> {
+		return this.http.post<WeekPlan>(`${environment.baseApiUrl}/week-planner/week/upsert`, plan);
+	}
+
+	copyWeek(userId: string, fromWeekStart: string, toWeekStart: string): Observable<WeekPlan> {
+		return this.http.post<WeekPlan>(`${environment.baseApiUrl}/week-planner/week/copy`, { userId, fromWeekStart, toWeekStart });
+	}
 
 	createWeekPlan(week: WeekPlanDTO): Observable<WeekPlan> {
 		return this.http.post<WeekPlan>(`${environment.baseApiUrl}/week-planner/week`, week);
@@ -19,17 +29,7 @@ export class WeekPlannerService {
 		return this.http.put<WeekPlan>(`${environment.baseApiUrl}/week-planner/week/${weekId}`, week);
 	}
 
-	getAllWeekPlans(): Observable<WeekPlan> {
-		const userId = localStorage.getItem('id');
-		return this.http.get<WeekPlan>(`${environment.baseApiUrl}/week-planner/week/${userId}`);
-	}
-
-	getWeekPlanById(weekId: string): Observable<WeekPlan> {
-		return this.http.get<WeekPlan>(`${environment.baseApiUrl}/week-planner/week/${weekId}`);
-	}
-
 	deleteWeekPlan(weekId: string): Observable<void> {
 		return this.http.delete<void>(`${environment.baseApiUrl}/week-planner/week/${weekId}`);
 	}
 }
-

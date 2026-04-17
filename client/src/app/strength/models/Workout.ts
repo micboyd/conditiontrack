@@ -13,6 +13,7 @@ export class Workout {
 	name: string;
 	description: string;
 	exercises: WorkoutExerciseTemplate[];
+	showInWeekPlanner: boolean;
 
 	constructor(workout: Workout | null) {
 		this._id = workout?._id || '';
@@ -25,6 +26,7 @@ export class Workout {
 			defaultSets: e.defaultSets ?? 3,
 			defaultReps: e.defaultReps ?? 10,
 		}));
+		this.showInWeekPlanner = workout?.showInWeekPlanner ?? false;
 	}
 
 	static toFormGroup(workout: Workout, fb: FormBuilder): FormGroup {
@@ -32,6 +34,7 @@ export class Workout {
 			userId: [localStorage.getItem('id'), [Validators.required]],
 			name: [workout.name, [Validators.required]],
 			description: [workout.description, [Validators.required]],
+			showInWeekPlanner: [workout.showInWeekPlanner],
 		});
 	}
 }
