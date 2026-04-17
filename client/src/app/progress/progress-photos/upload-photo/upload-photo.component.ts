@@ -19,6 +19,11 @@ export class UploadPhotoComponent implements OnInit {
     uploading = false;
     error = '';
 
+    readonly maxFileSizeMB = 25;
+    readonly maxFileSizeBytes = this.maxFileSizeMB * 1024 * 1024;
+    readonly allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+    readonly allowedTypesLabel = 'JPG, PNG, WEBP, GIF';
+
     constructor(
         private fb: FormBuilder,
         private progressPhotosService: ProgressPhotosService
@@ -37,24 +42,40 @@ export class UploadPhotoComponent implements OnInit {
         if (!input.files || input.files.length === 0) return;
 
         const files = Array.from(input.files);
-        const invalidFiles = files.filter((file) => !file.type.startsWith('image/'));
+        const errors: string[] = [];
+        const validFiles: File[] = [];
 
-        if (invalidFiles.length > 0) {
-            this.error = `${invalidFiles.length} file(s) are not valid image files.`;
-            return;
+        for (const file of files) {
+            if (!this.allowedTypes.includes(file.type)) {
+                errors.push(`"${file.name}" is not a supported format (allowed: ${this.allowedTypesLabel}).`);
+            } else if (file.size > this.maxFileSizeBytes) {
+                const sizeMB = (file.size / 1024 / 1024).toFixed(1);
+                errors.push(`"${file.name}" is ${sizeMB}MB — exceeds the ${this.maxFileSizeMB}MB limit.`);
+            } else {
+                validFiles.push(file);
+            }
         }
 
-        this.selectedFiles = files;
-        this.error = '';
-        this.previewUrls = [];
+        if (errors.length > 0) {
+            this.error = errors.join(' ');
+            // Still accept the valid files if there were some
+            if (validFiles.length === 0) return;
+        } else {
+            this.error = '';
+        }
 
-        files.forEach((file) => {
+        this.selectedFiles = [...this.selectedFiles, ...validFiles];
+
+        validFiles.forEach((file) => {
             const reader = new FileReader();
             reader.onload = (e) => {
                 this.previewUrls.push(e.target?.result as string);
             };
             reader.readAsDataURL(file);
         });
+
+        // Reset input so the same file can be re-selected after removal
+        input.value = '';
     }
 
     onSubmit(): void {
@@ -92,7 +113,17 @@ export class UploadPhotoComponent implements OnInit {
             },
             error: (err) => {
                 this.uploading = false;
-                this.error = err?.error?.error || 'Failed to upload photos. Please try again.';
+                const serverMsg = err?.error?.error;
+                const statusCode = err?.status;
+                if (serverMsg) {
+                    this.error = serverMsg;
+                } else if (statusCode === 413) {
+                    this.error = `File is too large. The maximum allowed size is ${this.maxFileSizeMB}MB.`;
+                } else if (statusCode === 0) {
+                    this.error = 'Could not reach the server. Check your connection and try again.';
+                } else {
+                    this.error = 'Upload failed. Please try again.';
+                }
             },
         });
     }

@@ -4,12 +4,17 @@ const multer = require('multer');
 const { cloudinary, storage } = require('../../cloudinary');
 const ProgressPhoto = require('../../models/progress/ProgressPhoto');
 
+const MAX_FILE_SIZE_MB = 25;
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+
 const upload = multer({
     storage,
-    limits: { fileSize: 10 * 1024 * 1024 },
+    limits: { fileSize: MAX_FILE_SIZE_MB * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
-        if (!file.mimetype.startsWith('image/')) {
-            return cb(new Error('Only image files are allowed!'), false);
+        if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+            return cb(new Error(
+                `"${file.originalname}" is not a supported format. Allowed types: JPG, PNG, WEBP, GIF.`
+            ));
         }
         cb(null, true);
     },
@@ -27,33 +32,46 @@ router.get('/:userId', async (req, res) => {
 });
 
 // POST / — upload single image + body fields
-router.post('/', upload.single('image'), async (req, res) => {
-    try {
-        if (!req.file) {
-            return res.status(400).json({ error: 'Image file is required' });
+// Multer errors (e.g. LIMIT_FILE_SIZE) don't reach try/catch, so we use the callback form.
+router.post('/', (req, res) => {
+    upload.single('image')(req, res, async (err) => {
+        if (err) {
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(400).json({
+                    error: `File is too large. The maximum allowed size is ${MAX_FILE_SIZE_MB}MB.`,
+                });
+            }
+            // fileFilter rejection or other multer error
+            return res.status(400).json({ error: err.message });
         }
 
-        const { userId, date, notes, weight } = req.body;
+        try {
+            if (!req.file) {
+                return res.status(400).json({ error: 'Image file is required.' });
+            }
 
-        if (!userId || !date) {
-            return res.status(400).json({ error: 'userId and date are required' });
+            const { userId, date, notes, weight } = req.body;
+
+            if (!userId || !date) {
+                return res.status(400).json({ error: 'userId and date are required.' });
+            }
+
+            const imageUrl = req.file.secure_url || req.file.url || req.file.path;
+
+            const photo = new ProgressPhoto({
+                userId,
+                imageUrl,
+                date,
+                notes: notes || '',
+                weight: weight ? Number(weight) : undefined,
+            });
+
+            const saved = await photo.save();
+            res.status(201).json(saved);
+        } catch (saveErr) {
+            res.status(500).json({ error: saveErr.message });
         }
-
-        const imageUrl = req.file.secure_url || req.file.url || req.file.path;
-
-        const photo = new ProgressPhoto({
-            userId,
-            imageUrl,
-            date,
-            notes: notes || '',
-            weight: weight ? Number(weight) : undefined,
-        });
-
-        const saved = await photo.save();
-        res.status(201).json(saved);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
+    });
 });
 
 // DELETE /:id — delete from DB and Cloudinary

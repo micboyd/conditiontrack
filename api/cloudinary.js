@@ -15,8 +15,8 @@ cloudinary.config({
 const storage = CloudinaryStorage({
   cloudinary: cloudinaryModule,
   folder: 'conditiontrack',
-  allowedFormats: ['jpg', 'png', 'jpeg'],
-  transformation: [{ width: 1000, height: 1000, crop: 'limit' }],
+  allowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+  transformation: [{ width: 2000, height: 2000, crop: 'limit' }],
 });
 
 
