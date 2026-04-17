@@ -64,6 +64,7 @@ export class DashboardComponent implements OnInit {
 	// Workout logging state
 	logWorkoutStep: 1 | 2 = 1;
 	logWorkoutSelectedWorkout: Workout | null = null;
+	lastSessionRecord: WorkoutRecord | null = null;
 	workoutCloseOnSave = true;
 	workoutLogForm!: FormGroup;
 	workoutLogErrors: string[] = [];
@@ -608,6 +609,29 @@ export class DashboardComponent implements OnInit {
 		record.date = this.viewDateStr;
 		this.workoutLogForm = WorkoutRecord.toFormGroup(record, this.fb);
 		this.logWorkoutStep = 2;
+		// Find the most recent previous record for this workout (strictly before view date)
+		this.lastSessionRecord = [...this.workoutRecords]
+			.filter(r => r.workoutId === workout._id && this.toDateStr(r.date) < this.viewDateStr)
+			.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0] ?? null;
+	}
+
+	/** Returns a summary of the last session's performance for a given exercise, or null if none. */
+	getExerciseLastSummary(exerciseName: string): { setCount: number; reps: number; maxWeight: number; suggestedWeight: number } | null {
+		if (!this.lastSessionRecord || !exerciseName) return null;
+		const ex = this.lastSessionRecord.exercises.find(
+			e => e.name.toLowerCase() === exerciseName.toLowerCase(),
+		);
+		if (!ex || ex.sets.length === 0) return null;
+		const weights = ex.sets.map(s => s.weight).filter(w => w > 0);
+		if (weights.length === 0) return null;
+		const maxWeight = Math.max(...weights);
+		const repCounts = ex.sets.map(s => s.reps).filter(r => r > 0);
+		const avgReps = repCounts.length
+			? Math.round(repCounts.reduce((a, b) => a + b, 0) / repCounts.length)
+			: 0;
+		// Suggest ~2.5% weight increase, rounded to nearest 0.5 kg
+		const suggestedWeight = Math.round(maxWeight * 1.025 * 2) / 2;
+		return { setCount: ex.sets.length, reps: avgReps, maxWeight, suggestedWeight };
 	}
 
 	get workoutLogExercises(): FormArray {

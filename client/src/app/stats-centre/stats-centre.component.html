@@ -50,6 +50,14 @@
                                     {{ getPersonalBest(pbSelectedExercises[slot]) }}<span class="text-sm font-normal text-zinc-500 ml-1">kg</span>
                                 </p>
                                 <p class="text-[10px] text-zinc-500 uppercase tracking-wide mt-1.5">Max weight</p>
+                                @if (getEstimated1RM(pbSelectedExercises[slot]) as e1rm) {
+                                    <div class="mt-3 pt-3 border-t border-white/10">
+                                        <p class="text-lg font-bold text-violet-400 leading-none">
+                                            {{ e1rm }}<span class="text-xs font-normal text-zinc-600 ml-1">kg</span>
+                                        </p>
+                                        <p class="text-[10px] text-zinc-600 uppercase tracking-wide mt-1">Est. 1RM</p>
+                                    </div>
+                                }
                             </div>
                         } @else {
                             <p class="text-sm text-zinc-600 mt-4">No records yet</p>
@@ -66,7 +74,7 @@
 
         <div class="mb-3">
             <h2 class="text-base font-semibold text-zinc-900">Strength Progression</h2>
-            <p class="text-xs text-zinc-400 mt-0.5">Max weight lifted per session for a given exercise.</p>
+            <p class="text-xs text-zinc-400 mt-0.5">{{ chartMode === 'maxWeight' ? 'Max weight lifted per session for a given exercise.' : 'Estimated one-rep max (Epley formula) per session.' }}</p>
         </div>
 
         <!-- Controls -->
@@ -81,6 +89,31 @@
                         placeholder="Select an exercise..."
                         (valueChange)="onExerciseChange($event)">
                     </app-select>
+                </div>
+
+                <!-- Metric toggle -->
+                <div>
+                    <label class="block text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wide">Metric</label>
+                    <div class="flex gap-1 bg-zinc-100 rounded-lg p-1">
+                        <button
+                            (click)="onChartModeChange('maxWeight')"
+                            class="px-3.5 py-1.5 rounded-md text-sm font-medium transition cursor-pointer"
+                            [class.bg-white]="chartMode === 'maxWeight'"
+                            [class.text-zinc-900]="chartMode === 'maxWeight'"
+                            [class.shadow-sm]="chartMode === 'maxWeight'"
+                            [class.text-zinc-500]="chartMode !== 'maxWeight'">
+                            Max Weight
+                        </button>
+                        <button
+                            (click)="onChartModeChange('est1rm')"
+                            class="px-3.5 py-1.5 rounded-md text-sm font-medium transition cursor-pointer"
+                            [class.bg-white]="chartMode === 'est1rm'"
+                            [class.text-zinc-900]="chartMode === 'est1rm'"
+                            [class.shadow-sm]="chartMode === 'est1rm'"
+                            [class.text-zinc-500]="chartMode !== 'est1rm'">
+                            Est. 1RM
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Time range pills -->
@@ -122,7 +155,7 @@
                 <div class="flex items-center justify-between mb-4">
                     <div>
                         <h2 class="font-semibold text-zinc-900">{{ selectedExerciseName }}</h2>
-                        <p class="text-xs text-zinc-400 mt-0.5">Max weight per session</p>
+                        <p class="text-xs text-zinc-400 mt-0.5">{{ chartMode === 'maxWeight' ? 'Max weight per session' : 'Estimated 1RM per session (Epley)' }}</p>
                     </div>
                     @if (selectedRange === 'block' && selectedBlock) {
                         <span class="text-xs text-zinc-400">{{ selectedBlock.dateRangeLabel }}</span>

@@ -34,70 +34,75 @@
 					</span>
 				</div>
 
-				<!-- Photo grid -->
-				<div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-					@for (photo of group.photos; track photo._id) {
-						<div class="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+				<!-- Sessions -->
+				@for (photo of group.photos; track photo._id) {
+					<div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
 
-							<!-- Image -->
-							<div class="relative aspect-square overflow-hidden bg-zinc-100">
-								<img [src]="photo.imageUrl" [alt]="'Progress photo ' + formatDate(photo.date)"
-									class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+						<!-- Photos Grid -->
+						<div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 p-4">
+							@for (imageUrl of photo.imageUrls; track imageUrl; let idx = $index) {
+								<div class="group relative rounded-xl overflow-hidden bg-zinc-100 aspect-square">
+									<img [src]="imageUrl" [alt]="'Progress photo ' + formatDate(photo.date) + ' (' + (idx + 1) + ')'"
+										class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
 
-								<!-- Hover overlay -->
-								<div class="absolute inset-0 bg-gradient-to-t from-zinc-900/80 via-zinc-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-end p-4">
-									<p class="text-white text-sm font-semibold">{{ formatDate(photo.date) }}</p>
-									@if (photo.weight) {
-										<p class="text-zinc-300 text-xs mt-0.5">{{ photo.weight }} kg</p>
-									}
-									@if (photo.notes) {
-										<p class="text-zinc-400 text-xs mt-1 line-clamp-2">{{ photo.notes }}</p>
-									}
-								</div>
-
-								<!-- Delete button -->
-								@if (deleteConfirmId !== photo._id) {
-									<button (click)="confirmDelete(photo._id)"
-										class="absolute top-3 right-3 w-10 h-10 rounded-full bg-zinc-900/60 hover:bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer">
-										<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
-									</button>
-								} @else {
-									<!-- Confirm delete overlay -->
-									<div class="absolute inset-0 bg-zinc-900/80 flex flex-col items-center justify-center gap-3 p-4">
-										<p class="text-white text-sm font-medium text-center">Delete this photo?</p>
-										<div class="flex gap-2">
-											<button (click)="deletePhoto(photo._id)"
-												class="px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded-lg transition cursor-pointer min-h-[44px]">
-												Delete
-											</button>
-											<button (click)="cancelDelete()"
-												class="px-4 py-2.5 bg-zinc-700 hover:bg-zinc-600 text-white text-xs font-medium rounded-lg transition cursor-pointer min-h-[44px]">
-												Cancel
-											</button>
+									<!-- Hover overlay -->
+									<div class="absolute inset-0 bg-gradient-to-t from-zinc-900/80 via-zinc-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-3">
+										<button (click)="confirmDelete(photo._id, idx)"
+											class="self-end w-8 h-8 rounded-full bg-zinc-900/60 hover:bg-red-500 text-white flex items-center justify-center transition-all">
+											<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
+										</button>
+										<div>
+											<p class="text-white text-xs font-semibold">{{ formatDate(photo.date) }}</p>
 										</div>
 									</div>
-								}
-							</div>
-
-							<!-- Card footer -->
-							<div class="px-4 py-3">
-								<p class="text-sm font-medium text-zinc-700">{{ formatDate(photo.date) }}</p>
-								<div class="flex items-center gap-3 mt-0.5">
-									@if (photo.weight) {
-										<span class="text-xs text-zinc-400">
-											<i class="fa-sharp fa-solid fa-weight-scale mr-1 text-[10px]"></i>
-											{{ photo.weight }} kg
-										</span>
-									}
-									@if (photo.notes) {
-										<span class="text-xs text-zinc-400 truncate">{{ photo.notes }}</span>
-									}
 								</div>
+							}
+						</div>
+
+						<!-- Session footer -->
+						<div class="px-4 py-3 border-t border-zinc-200">
+							<p class="text-sm font-medium text-zinc-700">{{ formatDate(photo.date) }}</p>
+							<div class="flex items-center gap-3 mt-1.5 flex-wrap">
+								<span class="text-xs text-zinc-400">
+									<i class="fa-sharp fa-solid fa-images mr-1 text-[10px]"></i>
+									{{ photo.imageUrls.length }} {{ photo.imageUrls.length === 1 ? 'photo' : 'photos' }}
+								</span>
+								@if (photo.weight) {
+									<span class="text-xs text-zinc-400">
+										<i class="fa-sharp fa-solid fa-weight-scale mr-1 text-[10px]"></i>
+										{{ photo.weight }} kg
+									</span>
+								}
+								@if (photo.notes) {
+									<span class="text-xs text-zinc-400 truncate flex-1">{{ photo.notes }}</span>
+								}
+								<button (click)="confirmDeleteSession(photo._id)"
+									class="text-xs text-red-500 hover:text-red-600 font-medium ml-auto">
+									Delete Session
+								</button>
 							</div>
 
+							<!-- Delete confirmation -->
+							@if (deleteConfirmId?.sessionId === photo._id && deleteConfirmId?.imageIndex === undefined) {
+								<div class="mt-3 p-3 bg-red-50 rounded-lg border border-red-100 flex items-center justify-between gap-3">
+									<p class="text-xs font-medium text-red-600">Delete entire session?</p>
+									<div class="flex gap-2">
+										<button (click)="deleteSession(photo._id)"
+											class="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded transition cursor-pointer">
+											Delete
+										</button>
+										<button (click)="cancelDelete()"
+											class="px-3 py-1.5 bg-zinc-300 hover:bg-zinc-400 text-zinc-900 text-xs font-medium rounded transition cursor-pointer">
+											Cancel
+										</button>
+									</div>
+								</div>
+							}
 						</div>
-					}
-				</div>
+
+					</div>
+				}
+
 
 			</section>
 		}

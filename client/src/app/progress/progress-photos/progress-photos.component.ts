@@ -10,6 +10,11 @@ interface PhotoGroup {
     photos: ProgressPhoto[];
 }
 
+interface DeleteConfirm {
+    sessionId: string;
+    imageIndex?: number;
+}
+
 @Component({
     selector: 'app-progress-photos',
     templateUrl: './progress-photos.component.html',
@@ -20,7 +25,7 @@ export class ProgressPhotosComponent implements OnInit {
 
     photos: ProgressPhoto[] = [];
     loading = true;
-    deleteConfirmId: string | null = null;
+    deleteConfirmId: DeleteConfirm | null = null;
 
     constructor(private progressPhotosService: ProgressPhotosService) {}
 
@@ -68,7 +73,7 @@ export class ProgressPhotosComponent implements OnInit {
         this.uploadDrawer.close();
     }
 
-    deletePhoto(id: string): void {
+    deleteSession(id: string): void {
         this.progressPhotosService.deletePhoto(id).subscribe({
             next: () => {
                 this.photos = this.photos.filter((p) => p._id !== id);
@@ -77,8 +82,12 @@ export class ProgressPhotosComponent implements OnInit {
         });
     }
 
-    confirmDelete(id: string): void {
-        this.deleteConfirmId = id;
+    confirmDelete(sessionId: string, imageIndex?: number): void {
+        this.deleteConfirmId = { sessionId, imageIndex };
+    }
+
+    confirmDeleteSession(sessionId: string): void {
+        this.deleteConfirmId = { sessionId };
     }
 
     cancelDelete(): void {

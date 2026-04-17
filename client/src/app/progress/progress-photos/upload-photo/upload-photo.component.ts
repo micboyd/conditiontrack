@@ -14,8 +14,8 @@ export class UploadPhotoComponent implements OnInit {
     @Output() photoUploaded = new EventEmitter<ProgressPhoto>();
 
     form!: FormGroup;
-    selectedFile: File | null = null;
-    previewUrl: string | null = null;
+    selectedFiles: File[] = [];
+    previewUrls: string[] = [];
     uploading = false;
     error = '';
 
@@ -36,25 +36,30 @@ export class UploadPhotoComponent implements OnInit {
         const input = event.target as HTMLInputElement;
         if (!input.files || input.files.length === 0) return;
 
-        const file = input.files[0];
-        if (!file.type.startsWith('image/')) {
-            this.error = 'Please select an image file.';
+        const files = Array.from(input.files);
+        const invalidFiles = files.filter((file) => !file.type.startsWith('image/'));
+
+        if (invalidFiles.length > 0) {
+            this.error = `${invalidFiles.length} file(s) are not valid image files.`;
             return;
         }
 
-        this.selectedFile = file;
+        this.selectedFiles = files;
         this.error = '';
+        this.previewUrls = [];
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            this.previewUrl = e.target?.result as string;
-        };
-        reader.readAsDataURL(file);
+        files.forEach((file) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.previewUrls.push(e.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+        });
     }
 
     onSubmit(): void {
-        if (!this.selectedFile) {
-            this.error = 'Please select a photo to upload.';
+        if (this.selectedFiles.length === 0) {
+            this.error = 'Please select at least one photo to upload.';
             return;
         }
 
@@ -68,7 +73,10 @@ export class UploadPhotoComponent implements OnInit {
 
         const userId = localStorage.getItem('id') || '';
         const formData = new FormData();
-        formData.append('image', this.selectedFile);
+
+        this.selectedFiles.forEach((file) => {
+            formData.append('images', file);
+        });
         formData.append('userId', userId);
         formData.append('date', this.form.value.date);
         formData.append('notes', this.form.value.notes || '');
@@ -84,20 +92,25 @@ export class UploadPhotoComponent implements OnInit {
             },
             error: (err) => {
                 this.uploading = false;
-                this.error = err?.error?.error || 'Failed to upload photo. Please try again.';
+                this.error = err?.error?.error || 'Failed to upload photos. Please try again.';
             },
         });
     }
 
     resetForm(): void {
-        this.selectedFile = null;
-        this.previewUrl = null;
+        this.selectedFiles = [];
+        this.previewUrls = [];
         this.error = '';
         this.form.reset({
             date: format(new Date(), 'yyyy-MM-dd'),
             notes: '',
             weight: null,
         });
+    }
+
+    removePreview(index: number): void {
+        this.selectedFiles.splice(index, 1);
+        this.previewUrls.splice(index, 1);
     }
 
     triggerFileInput(): void {

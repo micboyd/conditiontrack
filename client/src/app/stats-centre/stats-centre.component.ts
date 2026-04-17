@@ -34,6 +34,7 @@ export class StatsCentreComponent implements OnInit {
     selectedExerciseName: string | null = null;
     selectedRange: TimeRange = '1M';
     selectedBlockId: string | null = null;
+    chartMode: 'maxWeight' | 'est1rm' = 'maxWeight';
 
     // Personal Bests state
     pbSelectedExercises: string[] = ['', '', '', ''];
@@ -65,7 +66,7 @@ export class StatsCentreComponent implements OnInit {
             legend: { display: false },
             tooltip: {
                 callbacks: {
-                    label: ctx => ` ${ctx.parsed.y} kg`,
+                    label: ctx => ` ${ctx.parsed.y} kg${this.chartMode === 'est1rm' ? ' (est.)' : ''}`,
                 },
             },
         },
@@ -207,6 +208,11 @@ export class StatsCentreComponent implements OnInit {
         this.buildChart();
     }
 
+    onChartModeChange(mode: 'maxWeight' | 'est1rm'): void {
+        this.chartMode = mode;
+        this.buildChart();
+    }
+
     get selectedBlock(): TrainingBlock | undefined {
         return this.trainingBlocks.find(b => b._id === this.selectedBlockId);
     }
@@ -242,7 +248,7 @@ export class StatsCentreComponent implements OnInit {
         const name = this.selectedExerciseName.toLowerCase();
         const { from, to } = this.dateRange;
 
-        const weightByDate = new Map<string, number>();
+        const valueByDate = new Map<string, number>();
 
         for (const record of this.allRecords) {
             const recordDate = (record.date ?? '').slice(0, 10);
@@ -251,20 +257,27 @@ export class StatsCentreComponent implements OnInit {
             const exercise = record.exercises.find(e => e.name.toLowerCase() === name);
             if (!exercise || exercise.sets.length === 0) continue;
 
-            const weights = exercise.sets.map(s => s.weight).filter(w => w > 0);
-            if (weights.length === 0) continue;
-
-            const maxWeight = Math.max(...weights);
-            const existing = weightByDate.get(recordDate) ?? 0;
-            if (maxWeight > existing) {
-                weightByDate.set(recordDate, maxWeight);
+            if (this.chartMode === 'maxWeight') {
+                const weights = exercise.sets.map(s => s.weight).filter(w => w > 0);
+                if (weights.length === 0) continue;
+                const maxWeight = Math.max(...weights);
+                const existing = valueByDate.get(recordDate) ?? 0;
+                if (maxWeight > existing) valueByDate.set(recordDate, maxWeight);
+            } else {
+                // Epley estimated 1RM: weight × (1 + reps / 30)
+                for (const set of exercise.sets) {
+                    if (set.weight > 0 && set.reps > 0) {
+                        const e1rm = Math.round(set.weight * (1 + set.reps / 30) * 10) / 10;
+                        const existing = valueByDate.get(recordDate) ?? 0;
+                        if (e1rm > existing) valueByDate.set(recordDate, e1rm);
+                    }
+                }
             }
         }
 
-        const sorted = Array.from(weightByDate.entries()).sort(([a], [b]) => a.localeCompare(b));
-
+        const sorted = Array.from(valueByDate.entries()).sort(([a], [b]) => a.localeCompare(b));
         const labels = sorted.map(([date]) => format(parseISO(date), 'd MMM'));
-        const data = sorted.map(([, weight]) => weight);
+        const data = sorted.map(([, value]) => value);
 
         this.chartData = {
             labels,
@@ -301,6 +314,24 @@ export class StatsCentreComponent implements OnInit {
             if (max === null || m > max) max = m;
         }
         return max;
+    }
+
+    /** Estimated 1RM using the Epley formula: weight × (1 + reps / 30). Returns the best across all records. */
+    getEstimated1RM(name: string): number | null {
+        if (!name) return null;
+        const lower = name.toLowerCase();
+        let best: number | null = null;
+        for (const record of this.allRecords) {
+            const ex = record.exercises.find(e => e.name.toLowerCase() === lower);
+            if (!ex) continue;
+            for (const set of ex.sets) {
+                if (set.weight > 0 && set.reps > 0) {
+                    const e1rm = Math.round(set.weight * (1 + set.reps / 30) * 10) / 10;
+                    if (best === null || e1rm > best) best = e1rm;
+                }
+            }
+        }
+        return best;
     }
 
     setPbExercise(slot: number, name: string): void {
