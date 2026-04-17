@@ -761,9 +761,10 @@
 						<div [formGroupName]="i" class="rounded-xl overflow-hidden border border-zinc-100">
 							<div class="px-4 py-2.5 bg-zinc-50">
 								<p class="text-[11px] font-medium text-zinc-600 uppercase tracking-wide">{{ ex.get('name')?.value }}</p>
-								@if (getExerciseLastSummary(ex.get('name')?.value ?? '') as hint) {
+								@let hint = getExerciseLastSummary(ex.get('name')?.value ?? '');
+									@if (hint) {
 									<p class="text-[10px] text-zinc-400 mt-0.5">
-										Last: {{ hint.setCount }}×{{ hint.reps }} @ {{ hint.maxWeight }}kg
+										Last: {{ hint.setCount }}×{{ hint.reps }} &#64; {{ hint.maxWeight }}kg
 										<span class="text-violet-500 font-semibold ml-2">→ Try {{ hint.suggestedWeight }}kg</span>
 									</p>
 								}

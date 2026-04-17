@@ -50,7 +50,8 @@
                                     {{ getPersonalBest(pbSelectedExercises[slot]) }}<span class="text-sm font-normal text-zinc-500 ml-1">kg</span>
                                 </p>
                                 <p class="text-[10px] text-zinc-500 uppercase tracking-wide mt-1.5">Max weight</p>
-                                @if (getEstimated1RM(pbSelectedExercises[slot]) as e1rm) {
+                                @let e1rm = getEstimated1RM(pbSelectedExercises[slot]);
+                                @if (e1rm) {
                                     <div class="mt-3 pt-3 border-t border-white/10">
                                         <p class="text-lg font-bold text-violet-400 leading-none">
                                             {{ e1rm }}<span class="text-xs font-normal text-zinc-600 ml-1">kg</span>
