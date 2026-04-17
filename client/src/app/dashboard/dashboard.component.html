@@ -157,7 +157,7 @@
 								(keyup.enter)="saveExtraCalories()"
 								(keyup.escape)="showExtraCalInput = false"
 								placeholder="0"
-								class="w-20 px-2 py-1.5 bg-zinc-800 border border-zinc-600 rounded-lg text-white text-lg font-bold focus:outline-none focus:border-zinc-400 transition" />
+								class="w-20 px-2 py-1.5 bg-zinc-800 border border-zinc-600 rounded-lg text-white text-lg font-bold placeholder-zinc-500 focus:outline-none focus:border-zinc-400 transition" />
 							<span class="text-xs text-zinc-500">kcal</span>
 						</div>
 						<div class="flex items-center gap-3 mt-2.5">
@@ -650,7 +650,7 @@
 			<i class="fa-sharp fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
 			<input type="text" placeholder="Search meals..."
 				[(ngModel)]="mealSearchQuery"
-				class="w-full pl-9 pr-4 py-2.5 text-base sm:text-sm border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent" />
+				class="w-full pl-9 pr-4 py-2.5 text-base sm:text-sm text-zinc-800 placeholder-zinc-300 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent" />
 		</div>
 
 		<div class="flex-1 overflow-y-auto">
@@ -739,7 +739,7 @@
 						<div>
 							<label class="block text-[11px] font-medium text-zinc-400 uppercase tracking-widest mb-2">Duration (min) <span class="text-red-400">*</span></label>
 							<input type="number" formControlName="duration" placeholder="45"
-								class="w-full px-3 py-2.5 border rounded-xl text-base sm:text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
+								class="w-full px-3 py-2.5 border rounded-xl text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
 								[ngClass]="workoutLogForm.get('duration')?.invalid && workoutLogForm.get('duration')?.touched ? 'border-red-400 focus:ring-red-300' : 'border-zinc-200 focus:ring-zinc-900'" />
 							@if (workoutLogForm.get('duration')?.invalid && workoutLogForm.get('duration')?.touched) {
 								<p class="flex items-center gap-1 text-xs text-red-500 mt-1.5">
@@ -775,9 +775,9 @@
 									<div [formGroupName]="j" class="flex items-center gap-2">
 										<span class="text-xs text-zinc-400 w-5 flex-shrink-0 font-medium">{{ j + 1 }}</span>
 										<input formControlName="reps" placeholder="Reps" type="number"
-											class="flex-1 px-3 py-2 border border-zinc-200 rounded-lg text-base sm:text-sm text-zinc-800 focus:outline-none focus:ring-1 focus:ring-zinc-900" />
+											class="flex-1 px-3 py-2 border border-zinc-200 rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-900" />
 										<input formControlName="weight" placeholder="kg" type="number"
-											class="flex-1 px-3 py-2 border border-zinc-200 rounded-lg text-base sm:text-sm text-zinc-800 focus:outline-none focus:ring-1 focus:ring-zinc-900" />
+											class="flex-1 px-3 py-2 border border-zinc-200 rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-900" />
 										<button type="button" (click)="removeWorkoutLogSet(i, j)"
 											class="text-zinc-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-2">
 											<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
@@ -899,14 +899,14 @@
 						<div>
 							<label class="block text-[11px] font-medium text-zinc-400 uppercase tracking-widest mb-2">Duration (min)</label>
 							<input type="number" formControlName="duration" placeholder="30"
-								class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-base sm:text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent transition-colors" />
+								class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent transition-colors" />
 						</div>
 					</div>
 
 					<div>
 						<label class="block text-[11px] font-medium text-zinc-400 uppercase tracking-widest mb-2">Calories Burned</label>
 						<input type="number" formControlName="caloriesBurned" placeholder="0"
-							class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-base sm:text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent" />
+							class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent" />
 					</div>
 
 					<div>

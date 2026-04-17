@@ -103,7 +103,7 @@
 							placeholder="Search..."
 							[value]="exerciseSearch"
 							(input)="exerciseSearch = $any($event.target).value"
-							class="w-full pl-7 pr-3 py-2 text-sm border border-zinc-200 rounded-lg bg-zinc-50 text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition" />
+							class="w-full pl-7 pr-3 py-2 text-sm border border-zinc-200 rounded-lg bg-zinc-50 text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition" />
 					</div>
 					<div class="space-y-1.5 max-h-60 overflow-y-auto">
 						@for (exercise of filteredAvailableExercises; track exercise._id) {

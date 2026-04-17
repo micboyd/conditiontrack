@@ -7,7 +7,7 @@ const measurementSchema = new mongoose.Schema({
 	muscleMass: { type: Number, default: null },   // kg
 	bodyFat:    { type: Number, default: null },   // %
 	notes:      { type: String, default: '' },
-	photoUrl:   { type: String, default: null },
+	photoUrls:  { type: [String], default: [] },   // up to 3 photo URLs
 }, { timestamps: true });
 
 module.exports = mongoose.model('Measurement', measurementSchema);

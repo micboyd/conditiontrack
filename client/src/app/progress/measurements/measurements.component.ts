@@ -26,13 +26,14 @@ export class MeasurementsComponent implements OnInit {
 	saving = false;
 	deletingId: string | null = null;
 
-	// Photo attachment state
-	selectedPhoto: File | null = null;
-	photoPreviewUrl: string | null = null;
-	removeExistingPhoto = false;
-
+	// Multi-photo state (up to 3)
+	readonly maxPhotos = 3;
 	readonly maxPhotoSizeMB = 25;
 	readonly maxPhotoSizeBytes = this.maxPhotoSizeMB * 1024 * 1024;
+
+	existingPhotoUrls: string[] = [];   // URLs already saved on the record
+	selectedPhotos: File[] = [];        // new files chosen this session
+	photoPreviewUrls: string[] = [];    // preview data-URLs for selectedPhotos
 
 	constructor(
 		private fb: FormBuilder,
@@ -66,53 +67,61 @@ export class MeasurementsComponent implements OnInit {
 		return Array.from(map.entries()).map(([monthLabel, entries]) => ({ monthLabel, entries }));
 	}
 
-	/** Latest values for the stat strip */
 	get latestWeight():     number | null { return this.measurements.find(m => m.weight     !== null)?.weight     ?? null; }
 	get latestMuscleMass(): number | null { return this.measurements.find(m => m.muscleMass !== null)?.muscleMass ?? null; }
 	get latestBodyFat():    number | null { return this.measurements.find(m => m.bodyFat    !== null)?.bodyFat    ?? null; }
 
+	/** All photos currently shown in the drawer (existing + new previews) */
+	get allDisplayPhotos(): string[] {
+		return [...this.existingPhotoUrls, ...this.photoPreviewUrls];
+	}
+
+	get canAddMorePhotos(): boolean {
+		return this.allDisplayPhotos.length < this.maxPhotos;
+	}
+
 	openDrawer(m: Measurement | null): void {
 		this.selected = m;
 		this.form = Measurement.toFormGroup(m, this.fb);
-		this.selectedPhoto = null;
-		this.photoPreviewUrl = null;
-		this.removeExistingPhoto = false;
+		this.existingPhotoUrls = [...(m?.photoUrls ?? [])];
+		this.selectedPhotos = [];
+		this.photoPreviewUrls = [];
 		this.drawer.open();
 	}
 
-	get displayPhotoUrl(): string | null {
-		if (this.photoPreviewUrl) return this.photoPreviewUrl;
-		if (!this.removeExistingPhoto) return this.selected?.photoUrl ?? null;
-		return null;
-	}
-
 	triggerPhotoInput(): void {
+		if (!this.canAddMorePhotos) return;
 		(document.getElementById('measurementPhotoInput') as HTMLInputElement)?.click();
 	}
 
 	onPhotoSelected(event: Event): void {
 		const input = event.target as HTMLInputElement;
 		if (!input.files?.length) return;
-		const file = input.files[0];
-		if (!file.type.startsWith('image/')) {
-			return;
+		const files = Array.from(input.files);
+		const remaining = this.maxPhotos - this.allDisplayPhotos.length;
+		if (remaining <= 0) { input.value = ''; return; }
+
+		for (const file of files.slice(0, remaining)) {
+			if (!file.type.startsWith('image/')) continue;
+			if (file.size > this.maxPhotoSizeBytes) continue;
+			this.selectedPhotos.push(file);
+			const reader = new FileReader();
+			reader.onload = e => this.photoPreviewUrls.push(e.target?.result as string);
+			reader.readAsDataURL(file);
 		}
-		if (file.size > this.maxPhotoSizeBytes) {
-			return;
-		}
-		this.selectedPhoto = file;
-		this.removeExistingPhoto = false;
-		const reader = new FileReader();
-		reader.onload = e => { this.photoPreviewUrl = e.target?.result as string; };
-		reader.readAsDataURL(file);
 		input.value = '';
 	}
 
-	clearPhoto(): void {
-		this.selectedPhoto = null;
-		this.photoPreviewUrl = null;
-		if (this.selected?.photoUrl) {
-			this.removeExistingPhoto = true;
+	removePhoto(index: number): void {
+		const existingCount = this.existingPhotoUrls.length;
+		if (index < existingCount) {
+			// Remove an already-saved photo — it simply won't be in keepPhotoUrls on submit
+			this.existingPhotoUrls.splice(index, 1);
+		} else {
+			// Remove a newly selected photo
+			const newIndex = index - existingCount;
+			this.selectedPhotos.splice(newIndex, 1);
+			this.photoPreviewUrls.splice(newIndex, 1);
 		}
 	}
 
@@ -136,8 +145,8 @@ export class MeasurementsComponent implements OnInit {
 		};
 
 		const req = this.selected?._id
-			? this.measurementsService.update(this.selected._id, payload, this.selectedPhoto ?? undefined, this.removeExistingPhoto)
-			: this.measurementsService.create(payload, this.selectedPhoto ?? undefined);
+			? this.measurementsService.update(this.selected._id, payload, this.selectedPhotos, this.existingPhotoUrls)
+			: this.measurementsService.create(payload, this.selectedPhotos);
 
 		req.subscribe({
 			next: () => { this.saving = false; this.drawer.close(); this.load(); },

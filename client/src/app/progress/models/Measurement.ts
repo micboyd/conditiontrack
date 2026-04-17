@@ -9,9 +9,9 @@ export class Measurement {
 	muscleMass: number | null;
 	bodyFat: number | null;
 	notes: string;
-	photoUrl: string | null;
+	photoUrls: string[];
 
-	constructor(data?: Partial<Measurement>) {
+	constructor(data?: Partial<Measurement> & { photoUrl?: string | null }) {
 		this._id        = data?._id        ?? '';
 		this.userId     = data?.userId     ?? '';
 		this.date       = data?.date       ?? '';
@@ -19,7 +19,10 @@ export class Measurement {
 		this.muscleMass = data?.muscleMass ?? null;
 		this.bodyFat    = data?.bodyFat    ?? null;
 		this.notes      = data?.notes      ?? '';
-		this.photoUrl   = data?.photoUrl   ?? null;
+		// Backwards compat: old records may have photoUrl (singular)
+		this.photoUrls  = data?.photoUrls?.length
+			? data.photoUrls
+			: (data?.photoUrl ? [data.photoUrl] : []);
 	}
 
 	get dateLabel(): string {

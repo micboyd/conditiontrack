@@ -11,6 +11,8 @@ export class TimelineComponent implements OnInit {
     measurements: Measurement[] = [];
     loading = true;
     lightboxUrl: string | null = null;
+    lightboxPhotos: string[] = [];
+    lightboxIndex = 0;
 
     constructor(private measurementsService: MeasurementsService) {}
 
@@ -27,15 +29,37 @@ export class TimelineComponent implements OnInit {
         });
     }
 
-    openLightbox(url: string): void {
-        this.lightboxUrl = url;
-    }
-
-    closeLightbox(): void {
-        this.lightboxUrl = null;
+    hasPhotos(m: Measurement): boolean {
+        return m.photoUrls?.length > 0;
     }
 
     hasStats(m: Measurement): boolean {
         return m.weight !== null || m.muscleMass !== null || m.bodyFat !== null;
+    }
+
+    openLightbox(photos: string[], index = 0): void {
+        this.lightboxPhotos = photos;
+        this.lightboxIndex = index;
+        this.lightboxUrl = photos[index];
+    }
+
+    prevPhoto(): void {
+        if (this.lightboxIndex > 0) {
+            this.lightboxIndex--;
+            this.lightboxUrl = this.lightboxPhotos[this.lightboxIndex];
+        }
+    }
+
+    nextPhoto(): void {
+        if (this.lightboxIndex < this.lightboxPhotos.length - 1) {
+            this.lightboxIndex++;
+            this.lightboxUrl = this.lightboxPhotos[this.lightboxIndex];
+        }
+    }
+
+    closeLightbox(): void {
+        this.lightboxUrl = null;
+        this.lightboxPhotos = [];
+        this.lightboxIndex = 0;
     }
 }

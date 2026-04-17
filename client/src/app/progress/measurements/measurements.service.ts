@@ -14,16 +14,20 @@ export class MeasurementsService {
 		return this.http.get<Measurement[]>(`${this.base}/${userId}`);
 	}
 
-	create(payload: Partial<Measurement>, photo?: File): Observable<Measurement> {
+	create(payload: Partial<Measurement>, photos: File[] = []): Observable<Measurement> {
 		const fd = this.toFormData(payload);
-		if (photo) fd.append('photo', photo);
+		photos.forEach(p => fd.append('photos', p));
 		return this.http.post<Measurement>(this.base, fd);
 	}
 
-	update(id: string, payload: Partial<Measurement>, photo?: File, removePhoto = false): Observable<Measurement> {
+	/**
+	 * @param keepPhotoUrls Existing photo URLs to retain (omitted = cleared)
+	 * @param photos New photo files to upload
+	 */
+	update(id: string, payload: Partial<Measurement>, photos: File[] = [], keepPhotoUrls: string[] = []): Observable<Measurement> {
 		const fd = this.toFormData(payload);
-		if (photo) fd.append('photo', photo);
-		if (removePhoto) fd.append('removePhoto', 'true');
+		photos.forEach(p => fd.append('photos', p));
+		keepPhotoUrls.forEach(url => fd.append('keepPhotoUrls', url));
 		return this.http.put<Measurement>(`${this.base}/${id}`, fd);
 	}
 
@@ -36,8 +40,8 @@ export class MeasurementsService {
 		const numOrNull = (v: number | null | undefined) =>
 			v !== null && v !== undefined ? String(v) : 'null';
 
-		if (payload.userId)   fd.append('userId',     payload.userId);
-		if (payload.date)     fd.append('date',        payload.date);
+		if (payload.userId) fd.append('userId',     payload.userId);
+		if (payload.date)   fd.append('date',        payload.date);
 		fd.append('weight',     numOrNull(payload.weight));
 		fd.append('muscleMass', numOrNull(payload.muscleMass));
 		fd.append('bodyFat',    numOrNull(payload.bodyFat));

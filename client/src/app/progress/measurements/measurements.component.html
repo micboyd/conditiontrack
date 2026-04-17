@@ -56,10 +56,15 @@
 				<div class="flex items-center gap-4 px-5 py-4"
 					[ngClass]="!last ? 'border-b border-zinc-50' : ''">
 
-					<!-- Photo thumbnail -->
-					@if (m.photoUrl) {
-					<div class="w-10 h-10 flex-shrink-0 rounded-lg overflow-hidden bg-zinc-100 cursor-pointer" (click)="openDrawer(m)">
-						<img [src]="m.photoUrl" alt="Progress photo" class="w-full h-full object-cover" />
+					<!-- Photo thumbnails (stacked, up to 3) -->
+					@if (m.photoUrls?.length > 0) {
+					<div class="flex flex-shrink-0 cursor-pointer" (click)="openDrawer(m)">
+						@for (url of m.photoUrls.slice(0, 3); track $index) {
+						<div class="w-9 h-9 rounded-lg overflow-hidden bg-zinc-100 ring-2 ring-white"
+							[ngClass]="$index > 0 ? '-ml-2.5' : ''">
+							<img [src]="url" alt="Progress photo" class="w-full h-full object-cover" />
+						</div>
+						}
 					</div>
 					}
 
@@ -116,7 +121,9 @@
 
 <!-- Side drawer -->
 <app-side-drawer side="right">
-	<form [formGroup]="form" (ngSubmit)="onSubmit()" class="p-6 flex flex-col h-full gap-5">
+	<form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col min-h-full">
+
+		<div class="p-6 space-y-5 flex-1">
 
 		<div>
 			<h2 class="text-xl font-semibold text-zinc-900 mb-1">{{ selected ? 'Edit Entry' : 'Add Measurement' }}</h2>
@@ -143,60 +150,84 @@
 		<div>
 			<label class="block text-sm font-medium text-zinc-700 mb-1">Weight (kg)</label>
 			<input formControlName="weight" type="number" step="0.1" min="0" placeholder="e.g. 82.5"
-				class="w-full px-3 py-2.5 rounded-xl border border-zinc-200 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 transition" />
+				class="w-full px-3 py-2.5 rounded-xl border border-zinc-200 text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 transition" />
 		</div>
 
 		<!-- Muscle Mass -->
 		<div>
 			<label class="block text-sm font-medium text-zinc-700 mb-1">Muscle Mass (kg)</label>
 			<input formControlName="muscleMass" type="number" step="0.1" min="0" placeholder="e.g. 38.2"
-				class="w-full px-3 py-2.5 rounded-xl border border-zinc-200 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 transition" />
+				class="w-full px-3 py-2.5 rounded-xl border border-zinc-200 text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 transition" />
 		</div>
 
 		<!-- Body Fat -->
 		<div>
 			<label class="block text-sm font-medium text-zinc-700 mb-1">Body Fat (%)</label>
 			<input formControlName="bodyFat" type="number" step="0.1" min="0" max="100" placeholder="e.g. 18.4"
-				class="w-full px-3 py-2.5 rounded-xl border border-zinc-200 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 transition" />
+				class="w-full px-3 py-2.5 rounded-xl border border-zinc-200 text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 transition" />
 		</div>
 
 		<!-- Notes -->
 		<div>
 			<label class="block text-sm font-medium text-zinc-700 mb-1">Notes</label>
 			<textarea formControlName="notes" rows="3" placeholder="Optional notes..."
-				class="w-full px-3 py-2.5 rounded-xl border border-zinc-200 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 transition resize-none">
+				class="w-full px-3 py-2.5 rounded-xl border border-zinc-200 text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 transition resize-none">
 			</textarea>
 		</div>
 
-		<!-- Photo attachment -->
+		<!-- Photos (up to 3) -->
 		<div>
-			<label class="block text-sm font-medium text-zinc-700 mb-1.5">Photo <span class="text-zinc-400 font-normal">(optional)</span></label>
-			<input type="file" id="measurementPhotoInput" accept="image/*" class="hidden" (change)="onPhotoSelected($event)" />
-			@if (!displayPhotoUrl) {
-				<button type="button" (click)="triggerPhotoInput()"
-					class="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-zinc-200 text-sm text-zinc-400 hover:border-zinc-400 hover:text-zinc-600 transition cursor-pointer">
-					<i class="fa-sharp fa-solid fa-camera text-sm"></i>
-					Attach a photo
-				</button>
-			} @else {
-				<div class="relative rounded-xl overflow-hidden bg-zinc-100" style="aspect-ratio: 4/3">
-					<img [src]="displayPhotoUrl" alt="Photo preview" class="w-full h-full object-cover" />
-					<div class="absolute top-2 right-2 flex gap-1.5">
-						<button type="button" (click)="triggerPhotoInput()" title="Replace photo"
-							class="w-8 h-8 rounded-full bg-zinc-900/60 hover:bg-zinc-900/90 text-white flex items-center justify-center transition cursor-pointer">
-							<i class="fa-sharp fa-solid fa-arrows-rotate text-xs"></i>
-						</button>
-						<button type="button" (click)="clearPhoto()" title="Remove photo"
-							class="w-8 h-8 rounded-full bg-red-500/80 hover:bg-red-500 text-white flex items-center justify-center transition cursor-pointer">
-							<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
-						</button>
+			<div class="flex items-center justify-between mb-1.5">
+				<label class="block text-sm font-medium text-zinc-700">
+					Photos <span class="text-zinc-400 font-normal">(optional, up to {{ maxPhotos }})</span>
+				</label>
+				@if (allDisplayPhotos.length > 0) {
+				<span class="text-xs text-zinc-400">{{ allDisplayPhotos.length }}/{{ maxPhotos }}</span>
+				}
+			</div>
+
+			<input type="file" id="measurementPhotoInput" accept="image/*" multiple class="hidden" (change)="onPhotoSelected($event)" />
+
+			<!-- Photo grid -->
+			@if (allDisplayPhotos.length > 0) {
+			<div class="grid gap-2 mb-2"
+				[ngClass]="allDisplayPhotos.length === 1 ? 'grid-cols-1' : allDisplayPhotos.length === 2 ? 'grid-cols-2' : 'grid-cols-3'">
+				@for (url of allDisplayPhotos; track $index) {
+				<div class="relative rounded-xl overflow-hidden bg-zinc-100"
+					[style.aspect-ratio]="allDisplayPhotos.length === 1 ? '4/3' : '1'">
+					<img [src]="url" alt="Photo {{ $index + 1 }}" class="w-full h-full object-cover" />
+					<button type="button" (click)="removePhoto($index)"
+						class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-zinc-900/70 hover:bg-red-500 text-white flex items-center justify-center transition cursor-pointer shadow">
+						<i class="fa-sharp fa-solid fa-xmark text-[9px]"></i>
+					</button>
+					@if (allDisplayPhotos.length > 1) {
+					<div class="absolute bottom-1 left-1.5">
+						<span class="text-[9px] font-semibold text-white/70">{{ $index + 1 }}</span>
 					</div>
+					}
 				</div>
+				}
+			</div>
+			}
+
+			<!-- Add button -->
+			@if (canAddMorePhotos) {
+			<button type="button" (click)="triggerPhotoInput()"
+				class="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-zinc-200 text-sm text-zinc-400 hover:border-zinc-400 hover:text-zinc-600 transition cursor-pointer">
+				<i class="fa-sharp fa-solid fa-camera text-sm"></i>
+				@if (allDisplayPhotos.length === 0) {
+					Attach photos
+				} @else {
+					Add more ({{ maxPhotos - allDisplayPhotos.length }} left)
+				}
+			</button>
 			}
 		</div>
 
-		<!-- Actions -->
-		<div class="flex gap-3 mt-auto">
+		</div><!-- end scrollable content -->
+
+		<!-- Sticky footer -->
+		<div class="sticky bottom-0 bg-white border-t border-zinc-100 px-6 py-4 flex gap-3">
 			<button type="button" (click)="drawer.close()"
 				class="flex-1 px-4 py-2.5 rounded-xl border border-zinc-200 text-sm font-medium text-zinc-600 hover:bg-zinc-50 transition cursor-pointer">
 				Cancel
