@@ -9,15 +9,17 @@ export class Measurement {
 	muscleMass: number | null;
 	bodyFat: number | null;
 	notes: string;
+	photoUrl: string | null;
 
 	constructor(data?: Partial<Measurement>) {
-		this._id       = data?._id       ?? '';
-		this.userId    = data?.userId    ?? '';
-		this.date      = data?.date      ?? '';
-		this.weight    = data?.weight    ?? null;
-		this.muscleMass= data?.muscleMass ?? null;
-		this.bodyFat   = data?.bodyFat   ?? null;
-		this.notes     = data?.notes     ?? '';
+		this._id        = data?._id        ?? '';
+		this.userId     = data?.userId     ?? '';
+		this.date       = data?.date       ?? '';
+		this.weight     = data?.weight     ?? null;
+		this.muscleMass = data?.muscleMass ?? null;
+		this.bodyFat    = data?.bodyFat    ?? null;
+		this.notes      = data?.notes      ?? '';
+		this.photoUrl   = data?.photoUrl   ?? null;
 	}
 
 	get dateLabel(): string {

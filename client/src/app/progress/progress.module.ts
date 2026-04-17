@@ -9,10 +9,11 @@ import { ProgressPhotosComponent } from './progress-photos/progress-photos.compo
 import { ProgressPhotosService } from './progress-photos/progress-photos.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
+import { TimelineComponent } from './timeline/timeline.component';
 import { UploadPhotoComponent } from './progress-photos/upload-photo/upload-photo.component';
 
 @NgModule({
-	declarations: [ProgressComponent, ProgressPhotosComponent, UploadPhotoComponent, MeasurementsComponent],
+	declarations: [ProgressComponent, ProgressPhotosComponent, UploadPhotoComponent, MeasurementsComponent, TimelineComponent],
 	imports: [CommonModule, AppRoutingModule, ReactiveFormsModule, SharedModule, FormsModule],
 	providers: [ProgressPhotosService, MeasurementsService],
 	exports: [ProgressComponent],

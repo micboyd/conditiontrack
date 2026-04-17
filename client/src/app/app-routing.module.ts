@@ -25,6 +25,7 @@ import { WorkoutLibraryComponent } from './strength/workout-library/workout-libr
 import { ProgressComponent } from './progress/progress.component';
 import { MeasurementsComponent } from './progress/measurements/measurements.component';
 import { ProgressPhotosComponent } from './progress/progress-photos/progress-photos.component';
+import { TimelineComponent } from './progress/timeline/timeline.component';
 import { TrainingBlocksComponent } from './training-blocks/training-blocks.component';
 import { VerifyEmailComponent } from './authentication/verify-email/verify-email.component';
 import { SetupChecklistComponent } from './setup-checklist/setup-checklist.component';
@@ -160,7 +161,8 @@ const routes: Routes = [
 				children: [
 					{ path: '', redirectTo: 'measurements', pathMatch: 'full' },
 					{ path: 'measurements', component: MeasurementsComponent, canActivate: [AuthGuard] },
-					{ path: 'photos', component: ProgressPhotosComponent, canActivate: [AuthGuard] },
+					{ path: 'timeline', component: TimelineComponent, canActivate: [AuthGuard] },
+					{ path: 'photos', redirectTo: 'measurements', pathMatch: 'full' },
 				],
 			},
 		],

@@ -26,6 +26,14 @@ export class MeasurementsComponent implements OnInit {
 	saving = false;
 	deletingId: string | null = null;
 
+	// Photo attachment state
+	selectedPhoto: File | null = null;
+	photoPreviewUrl: string | null = null;
+	removeExistingPhoto = false;
+
+	readonly maxPhotoSizeMB = 25;
+	readonly maxPhotoSizeBytes = this.maxPhotoSizeMB * 1024 * 1024;
+
 	constructor(
 		private fb: FormBuilder,
 		private measurementsService: MeasurementsService,
@@ -66,7 +74,46 @@ export class MeasurementsComponent implements OnInit {
 	openDrawer(m: Measurement | null): void {
 		this.selected = m;
 		this.form = Measurement.toFormGroup(m, this.fb);
+		this.selectedPhoto = null;
+		this.photoPreviewUrl = null;
+		this.removeExistingPhoto = false;
 		this.drawer.open();
+	}
+
+	get displayPhotoUrl(): string | null {
+		if (this.photoPreviewUrl) return this.photoPreviewUrl;
+		if (!this.removeExistingPhoto) return this.selected?.photoUrl ?? null;
+		return null;
+	}
+
+	triggerPhotoInput(): void {
+		(document.getElementById('measurementPhotoInput') as HTMLInputElement)?.click();
+	}
+
+	onPhotoSelected(event: Event): void {
+		const input = event.target as HTMLInputElement;
+		if (!input.files?.length) return;
+		const file = input.files[0];
+		if (!file.type.startsWith('image/')) {
+			return;
+		}
+		if (file.size > this.maxPhotoSizeBytes) {
+			return;
+		}
+		this.selectedPhoto = file;
+		this.removeExistingPhoto = false;
+		const reader = new FileReader();
+		reader.onload = e => { this.photoPreviewUrl = e.target?.result as string; };
+		reader.readAsDataURL(file);
+		input.value = '';
+	}
+
+	clearPhoto(): void {
+		this.selectedPhoto = null;
+		this.photoPreviewUrl = null;
+		if (this.selected?.photoUrl) {
+			this.removeExistingPhoto = true;
+		}
 	}
 
 	onDateChange(value: string): void {
@@ -89,8 +136,8 @@ export class MeasurementsComponent implements OnInit {
 		};
 
 		const req = this.selected?._id
-			? this.measurementsService.update(this.selected._id, payload)
-			: this.measurementsService.create(payload);
+			? this.measurementsService.update(this.selected._id, payload, this.selectedPhoto ?? undefined, this.removeExistingPhoto)
+			: this.measurementsService.create(payload, this.selectedPhoto ?? undefined);
 
 		req.subscribe({
 			next: () => { this.saving = false; this.drawer.close(); this.load(); },
