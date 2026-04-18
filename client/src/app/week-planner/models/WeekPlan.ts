@@ -11,6 +11,7 @@ export interface TimeBlock {
 export interface DayPlan {
 	_id: string;
 	dayName: string;
+	note: string;
 	// Overarching (all-day)
 	workouts: Workout[];
 	conditioning: ConditioningSession[];
@@ -22,6 +23,7 @@ export interface DayPlan {
 
 export interface DayPlanDTO {
 	dayName: string;
+	note: string;
 	workouts: string[];
 	conditioning: string[];
 	morning: { workouts: string[]; conditioning: string[] };
@@ -55,6 +57,7 @@ export class WeekPlan {
 			return {
 				_id:          existingDay?._id || '',
 				dayName:      day,
+				note:         existingDay?.note ?? '',
 				workouts:     existingDay?.workouts    ?? [],
 				conditioning: existingDay?.conditioning ?? [],
 				morning:      existingDay?.morning   ?? emptyBlock(),
@@ -135,6 +138,7 @@ export class WeekPlan {
 			days: this.days.map(d => ({
 				...(d._id && { _id: d._id }),
 				dayName:      d.dayName,
+				note:         d.note ?? '',
 				workouts:     d.workouts.map(w => w._id),
 				conditioning: d.conditioning.map(c => c._id),
 				morning:   { workouts: d.morning.workouts.map(w => w._id),   conditioning: d.morning.conditioning.map(c => c._id) },

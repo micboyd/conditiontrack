@@ -16,6 +16,8 @@ const dayPlanSchema = new mongoose.Schema({
 		enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
 		required: true,
 	},
+	// Free-text day note (e.g. "Holiday", "Race day")
+	note: { type: String, default: '' },
 	// Overarching (all-day) items — original behaviour
 	workouts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Workout' }],
 	conditioning: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ConditioningSession' }],

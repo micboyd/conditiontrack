@@ -30,6 +30,9 @@ export class WeekPlannerComponent implements OnInit {
 	copying = false;
 	sessionToView: ConditioningSession | null = null;
 
+	editingNoteDay: string | null = null;
+	noteInputValue = '';
+
 	currentWeekStart: Date = startOfWeek(new Date(), { weekStartsOn: 1 });
 
 	toggleMode() {
@@ -233,6 +236,28 @@ export class WeekPlannerComponent implements OnInit {
 		if (!day) return;
 		const arr = block === 'overarching' ? day.conditioning : day[block].conditioning;
 		moveItemInArray(arr, event.previousIndex, event.currentIndex);
+		this.autoSave();
+	}
+
+	startNoteEdit(day: DayPlan): void {
+		this.editingNoteDay = day.dayName;
+		this.noteInputValue = day.note ?? '';
+	}
+
+	cancelNoteEdit(): void {
+		this.editingNoteDay = null;
+		this.noteInputValue = '';
+	}
+
+	confirmNote(day: DayPlan): void {
+		day.note = this.noteInputValue.trim();
+		this.editingNoteDay = null;
+		this.noteInputValue = '';
+		this.autoSave();
+	}
+
+	clearNote(day: DayPlan): void {
+		day.note = '';
 		this.autoSave();
 	}
 

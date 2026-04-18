@@ -157,9 +157,56 @@
 		<div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-zinc-100 flex flex-col">
 
 			<!-- Day header -->
-			<div class="px-5 py-4 border-b border-zinc-100">
+			<div class="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
 				<h2 class="text-base font-semibold text-zinc-900">{{ day.dayName }}</h2>
+				@if (isEditMode && !day.note && editingNoteDay !== day.dayName) {
+					<button (click)="startNoteEdit(day)" title="Add day note"
+						class="w-7 h-7 flex items-center justify-center rounded-full text-zinc-300 hover:text-amber-500 hover:bg-amber-50 transition cursor-pointer">
+						<i class="fa-sharp fa-solid fa-flag text-xs"></i>
+					</button>
+				}
 			</div>
+
+			<!-- Day note -->
+			@if (editingNoteDay === day.dayName) {
+				<div class="px-4 py-2.5 border-b border-amber-100 bg-amber-50 flex items-center gap-2">
+					<i class="fa-sharp fa-solid fa-flag text-amber-400 text-xs flex-shrink-0"></i>
+					<input type="text" [(ngModel)]="noteInputValue"
+						placeholder="e.g. Holiday, Race day, Rest week..."
+						(keydown.enter)="confirmNote(day)"
+						(keydown.escape)="cancelNoteEdit()"
+						autofocus
+						class="flex-1 text-sm bg-transparent outline-none text-zinc-800 placeholder-amber-300 min-w-0" />
+					<button (click)="confirmNote(day)"
+						class="w-6 h-6 flex items-center justify-center rounded-full bg-amber-400 hover:bg-amber-500 text-white transition cursor-pointer flex-shrink-0">
+						<i class="fa-sharp fa-solid fa-check text-[10px]"></i>
+					</button>
+					<button (click)="cancelNoteEdit()"
+						class="w-6 h-6 flex items-center justify-center rounded-full bg-zinc-200 hover:bg-zinc-300 text-zinc-500 transition cursor-pointer flex-shrink-0">
+						<i class="fa-sharp fa-solid fa-xmark text-[10px]"></i>
+					</button>
+				</div>
+			}
+			@if (day.note && editingNoteDay !== day.dayName) {
+				<div class="px-4 py-2.5 border-b border-amber-100 bg-amber-50 flex items-center justify-between gap-2">
+					<div class="flex items-center gap-2 min-w-0">
+						<i class="fa-sharp fa-solid fa-flag text-amber-400 text-xs flex-shrink-0"></i>
+						<span class="text-sm font-medium text-amber-800 truncate">{{ day.note }}</span>
+					</div>
+					@if (isEditMode) {
+						<div class="flex items-center gap-1 flex-shrink-0">
+							<button (click)="startNoteEdit(day)"
+								class="w-6 h-6 flex items-center justify-center rounded-full text-amber-400 hover:bg-amber-100 transition cursor-pointer">
+								<i class="fa-sharp fa-solid fa-pen text-[10px]"></i>
+							</button>
+							<button (click)="clearNote(day)"
+								class="w-6 h-6 flex items-center justify-center rounded-full text-amber-400 hover:bg-amber-100 transition cursor-pointer">
+								<i class="fa-sharp fa-solid fa-xmark text-[10px]"></i>
+							</button>
+						</div>
+					}
+				</div>
+			}
 
 			@if (!hasAnyContent(day)) {
 				<p class="px-5 py-4 text-sm text-zinc-300 italic">
