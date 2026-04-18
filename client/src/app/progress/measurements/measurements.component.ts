@@ -131,6 +131,7 @@ export class MeasurementsComponent implements OnInit {
 	}
 
 	onSubmit(): void {
+		this.form.markAllAsTouched();
 		if (this.form.invalid || this.saving) return;
 		this.saving = true;
 		const userId = localStorage.getItem('id') ?? '';

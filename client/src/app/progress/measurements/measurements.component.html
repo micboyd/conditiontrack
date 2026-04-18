@@ -74,27 +74,29 @@
 					</div>
 
 					<!-- Values -->
-					<div class="flex items-center gap-4 sm:gap-6 flex-1 flex-wrap">
-						@if (m.weight !== null) {
-						<div>
-							<p class="text-xs text-zinc-400 uppercase tracking-wide font-medium">Weight</p>
-							<p class="text-sm font-semibold text-zinc-900">{{ m.weight | number:'1.0-1' }} <span class="text-xs text-zinc-400 font-normal">kg</span></p>
+					<div class="flex-1 min-w-0">
+						<div class="flex items-center gap-7 sm:gap-10">
+							@if (m.weight !== null) {
+							<div>
+								<p class="text-[10px] text-zinc-400 uppercase tracking-wide font-medium mb-0.5">Weight</p>
+								<p class="text-sm font-semibold text-zinc-900">{{ m.weight | number:'1.0-1' }}<span class="text-xs text-zinc-400 font-normal ml-0.5">kg</span></p>
+							</div>
+							}
+							@if (m.muscleMass !== null) {
+							<div>
+								<p class="text-[10px] text-zinc-400 uppercase tracking-wide font-medium mb-0.5">Muscle</p>
+								<p class="text-sm font-semibold text-zinc-900">{{ m.muscleMass | number:'1.0-1' }}<span class="text-xs text-zinc-400 font-normal ml-0.5">kg</span></p>
+							</div>
+							}
+							@if (m.bodyFat !== null) {
+							<div>
+								<p class="text-[10px] text-zinc-400 uppercase tracking-wide font-medium mb-0.5">Body Fat</p>
+								<p class="text-sm font-semibold text-zinc-900">{{ m.bodyFat | number:'1.0-1' }}<span class="text-xs text-zinc-400 font-normal ml-0.5">%</span></p>
+							</div>
+							}
 						</div>
-						}
-						@if (m.muscleMass !== null) {
-						<div>
-							<p class="text-xs text-zinc-400 uppercase tracking-wide font-medium">Muscle</p>
-							<p class="text-sm font-semibold text-zinc-900">{{ m.muscleMass | number:'1.0-1' }} <span class="text-xs text-zinc-400 font-normal">kg</span></p>
-						</div>
-						}
-						@if (m.bodyFat !== null) {
-						<div>
-							<p class="text-xs text-zinc-400 uppercase tracking-wide font-medium">Body Fat</p>
-							<p class="text-sm font-semibold text-zinc-900">{{ m.bodyFat | number:'1.0-1' }}<span class="text-xs text-zinc-400 font-normal">%</span></p>
-						</div>
-						}
 						@if (m.notes) {
-						<p class="text-xs text-zinc-400 italic truncate hidden sm:block">{{ m.notes }}</p>
+						<p class="text-xs text-zinc-400 italic mt-1.5 truncate">{{ m.notes }}</p>
 						}
 					</div>
 
@@ -233,7 +235,7 @@
 				Cancel
 			</button>
 			<button type="submit"
-				[disabled]="form.invalid || saving"
+				[disabled]="saving"
 				class="flex-1 px-4 py-2.5 rounded-xl bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-700 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
 				{{ saving ? 'Saving...' : 'Save' }}
 			</button>

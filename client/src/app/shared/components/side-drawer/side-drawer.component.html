@@ -10,7 +10,7 @@
 }
 
 <!-- Overlay -->
-<div *ngIf="isOpen" (click)="close()" class="fixed inset-0 bg-black/50 z-10 backdrop-blur-sm" aria-hidden="true"></div>
+<div *ngIf="isOpen" (click)="close()" class="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm" aria-hidden="true"></div>
 
 <!-- Drawer -->
 <nav
@@ -18,7 +18,7 @@
 	role="dialog"
 	aria-modal="true"
 	[attr.aria-label]="'Main menu'"
-	class="fixed top-0 h-screen bg-white z-20
+	class="fixed top-0 h-screen bg-white z-50
 	       {{ widths.base }} {{ widths.md }} {{ widths.lg }}
 	       flex flex-col"
 	[class.right-0]="side === 'right'"
@@ -29,15 +29,16 @@
 		'translate-x-full': !isOpen && side === 'right',
 		'-translate-x-full': !isOpen && side === 'left'
 	}">
-	<!-- Close -->
-	<div class="flex justify-end px-6 pt-6 pb-2 shrink-0">
-		<button (click)="close()" class="w-10 h-10 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center transition cursor-pointer" aria-label="Close menu">
-			<i class="fa-sharp fa-solid fa-xmark text-zinc-600 text-sm"></i>
-		</button>
-	</div>
 
-	<!-- Content -->
-	<div class="flex-1 overflow-y-auto">
+	<!-- Close — pinned to top-right corner, above all content -->
+	<button (click)="close()"
+		class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center transition cursor-pointer"
+		aria-label="Close">
+		<i class="fa-sharp fa-solid fa-xmark text-zinc-600 text-sm"></i>
+	</button>
+
+	<!-- Content — top padding clears the close button -->
+	<div class="flex-1 overflow-y-auto pt-14">
 		<ng-content></ng-content>
 	</div>
 </nav>

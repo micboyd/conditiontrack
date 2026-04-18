@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
+import { format, parseISO } from 'date-fns';
 import { Measurement } from '../models/Measurement';
 import { MeasurementsService } from '../measurements/measurements.service';
 
@@ -29,6 +30,20 @@ export class TimelineComponent implements OnInit {
         });
     }
 
+    get grouped(): { monthLabel: string; entries: Measurement[] }[] {
+        const map = new Map<string, Measurement[]>();
+        for (const m of this.measurements) {
+            const label = m.date ? format(parseISO(m.date), 'MMMM yyyy') : 'Unknown';
+            if (!map.has(label)) map.set(label, []);
+            map.get(label)!.push(m);
+        }
+        return Array.from(map.entries()).map(([monthLabel, entries]) => ({ monthLabel, entries }));
+    }
+
+    globalIndex(m: Measurement): number {
+        return this.measurements.indexOf(m);
+    }
+
     hasPhotos(m: Measurement): boolean {
         return m.photoUrls?.length > 0;
     }
@@ -38,9 +53,12 @@ export class TimelineComponent implements OnInit {
     }
 
     openLightbox(photos: string[], index = 0): void {
-        this.lightboxPhotos = photos;
-        this.lightboxIndex = index;
-        this.lightboxUrl = photos[index];
+        // Build a flat list of every photo across all entries so arrows span the whole timeline
+        this.lightboxPhotos = this.measurements.flatMap(m => m.photoUrls);
+        const clickedUrl = photos[index];
+        const globalIndex = this.lightboxPhotos.indexOf(clickedUrl);
+        this.lightboxIndex = globalIndex !== -1 ? globalIndex : 0;
+        this.lightboxUrl = this.lightboxPhotos[this.lightboxIndex];
     }
 
     prevPhoto(): void {
@@ -57,9 +75,47 @@ export class TimelineComponent implements OnInit {
         }
     }
 
+    @HostListener('document:keydown', ['$event'])
+    onKeydown(e: KeyboardEvent): void {
+        if (!this.lightboxUrl) return;
+        if (e.key === 'ArrowLeft')  this.prevPhoto();
+        if (e.key === 'ArrowRight') this.nextPhoto();
+        if (e.key === 'Escape')     this.closeLightbox();
+    }
+
     closeLightbox(): void {
         this.lightboxUrl = null;
         this.lightboxPhotos = [];
         this.lightboxIndex = 0;
     }
+
+    statCount(m: Measurement): number {
+        return [m.weight, m.muscleMass, m.bodyFat].filter(v => v !== null).length;
+    }
+
+    private delta(index: number, field: 'weight' | 'muscleMass' | 'bodyFat'): number | null {
+        const curr = this.measurements[index]?.[field];
+        const prev = this.measurements[index + 1]?.[field];
+        if (curr === null || curr === undefined || prev === null || prev === undefined) return null;
+        const diff = +(curr - prev).toFixed(1);
+        return diff === 0 ? null : diff;
+    }
+
+    weightDelta(i: number): string | null {
+        const d = this.delta(i, 'weight');
+        return d === null ? null : `${d > 0 ? '+' : ''}${d.toFixed(1)} kg`;
+    }
+
+    muscleDelta(i: number): string | null {
+        const d = this.delta(i, 'muscleMass');
+        return d === null ? null : `${d > 0 ? '+' : ''}${d.toFixed(1)} kg`;
+    }
+
+    bodyFatDelta(i: number): string | null {
+        const d = this.delta(i, 'bodyFat');
+        return d === null ? null : `${d > 0 ? '+' : ''}${d.toFixed(1)}%`;
+    }
+
+    muscleDeltaPositive(i: number): boolean { return (this.delta(i, 'muscleMass') ?? 0) > 0; }
+    bodyFatDeltaPositive(i: number): boolean { return (this.delta(i, 'bodyFat') ?? 0) > 0; }
 }
