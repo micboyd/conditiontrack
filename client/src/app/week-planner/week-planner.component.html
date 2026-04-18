@@ -153,12 +153,15 @@
 	} @else {
 
 	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-		@for (day of weekPlan?.days; track day.dayName) {
+		@for (day of weekPlan?.days; track day.dayName; let i = $index) {
 		<div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-zinc-100 flex flex-col">
 
 			<!-- Day header -->
 			<div class="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
-				<h2 class="text-base font-semibold text-zinc-900">{{ day.dayName }}</h2>
+				<div>
+					<h2 class="text-base font-semibold text-zinc-900">{{ day.dayName }}</h2>
+					<p class="text-xs text-zinc-400 mt-0.5">{{ dayDate(i) }}</p>
+				</div>
 				@if (isEditMode && !day.note && editingNoteDay !== day.dayName) {
 					<button (click)="startNoteEdit(day)" title="Add day note"
 						class="w-7 h-7 flex items-center justify-center rounded-full text-zinc-300 hover:text-amber-500 hover:bg-amber-50 transition cursor-pointer">

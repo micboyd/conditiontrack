@@ -261,6 +261,10 @@ export class WeekPlannerComponent implements OnInit {
 		this.autoSave();
 	}
 
+	dayDate(index: number): string {
+		return format(addDays(this.currentWeekStart, index), 'do MMM');
+	}
+
 	hasAnyContent(day: DayPlan): boolean {
 		return (
 			day.workouts.length > 0 ||
