@@ -12,9 +12,9 @@ export class GoalsService {
 
 	// ── CRUD ──────────────────────────────────────────────────────────────────
 
-	getAllGoals(): Observable<Goal[]> {
+	getAllGoals(status: 'active' | 'completed' | 'archived' = 'active'): Observable<Goal[]> {
 		const userId = localStorage.getItem('id');
-		return this.http.get<Goal[]>(`${this.base}/${userId}`);
+		return this.http.get<Goal[]>(`${this.base}/${userId}?status=${status}`);
 	}
 
 	createGoal(goal: Partial<Goal>): Observable<Goal> {
@@ -31,6 +31,14 @@ export class GoalsService {
 
 	markComplete(id: string): Observable<Goal> {
 		return this.http.put<Goal>(`${this.base}/${id}`, { status: 'completed' });
+	}
+
+	archiveGoal(id: string): Observable<Goal> {
+		return this.http.put<Goal>(`${this.base}/${id}`, { status: 'archived' });
+	}
+
+	restoreGoal(id: string): Observable<Goal> {
+		return this.http.put<Goal>(`${this.base}/${id}`, { status: 'active' });
 	}
 
 	// ── Auto-compute helpers ──────────────────────────────────────────────────

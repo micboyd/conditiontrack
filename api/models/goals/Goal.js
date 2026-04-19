@@ -18,7 +18,7 @@ const goalSchema = new mongoose.Schema(
 		unit:         { type: String, default: '' },
 		targetDate:   { type: String, default: null },
 		notes:        { type: String, default: '' },
-		status:       { type: String, default: 'active', enum: ['active', 'completed'] },
+		status:       { type: String, default: 'active', enum: ['active', 'completed', 'archived'] },
 		milestones: [{
 			title:       { type: String, required: true },
 			targetDate:  { type: String, default: null },

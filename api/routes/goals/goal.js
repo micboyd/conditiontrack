@@ -34,14 +34,15 @@ router.put('/:id', async (req, res) => {
 	}
 });
 
-// GET /:userId — all active goals for a user
+// GET /:userId — goals for a user, filtered by status (default: active)
 router.get('/:userId', async (req, res) => {
 	try {
 		if (!isValidId(req.params.userId))
 			return res.status(400).json({ error: 'Invalid User ID' });
+		const status = req.query.status || 'active';
 		const goals = await Goal.find({
 			userId: req.params.userId,
-			status: 'active',
+			status,
 		}).sort({ createdAt: -1 });
 		res.json(goals);
 	} catch (err) {

@@ -1,9 +1,27 @@
 <!-- Page header -->
 <div class="bg-white border-b border-zinc-100">
 	<app-container [noPadding]="true">
-		<div class="pt-6 sm:pt-8 pb-6 sm:pb-8">
+		<div class="pt-6 sm:pt-8 pb-0">
 			<h1 class="text-2xl sm:text-3xl font-bold text-zinc-900 mb-1">Goals</h1>
-			<p class="text-sm text-zinc-400">Track your active fitness goals</p>
+			<p class="text-sm text-zinc-400 mb-5">Track your fitness goals</p>
+			<!-- Tabs -->
+			<div class="flex gap-1">
+				<button (click)="switchTab('active')"
+					class="px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors cursor-pointer"
+					[ngClass]="activeTab === 'active' ? 'text-zinc-900 border-b-2 border-zinc-900' : 'text-zinc-400 hover:text-zinc-600'">
+					Active
+				</button>
+				<button (click)="switchTab('completed')"
+					class="px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors cursor-pointer"
+					[ngClass]="activeTab === 'completed' ? 'text-zinc-900 border-b-2 border-zinc-900' : 'text-zinc-400 hover:text-zinc-600'">
+					Completed
+				</button>
+				<button (click)="switchTab('archived')"
+					class="px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors cursor-pointer"
+					[ngClass]="activeTab === 'archived' ? 'text-zinc-900 border-b-2 border-zinc-900' : 'text-zinc-400 hover:text-zinc-600'">
+					Archived
+				</button>
+			</div>
 		</div>
 	</app-container>
 </div>
@@ -25,12 +43,18 @@
 
 			<!-- Header + Add button -->
 			<div class="flex items-center justify-between mb-6">
-				<h2 class="text-lg font-semibold text-zinc-900">Active Goals</h2>
+				<h2 class="text-lg font-semibold text-zinc-900">
+					@if (activeTab === 'active') { Active Goals }
+					@if (activeTab === 'completed') { Completed Goals }
+					@if (activeTab === 'archived') { Archived Goals }
+				</h2>
+				@if (activeTab === 'active') {
 				<button (click)="openDrawer(null)"
 					class="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium px-5 py-3 rounded-full transition-colors cursor-pointer min-h-[44px]">
 					<i class="fa-sharp fa-solid fa-plus text-xs"></i>
 					Add Goal
 				</button>
+				}
 			</div>
 
 			@if (loading) {
@@ -39,9 +63,21 @@
 				</div>
 			} @else if (goals.length === 0) {
 				<div class="bg-white rounded-2xl px-6 py-16 text-center">
-					<i class="fa-sharp fa-solid fa-bullseye text-zinc-200 text-4xl mb-4 block"></i>
-					<p class="text-sm font-medium text-zinc-500 mb-1">No active goals</p>
-					<p class="text-xs text-zinc-400">Add a goal to start tracking your progress</p>
+					@if (activeTab === 'active') {
+						<i class="fa-sharp fa-solid fa-bullseye text-zinc-200 text-4xl mb-4 block"></i>
+						<p class="text-sm font-medium text-zinc-500 mb-1">No active goals</p>
+						<p class="text-xs text-zinc-400">Add a goal to start tracking your progress</p>
+					}
+					@if (activeTab === 'completed') {
+						<i class="fa-sharp fa-solid fa-circle-check text-zinc-200 text-4xl mb-4 block"></i>
+						<p class="text-sm font-medium text-zinc-500 mb-1">No completed goals yet</p>
+						<p class="text-xs text-zinc-400">Goals you complete will appear here</p>
+					}
+					@if (activeTab === 'archived') {
+						<i class="fa-sharp fa-solid fa-box-archive text-zinc-200 text-4xl mb-4 block"></i>
+						<p class="text-sm font-medium text-zinc-500 mb-1">No archived goals</p>
+						<p class="text-xs text-zinc-400">Goals you archive will appear here</p>
+					}
 				</div>
 			} @else {
 				<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -52,10 +88,20 @@
 						<div class="bg-white rounded-2xl shadow-sm p-5 flex flex-col gap-3">
 							<div class="flex items-start gap-3">
 
-								<!-- Complete circle -->
+								<!-- Complete circle (active only) -->
+								@if (activeTab === 'active') {
 								<button (click)="markComplete(goal)" title="Mark complete"
 									class="mt-0.5 w-5 h-5 rounded-full border-2 border-zinc-300 hover:border-green-500 hover:bg-green-50 flex-shrink-0 transition-colors cursor-pointer">
 								</button>
+								}
+								@if (activeTab === 'completed') {
+								<div class="mt-0.5 w-5 h-5 rounded-full border-2 border-green-500 bg-green-500 flex-shrink-0 flex items-center justify-center">
+									<i class="fa-sharp fa-solid fa-check text-white" style="font-size: 7px"></i>
+								</div>
+								}
+								@if (activeTab === 'archived') {
+								<div class="mt-0.5 w-5 h-5 rounded-full border-2 border-zinc-200 bg-zinc-100 flex-shrink-0"></div>
+								}
 
 								<!-- Text -->
 								<div class="flex-1 min-w-0">
@@ -71,16 +117,38 @@
 									}
 								</div>
 
-								<!-- Edit / Delete -->
+								<!-- Actions -->
 								<div class="flex items-center -mt-1 -mr-1 flex-shrink-0">
-									<button (click)="openDrawer(goal)" title="Edit"
-										class="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-300 hover:text-zinc-700 transition-colors cursor-pointer">
-										<i class="fa-sharp fa-solid fa-pen-to-square text-xs"></i>
-									</button>
-									<button (click)="deleteGoal(goal)" title="Delete"
-										class="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-300 hover:text-red-500 transition-colors cursor-pointer">
-										<i class="fa-sharp fa-solid fa-trash text-xs"></i>
-									</button>
+									@if (activeTab === 'active') {
+										<button (click)="openDrawer(goal)" title="Edit"
+											class="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-300 hover:text-zinc-700 transition-colors cursor-pointer">
+											<i class="fa-sharp fa-solid fa-pen-to-square text-xs"></i>
+										</button>
+										<button (click)="deleteGoal(goal)" title="Delete"
+											class="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-300 hover:text-red-500 transition-colors cursor-pointer">
+											<i class="fa-sharp fa-solid fa-trash text-xs"></i>
+										</button>
+									}
+									@if (activeTab === 'completed') {
+										<button (click)="archiveGoal(goal)" title="Archive"
+											class="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-300 hover:text-zinc-700 transition-colors cursor-pointer">
+											<i class="fa-sharp fa-solid fa-box-archive text-xs"></i>
+										</button>
+										<button (click)="restoreGoal(goal)" title="Restore to active"
+											class="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-300 hover:text-green-600 transition-colors cursor-pointer">
+											<i class="fa-sharp fa-solid fa-rotate-left text-xs"></i>
+										</button>
+									}
+									@if (activeTab === 'archived') {
+										<button (click)="restoreGoal(goal)" title="Restore to active"
+											class="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-300 hover:text-green-600 transition-colors cursor-pointer">
+											<i class="fa-sharp fa-solid fa-rotate-left text-xs"></i>
+										</button>
+										<button (click)="deleteGoal(goal)" title="Delete"
+											class="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-300 hover:text-red-500 transition-colors cursor-pointer">
+											<i class="fa-sharp fa-solid fa-trash text-xs"></i>
+										</button>
+									}
 								</div>
 							</div>
 
@@ -117,20 +185,42 @@
 								</div>
 								<!-- Actions -->
 								<div class="flex items-center -mt-1 -mr-1 flex-shrink-0">
-									@if (goal.trackingType === 'manual') {
-										<button (click)="openDrawer(goal)" title="Edit"
-											class="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-300 hover:text-zinc-700 transition-colors cursor-pointer">
-											<i class="fa-sharp fa-solid fa-pen-to-square text-xs"></i>
+									@if (activeTab === 'active') {
+										@if (goal.trackingType === 'manual') {
+											<button (click)="openDrawer(goal)" title="Edit"
+												class="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-300 hover:text-zinc-700 transition-colors cursor-pointer">
+												<i class="fa-sharp fa-solid fa-pen-to-square text-xs"></i>
+											</button>
+										}
+										<button (click)="markComplete(goal)" title="Mark complete"
+											class="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-300 hover:text-green-600 transition-colors cursor-pointer">
+											<i class="fa-sharp fa-solid fa-circle-check text-xs"></i>
+										</button>
+										<button (click)="deleteGoal(goal)" title="Delete"
+											class="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-300 hover:text-red-500 transition-colors cursor-pointer">
+											<i class="fa-sharp fa-solid fa-trash text-xs"></i>
 										</button>
 									}
-									<button (click)="markComplete(goal)" title="Mark complete"
-										class="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-300 hover:text-green-600 transition-colors cursor-pointer">
-										<i class="fa-sharp fa-solid fa-circle-check text-xs"></i>
-									</button>
-									<button (click)="deleteGoal(goal)" title="Delete"
-										class="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-300 hover:text-red-500 transition-colors cursor-pointer">
-										<i class="fa-sharp fa-solid fa-trash text-xs"></i>
-									</button>
+									@if (activeTab === 'completed') {
+										<button (click)="archiveGoal(goal)" title="Archive"
+											class="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-300 hover:text-zinc-700 transition-colors cursor-pointer">
+											<i class="fa-sharp fa-solid fa-box-archive text-xs"></i>
+										</button>
+										<button (click)="restoreGoal(goal)" title="Restore to active"
+											class="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-300 hover:text-green-600 transition-colors cursor-pointer">
+											<i class="fa-sharp fa-solid fa-rotate-left text-xs"></i>
+										</button>
+									}
+									@if (activeTab === 'archived') {
+										<button (click)="restoreGoal(goal)" title="Restore to active"
+											class="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-300 hover:text-green-600 transition-colors cursor-pointer">
+											<i class="fa-sharp fa-solid fa-rotate-left text-xs"></i>
+										</button>
+										<button (click)="deleteGoal(goal)" title="Delete"
+											class="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-300 hover:text-red-500 transition-colors cursor-pointer">
+											<i class="fa-sharp fa-solid fa-trash text-xs"></i>
+										</button>
+									}
 								</div>
 							</div>
 
@@ -151,8 +241,8 @@
 								<p class="text-[11px] text-zinc-400 mt-1 text-right">{{ getProgress(goal) | number:'1.0-0' }}%</p>
 							</div>
 
-							<!-- Manual: inline progress update -->
-							@if (goal.trackingType === 'manual') {
+							<!-- Manual: inline progress update (active only) -->
+							@if (activeTab === 'active' && goal.trackingType === 'manual') {
 								<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1 border-t border-zinc-50">
 									<input type="number" placeholder="Update progress"
 										#manualInput
@@ -166,8 +256,8 @@
 								</div>
 							}
 
-							<!-- Auto badge -->
-							@if (goal.trackingType === 'auto') {
+							<!-- Auto badge (active only) -->
+							@if (activeTab === 'active' && goal.trackingType === 'auto') {
 								<div class="flex items-center gap-1.5 text-[11px] text-zinc-400 pt-1 border-t border-zinc-50">
 									<i class="fa-sharp fa-solid fa-bolt text-[9px] text-amber-400"></i>
 									Auto-tracked

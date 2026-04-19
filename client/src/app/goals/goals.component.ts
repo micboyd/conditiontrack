@@ -16,6 +16,7 @@ export class GoalsComponent implements OnInit {
 	selectedGoal: Goal | null = null;
 	drawerOpen = false;
 	autoValues = new Map<string, number>();
+	activeTab: 'active' | 'completed' | 'archived' = 'active';
 
 	constructor(private goalsService: GoalsService) {}
 
@@ -23,15 +24,22 @@ export class GoalsComponent implements OnInit {
 		this.loadGoals();
 	}
 
+	switchTab(tab: 'active' | 'completed' | 'archived'): void {
+		this.activeTab = tab;
+		this.loadGoals();
+	}
+
 	loadGoals(): void {
 		this.loading = true;
-		this.goalsService.getAllGoals().subscribe({
+		this.goalsService.getAllGoals(this.activeTab).subscribe({
 			next: (goals) => {
 				this.goals = goals.map(g => new Goal(g));
 				this.loading = false;
-				this.goalsService.resolveAutoValues(this.goals).subscribe(map => {
-					this.autoValues = map;
-				});
+				if (this.activeTab === 'active') {
+					this.goalsService.resolveAutoValues(this.goals).subscribe(map => {
+						this.autoValues = map;
+					});
+				}
 			},
 			error: () => { this.loading = false; },
 		});
@@ -93,6 +101,18 @@ export class GoalsComponent implements OnInit {
 
 	markComplete(goal: Goal): void {
 		this.goalsService.markComplete(goal._id).subscribe(() => {
+			this.goals = this.goals.filter(g => g._id !== goal._id);
+		});
+	}
+
+	archiveGoal(goal: Goal): void {
+		this.goalsService.archiveGoal(goal._id).subscribe(() => {
+			this.goals = this.goals.filter(g => g._id !== goal._id);
+		});
+	}
+
+	restoreGoal(goal: Goal): void {
+		this.goalsService.restoreGoal(goal._id).subscribe(() => {
 			this.goals = this.goals.filter(g => g._id !== goal._id);
 		});
 	}
