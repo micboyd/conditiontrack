@@ -240,7 +240,8 @@ router.post('/login', async (req, res) => {
 			});
 		}
 
-		const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+		const { rememberMe } = req.body;
+		const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: rememberMe ? '30d' : '1h' });
 
 		res.json({ token, id: user._id });
 	} catch (err) {

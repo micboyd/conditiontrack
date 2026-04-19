@@ -69,6 +69,15 @@
 						}
 					</div>
 
+					<label class="flex items-center gap-3 cursor-pointer select-none">
+						<input
+							type="checkbox"
+							[(ngModel)]="keepMeLoggedIn"
+							[ngModelOptions]="{standalone: true}"
+							class="w-4 h-4 rounded border-zinc-300 text-zinc-900 accent-zinc-900 cursor-pointer" />
+						<span class="text-sm text-zinc-500">Keep me logged in</span>
+					</label>
+
 					@if (loginErrorMessage) {
 					<div class="bg-red-50 rounded-xl px-4 py-3 space-y-2">
 						<p class="text-sm text-red-600">{{ loginErrorMessage }}</p>

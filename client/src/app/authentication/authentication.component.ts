@@ -34,6 +34,7 @@ export class AuthenticationComponent {
 	loginForm: FormGroup;
 	loginErrorMessage = '';
 	loginLoading = false;
+	keepMeLoggedIn = false;
 	unverifiedEmail = ''; // set when login returns 403 unverified
 
 	// ── Register ──────────────────────────────────────────────────────────────
@@ -98,7 +99,7 @@ export class AuthenticationComponent {
 		this.unverifiedEmail = '';
 
 		this.authService
-			.login(new LoginRequest(this.loginForm.value.username, this.loginForm.value.password))
+			.login(new LoginRequest(this.loginForm.value.username, this.loginForm.value.password, this.keepMeLoggedIn))
 			.subscribe({
 				next: loginData => {
 					this.authService.setDetails(loginData);
