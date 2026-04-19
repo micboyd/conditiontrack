@@ -6,6 +6,8 @@ import { addDays, addWeeks, format, startOfWeek, subWeeks, parseISO } from 'date
 import { ConditioningLibraryService } from '../conditioning/conditioning-library/conditioning-library.service';
 import { ConditioningSession } from '../conditioning/models/ConditioningSession';
 import { SideDrawerComponent } from '../shared/components/side-drawer/side-drawer.component';
+import { TrainingBlock } from '../training-blocks/models/TrainingBlock';
+import { TrainingBlocksService } from '../training-blocks/training-blocks.service';
 import { WeekPlannerService } from './week-planner.service';
 import { Workout } from '../strength/models/Workout';
 import { WorkoutService } from '../strength/workout-library/workout.service';
@@ -47,6 +49,7 @@ export class WeekPlannerComponent implements OnInit {
 	private _weekPlan: WeekPlan;
 	private _allWorkouts: Workout[] = [];
 	private _allConditioningSessions: ConditioningSession[] = [];
+	private _trainingBlocks: TrainingBlock[] = [];
 
 	readonly blocks: { key: BlockSelection; label: string; icon: string }[] = [
 		{ key: 'overarching', label: 'All Day',   icon: 'fa-calendar-day' },
@@ -59,6 +62,7 @@ export class WeekPlannerComponent implements OnInit {
 		private weekPlannerService: WeekPlannerService,
 		private workoutService: WorkoutService,
 		private conditioningLibraryService: ConditioningLibraryService,
+		private trainingBlocksService: TrainingBlocksService,
 	) {}
 
 	get weekStartStr(): string {
@@ -95,10 +99,12 @@ export class WeekPlannerComponent implements OnInit {
 		forkJoin({
 			conditioningSessions: this.conditioningLibraryService.getAllConditioningSessions(),
 			workouts: this.workoutService.getAllWorkouts(),
+			trainingBlocks: this.trainingBlocksService.getAllBlocks(),
 		}).subscribe({
-			next: ({ conditioningSessions, workouts }) => {
+			next: ({ conditioningSessions, workouts, trainingBlocks }) => {
 				this._allConditioningSessions = conditioningSessions;
 				this._allWorkouts = workouts;
+				this._trainingBlocks = trainingBlocks;
 				this.getWeekPlan();
 			},
 			error: () => {
@@ -276,6 +282,21 @@ export class WeekPlannerComponent implements OnInit {
 
 	dayDate(index: number): string {
 		return format(addDays(this.currentWeekStart, index), 'do MMM');
+	}
+
+	getBlocksForWeek(): { block: TrainingBlock; startDay: number; endDay: number }[] {
+		const results: { block: TrainingBlock; startDay: number; endDay: number }[] = [];
+		for (const block of this._trainingBlocks) {
+			const end = block.endDate || '9999-12-31';
+			const weekEnd = format(addDays(this.currentWeekStart, 6), 'yyyy-MM-dd');
+			if (block.startDate > weekEnd || end < this.weekStartStr) continue;
+			const startDay = block.startDate <= this.weekStartStr ? 0
+				: [...Array(7)].findIndex((_, i) => format(addDays(this.currentWeekStart, i), 'yyyy-MM-dd') >= block.startDate);
+			const endDay = end >= weekEnd ? 6
+				: [...Array(7)].reduce((last, _, i) => format(addDays(this.currentWeekStart, i), 'yyyy-MM-dd') <= end ? i : last, 0);
+			results.push({ block, startDay, endDay });
+		}
+		return results;
 	}
 
 	hasAnyContent(day: DayPlan): boolean {

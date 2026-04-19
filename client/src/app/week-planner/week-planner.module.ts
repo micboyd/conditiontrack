@@ -6,6 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { WeekPlannerComponent } from './week-planner.component';
 import { WeekPlannerService } from './week-planner.service';
+import { TrainingBlocksService } from '../training-blocks/training-blocks.service';
 
 @NgModule({
 	declarations: [
@@ -13,7 +14,7 @@ import { WeekPlannerService } from './week-planner.service';
 	],
 	imports: [CommonModule, AppRoutingModule, FormsModule, ReactiveFormsModule, SharedModule, DragDropModule],
 	exports: [],
-	providers: [WeekPlannerService],
+	providers: [WeekPlannerService, TrainingBlocksService],
 })
 export class WeekPlannerModule {}
 
