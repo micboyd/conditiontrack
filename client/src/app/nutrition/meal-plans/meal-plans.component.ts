@@ -37,8 +37,10 @@ export class MealPlansComponent implements OnInit {
 	loading = false;
 	saving = false;
 	saved = false;
-	copying = false;
 	showClearModal = false;
+
+	copiedEntries: { day: string; slot: string; mealId: string }[] | null = null;
+	copiedFromWeekStart: string | null = null;
 
 	// Mobile view
 	selectedMobileDay = 'Monday';
@@ -204,20 +206,21 @@ export class MealPlansComponent implements OnInit {
 		this.autoSave();
 	}
 
-	// ─── Copy to next week ───────────────────────────────────────────────────
+	// ─── Copy / Paste week ───────────────────────────────────────────────────
 
-	copyToNextWeek(): void {
-		const userId = localStorage.getItem('id') ?? '';
-		const fromWeekStart = this.weekStartStr;
-		const toWeekStart = format(addWeeks(this.currentWeekStart, 1), 'yyyy-MM-dd');
-		this.copying = true;
-		this.mealPlansService.copyWeek(userId, fromWeekStart, toWeekStart).subscribe({
-			next: () => {
-				this.copying = false;
-				this.nextWeek();
-			},
-			error: () => { this.copying = false; },
-		});
+	get canPaste(): boolean {
+		return !!this.copiedEntries && this.copiedFromWeekStart !== this.weekStartStr;
+	}
+
+	copyCurrentWeek(): void {
+		this.copiedEntries = this.plan.entries.map(e => ({ ...e }));
+		this.copiedFromWeekStart = this.weekStartStr;
+	}
+
+	pasteWeek(): void {
+		if (!this.copiedEntries) return;
+		this.plan.entries = this.copiedEntries.map(e => ({ ...e }));
+		this.autoSave();
 	}
 
 	// ─── Picker ──────────────────────────────────────────────────────────────

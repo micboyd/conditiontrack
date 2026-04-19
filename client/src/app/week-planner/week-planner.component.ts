@@ -27,8 +27,11 @@ export class WeekPlannerComponent implements OnInit {
 	saveError = false;
 	loadError = false;
 	isEditMode = false;
-	copying = false;
+	pasting = false;
 	sessionToView: ConditioningSession | null = null;
+
+	copiedWeekPlan: WeekPlan | null = null;
+	copiedFromWeekStart: string | null = null;
 
 	editingNoteDay: string | null = null;
 	noteInputValue = '';
@@ -125,18 +128,28 @@ export class WeekPlannerComponent implements OnInit {
 		this.getWeekPlan();
 	}
 
-	copyToNextWeek(): void {
-		const userId = localStorage.getItem('id') ?? '';
-		const fromWeekStart = this.weekStartStr;
-		const toWeekStart = format(addWeeks(this.currentWeekStart, 1), 'yyyy-MM-dd');
-		this.copying = true;
-		this.weekPlannerService.copyWeek(userId, fromWeekStart, toWeekStart).subscribe({
-			next: () => {
-				this.copying = false;
-				this.nextWeek();
-			},
-			error: () => { this.copying = false; },
-		});
+	get canPaste(): boolean {
+		return !!this.copiedWeekPlan && this.copiedFromWeekStart !== this.weekStartStr;
+	}
+
+	copyCurrentWeek(): void {
+		this.copiedWeekPlan = this._weekPlan;
+		this.copiedFromWeekStart = this.weekStartStr;
+	}
+
+	pasteWeek(): void {
+		if (!this.copiedWeekPlan) return;
+		const copiedDays = this.copiedWeekPlan.days.map(d => ({
+			...d,
+			_id: '',
+			workouts: [...d.workouts],
+			conditioning: [...d.conditioning],
+			morning:   { workouts: [...d.morning.workouts],   conditioning: [...d.morning.conditioning] },
+			afternoon: { workouts: [...d.afternoon.workouts], conditioning: [...d.afternoon.conditioning] },
+			evening:   { workouts: [...d.evening.workouts],   conditioning: [...d.evening.conditioning] },
+		}));
+		this._weekPlan = new WeekPlan({ weekStart: this.weekStartStr, days: copiedDays });
+		this.autoSave();
 	}
 
 	getWeekPlan() {

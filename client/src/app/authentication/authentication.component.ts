@@ -64,9 +64,7 @@ export class AuthenticationComponent {
 		);
 	}
 
-	ngOnInit() {
-		localStorage.clear();
-	}
+	ngOnInit() {}
 
 	// ── Helpers ───────────────────────────────────────────────────────────────
 

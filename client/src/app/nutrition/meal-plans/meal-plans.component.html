@@ -14,16 +14,22 @@
 			Saved
 		</span>
 		}
-		@if (hasMealsThisWeek() && !saving) {
-		<button (click)="copyToNextWeek()" [disabled]="copying"
-			class="text-sm text-zinc-400 hover:text-zinc-700 transition cursor-pointer px-3 py-2 rounded-lg hover:bg-zinc-100 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5">
-			@if (copying) {
-				<i class="fa-sharp fa-solid fa-spinner fa-spin text-xs"></i>
-			} @else {
-				<i class="fa-sharp fa-solid fa-copy text-xs"></i>
-			}
-			Copy to next week
+		<button (click)="copyCurrentWeek()"
+			class="text-sm transition cursor-pointer px-3 py-2 rounded-lg font-medium flex items-center gap-1.5"
+			[ngClass]="copiedFromWeekStart === weekStartStr
+				? 'text-emerald-600 bg-emerald-50'
+				: 'text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100'">
+			<i class="fa-sharp fa-solid fa-copy text-xs"></i>
+			{{ copiedFromWeekStart === weekStartStr ? 'Copied' : 'Copy week' }}
 		</button>
+		@if (canPaste) {
+		<button (click)="pasteWeek()"
+			class="text-sm text-white bg-zinc-900 hover:bg-zinc-700 transition cursor-pointer px-3 py-2 rounded-lg font-medium flex items-center gap-1.5">
+			<i class="fa-sharp fa-solid fa-clipboard text-xs"></i>
+			Paste week
+		</button>
+		}
+		@if (hasMealsThisWeek() && !saving) {
 		<button (click)="openClearModal()"
 			class="text-sm text-zinc-400 hover:text-red-500 transition cursor-pointer px-3 py-2 rounded-lg hover:bg-red-50 font-medium">
 			Clear week
