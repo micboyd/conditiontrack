@@ -37,8 +37,8 @@ export class WorkoutRecord {
 
 	static createSetFormGroup(fb: FormBuilder, reps: number | '' = '', weight: number | '' = '') {
 		return fb.group({
-			reps: [reps],
-			weight: [weight],
+			reps: [reps, [Validators.required, Validators.min(0)]],
+			weight: [weight, [Validators.min(0)]],
 		});
 	}
 
@@ -53,7 +53,7 @@ export class WorkoutRecord {
 		return fb.group({
 			_id: [record._id],
 			notes: [record.notes],
-			duration: [record.duration],
+			duration: [record.duration, [Validators.min(1)]],
 			userId: [record.userId, [Validators.required]],
 			workoutId: [record.workoutId, [Validators.required]],
 			date: [record.date, [Validators.required]],

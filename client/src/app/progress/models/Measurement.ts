@@ -34,7 +34,7 @@ export class Measurement {
 			date:       [m?.date       ?? format(new Date(), 'yyyy-MM-dd'), Validators.required],
 			weight:     [m?.weight     ?? null],
 			muscleMass: [m?.muscleMass ?? null],
-			bodyFat:    [m?.bodyFat    ?? null],
+			bodyFat:    [m?.bodyFat    ?? null, [Validators.min(0), Validators.max(100)]],
 			notes:      [m?.notes      ?? ''],
 		});
 	}

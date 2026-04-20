@@ -99,8 +99,8 @@
 
 					<button
 						type="submit"
-						[disabled]="loginLoading"
-						class="w-full bg-zinc-900 text-white py-4 rounded-xl text-sm font-medium hover:bg-zinc-800 transition mt-2 cursor-pointer disabled:opacity-50">
+						[disabled]="loginForm.invalid || loginLoading"
+						class="w-full bg-zinc-900 text-white py-4 rounded-xl text-sm font-medium hover:bg-zinc-800 transition mt-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
 						@if (loginLoading) {
 							<app-loading-indicator [spinner]="true" [loading]="true"></app-loading-indicator>
 						} @else {
@@ -220,8 +220,8 @@
 
 					<button
 						type="submit"
-						[disabled]="registerLoading"
-						class="w-full bg-zinc-900 text-white py-4 rounded-xl text-sm font-medium hover:bg-zinc-800 transition mt-2 cursor-pointer disabled:opacity-50">
+						[disabled]="registerForm.invalid || registerLoading"
+						class="w-full bg-zinc-900 text-white py-4 rounded-xl text-sm font-medium hover:bg-zinc-800 transition mt-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
 						@if (registerLoading) {
 							<app-loading-indicator [spinner]="true" [loading]="true"></app-loading-indicator>
 						} @else {

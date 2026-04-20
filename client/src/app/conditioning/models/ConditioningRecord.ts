@@ -32,10 +32,10 @@ export class ConditioningRecord {
 		return fb.group({
 			sessionId: [record?.sessionId || session?._id || '', Validators.required],
 			date: [record?.date || format(new Date(), 'yyyy-MM-dd'), Validators.required],
-			duration: [record?.duration ?? session?.duration ?? 0],
+			duration: [record?.duration ?? session?.duration ?? 0, [Validators.min(1)]],
 			notes: [record?.notes || ''],
 			completed: [record?.completed ?? false],
-            caloriesBurned: [record?.caloriesBurned ?? 0],
+			caloriesBurned: [record?.caloriesBurned ?? 0, [Validators.min(0)]],
 			userId: [record?.userId || localStorage.getItem('id')],
 		});
 	}

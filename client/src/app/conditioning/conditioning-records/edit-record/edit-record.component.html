@@ -70,15 +70,29 @@
 
 					<div>
 						<label class="block text-xs font-medium text-zinc-500 mb-1.5">Duration (min)</label>
-						<input type="number" formControlName="duration" placeholder="45"
-							class="w-full px-3 py-2 border border-zinc-200 rounded-lg text-base sm:text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent transition-colors" />
+						<input type="number" formControlName="duration" placeholder="45" min="1"
+							class="w-full px-3 py-2 border rounded-lg text-base sm:text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
+							[ngClass]="isInvalid('duration') ? 'border-red-400 focus:ring-red-300' : 'border-zinc-200 focus:ring-zinc-900'" />
+						@if (isInvalid('duration')) {
+							<p class="flex items-center gap-1 text-xs text-red-500 mt-1.5">
+								<i class="fa-sharp fa-solid fa-circle-exclamation text-[10px]"></i>
+								Must be at least 1 minute
+							</p>
+						}
 					</div>
 				</div>
 
 				<div>
 					<label class="block text-xs font-medium text-zinc-500 mb-1.5">Calories Burned</label>
-					<input type="number" formControlName="caloriesBurned" placeholder="e.g. 350"
-						class="w-full px-3 py-2 border border-zinc-200 rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent" />
+					<input type="number" formControlName="caloriesBurned" placeholder="e.g. 350" min="0"
+						class="w-full px-3 py-2 border rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent"
+						[ngClass]="isInvalid('caloriesBurned') ? 'border-red-400 focus:ring-red-300' : 'border-zinc-200 focus:ring-zinc-900'" />
+					@if (isInvalid('caloriesBurned')) {
+						<p class="flex items-center gap-1 text-xs text-red-500 mt-1.5">
+							<i class="fa-sharp fa-solid fa-circle-exclamation text-[10px]"></i>
+							Cannot be negative
+						</p>
+					}
 				</div>
 
 				<div>
