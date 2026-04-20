@@ -22,6 +22,7 @@ import { StyleguideComponent } from './styleguide/styleguide.component';
 import { WorkoutRecordsComponent } from './strength/workout-records/workout-records.component';
 import { WeekPlannerComponent } from './week-planner/week-planner.component';
 import { WorkoutLibraryComponent } from './strength/workout-library/workout-library.component';
+import { ComparisonToolComponent } from './progress/comparison-tool/comparison-tool.component';
 import { ProgressComponent } from './progress/progress.component';
 import { MeasurementsComponent } from './progress/measurements/measurements.component';
 import { ProgressPhotosComponent } from './progress/progress-photos/progress-photos.component';
@@ -188,6 +189,7 @@ const routes: Routes = [
 					{ path: '', redirectTo: 'measurements', pathMatch: 'full' },
 					{ path: 'measurements', component: MeasurementsComponent, canActivate: [AuthGuard], data: { title: 'Measurements' } },
 					{ path: 'timeline', component: TimelineComponent, canActivate: [AuthGuard], data: { title: 'Timeline' } },
+					{ path: 'comparison', component: ComparisonToolComponent, canActivate: [AuthGuard], data: { title: 'Comparison Tool' } },
 					{ path: 'photos', redirectTo: 'measurements', pathMatch: 'full' },
 				],
 			},

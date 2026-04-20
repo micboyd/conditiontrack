@@ -1,5 +1,6 @@
 import { AppRoutingModule } from '../app-routing.module';
 import { CommonModule } from '@angular/common';
+import { ComparisonToolComponent } from './comparison-tool/comparison-tool.component';
 import { FormsModule } from '@angular/forms';
 import { MeasurementsComponent } from './measurements/measurements.component';
 import { MeasurementsService } from './measurements/measurements.service';
@@ -13,7 +14,7 @@ import { TimelineComponent } from './timeline/timeline.component';
 import { UploadPhotoComponent } from './progress-photos/upload-photo/upload-photo.component';
 
 @NgModule({
-	declarations: [ProgressComponent, ProgressPhotosComponent, UploadPhotoComponent, MeasurementsComponent, TimelineComponent],
+	declarations: [ProgressComponent, ProgressPhotosComponent, UploadPhotoComponent, MeasurementsComponent, TimelineComponent, ComparisonToolComponent],
 	imports: [CommonModule, AppRoutingModule, ReactiveFormsModule, SharedModule, FormsModule],
 	providers: [ProgressPhotosService, MeasurementsService],
 	exports: [ProgressComponent],
