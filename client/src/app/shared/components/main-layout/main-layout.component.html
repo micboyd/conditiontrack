@@ -11,7 +11,7 @@
 			<span class="text-sm text-violet-200 hidden sm:inline">{{ activeBlock.dateRangeLabel }}</span>
 			@if (activeBlock.durationWeeks) {
 				<span class="text-violet-300 text-sm hidden sm:inline">·</span>
-				<span class="text-sm text-violet-200 hidden sm:inline">{{ activeBlock.durationWeeks }} {{ activeBlock.durationWeeks === 1 ? 'week' : 'weeks' }}</span>
+				<span class="text-sm text-violet-200 hidden sm:inline">Week {{ activeBlock.currentWeek }} of {{ activeBlock.durationWeeks }}</span>
 			}
 		</div></app-container>
 	</div>

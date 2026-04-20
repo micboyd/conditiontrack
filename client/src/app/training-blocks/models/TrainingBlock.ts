@@ -45,6 +45,13 @@ export class TrainingBlock {
 		return Math.ceil(days / 7);
 	}
 
+	/** Which week of the block today falls in, 1-indexed. */
+	get currentWeek(): number {
+		if (!this.startDate) return 1;
+		const days = differenceInDays(new Date(), parseISO(this.startDate));
+		return Math.max(1, Math.ceil((days + 1) / 7));
+	}
+
 	static toFormGroup(block: TrainingBlock | null, fb: FormBuilder): FormGroup {
 		return fb.group({
 			name:      [block?.name      ?? '', Validators.required],
