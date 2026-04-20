@@ -31,7 +31,7 @@ export class SetupChecklistService {
 			workoutRecords: safe(this.http.get<any[]>(`${this.base}/strength/workout-record/${userId}`)),
 			cardioSessions: safe(this.http.get<any[]>(`${this.base}/conditioning/conditioning-session/${userId}`)),
 			cardioRecords: safe(this.http.get<any[]>(`${this.base}/conditioning/conditioning-record/${userId}`)),
-			meals: safe(this.http.get<any[]>(`${this.base}/nutrition/meal/${userId}`)),
+			meals: safe(this.http.get<any[]>(`${this.base}/nutrition/meal/user/${userId}`)),
 			measurements: safe(this.http.get<any[]>(`${this.base}/progress/measurements/${userId}`)),
 			goals: safe(this.http.get<any[]>(`${this.base}/goals/goal/${userId}`)),
 			user: this.http.get<any>(`${this.base}/user/${userId}`).pipe(catchError(() => of(null))),
