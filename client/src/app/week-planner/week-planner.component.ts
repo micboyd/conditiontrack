@@ -31,6 +31,7 @@ export class WeekPlannerComponent implements OnInit {
 	isEditMode = false;
 	pasting = false;
 	sessionToView: ConditioningSession | null = null;
+	workoutToView: Workout | null = null;
 
 	copiedWeekPlan: WeekPlan | null = null;
 	copiedFromWeekStart: string | null = null;

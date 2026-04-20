@@ -52,6 +52,54 @@
 </div>
 }
 
+<!-- Workout full-screen overlay -->
+@if (workoutToView) {
+<div class="fixed inset-0 bg-white z-[60] flex flex-col">
+	<div class="flex items-center gap-3 px-6 py-5 shrink-0 border-b border-zinc-100">
+		<button (click)="workoutToView = null"
+			class="flex items-center gap-2 text-sm font-medium text-zinc-500 hover:text-zinc-900 transition cursor-pointer">
+			<i class="fa-sharp fa-solid fa-arrow-left text-xs"></i>
+			Back
+		</button>
+	</div>
+	<div class="flex-1 overflow-y-auto px-6 pb-6 pt-6 space-y-6">
+		<div>
+			<p class="text-[11px] font-semibold text-zinc-400 uppercase tracking-widest mb-1">Strength</p>
+			<h2 class="text-xl font-bold text-zinc-900">{{ workoutToView.name }}</h2>
+		</div>
+		<div class="grid grid-cols-2 gap-3">
+			<div class="bg-zinc-50 rounded-xl px-4 py-3">
+				<p class="text-[11px] text-zinc-400 uppercase tracking-wide font-medium">Exercises</p>
+				<p class="text-xl font-bold text-zinc-900 mt-1">{{ workoutToView.exercises.length }}</p>
+			</div>
+			<div class="bg-zinc-50 rounded-xl px-4 py-3">
+				<p class="text-[11px] text-zinc-400 uppercase tracking-wide font-medium">Category</p>
+				<p class="text-xl font-bold text-zinc-900 mt-1">Strength</p>
+			</div>
+		</div>
+		@if (workoutToView.description) {
+		<div>
+			<h3 class="text-[11px] font-semibold text-zinc-400 uppercase tracking-widest mb-2">Description</h3>
+			<p class="text-sm text-zinc-700 leading-relaxed">{{ workoutToView.description }}</p>
+		</div>
+		}
+		@if (workoutToView.exercises?.length) {
+		<div>
+			<h3 class="text-[11px] font-semibold text-zinc-400 uppercase tracking-widest mb-3">Exercises</h3>
+			<div class="space-y-2">
+				@for (exercise of workoutToView.exercises; track exercise._id) {
+				<div class="flex items-center justify-between gap-4 px-4 py-3 bg-zinc-50 rounded-xl">
+					<p class="text-sm font-semibold text-zinc-900">{{ exercise.name }}</p>
+					<p class="text-sm text-zinc-500 flex-shrink-0">{{ exercise.defaultSets }} × {{ exercise.defaultReps }}</p>
+				</div>
+				}
+			</div>
+		</div>
+		}
+	</div>
+</div>
+}
+
 <!-- Page header -->
 <div class="bg-white border-b border-zinc-100">
 <app-container [noPadding]="true"><div class="py-6 sm:py-8 flex flex-col gap-4">
@@ -279,6 +327,10 @@
 								<p class="text-sm font-medium text-blue-900 truncate">{{ workout.name }}</p>
 								<p class="text-xs text-blue-400 uppercase tracking-wide">Strength</p>
 							</div>
+							<button (click)="workoutToView = workout" title="View workout"
+								class="text-blue-300 hover:text-blue-500 transition cursor-pointer flex-shrink-0 p-1.5 min-h-[36px] min-w-[36px] flex items-center justify-center">
+								<i class="fa-sharp fa-solid fa-eye text-xs"></i>
+							</button>
 							@if (isEditMode) {
 							<button (click)="removeWorkout(day.dayName, workout)"
 								class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
@@ -349,6 +401,10 @@
 							<i cdkDragHandle class="fa-sharp fa-solid fa-grip-dots-vertical text-blue-200 cursor-grab text-xs flex-shrink-0"></i>
 							}
 							<p class="text-sm font-medium text-blue-900 truncate flex-1">{{ workout.name }}</p>
+							<button (click)="workoutToView = workout" title="View workout"
+								class="text-blue-300 hover:text-blue-500 transition cursor-pointer flex-shrink-0 p-1.5 min-h-[36px] min-w-[36px] flex items-center justify-center">
+								<i class="fa-sharp fa-solid fa-eye text-xs"></i>
+							</button>
 							@if (isEditMode) {
 							<button (click)="removeWorkoutFromBlock(day.dayName, 'morning', workout)"
 								class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
@@ -420,6 +476,10 @@
 							<i cdkDragHandle class="fa-sharp fa-solid fa-grip-dots-vertical text-blue-200 cursor-grab text-xs flex-shrink-0"></i>
 							}
 							<p class="text-sm font-medium text-blue-900 truncate flex-1">{{ workout.name }}</p>
+							<button (click)="workoutToView = workout" title="View workout"
+								class="text-blue-300 hover:text-blue-500 transition cursor-pointer flex-shrink-0 p-1.5 min-h-[36px] min-w-[36px] flex items-center justify-center">
+								<i class="fa-sharp fa-solid fa-eye text-xs"></i>
+							</button>
 							@if (isEditMode) {
 							<button (click)="removeWorkoutFromBlock(day.dayName, 'afternoon', workout)"
 								class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
@@ -491,6 +551,10 @@
 							<i cdkDragHandle class="fa-sharp fa-solid fa-grip-dots-vertical text-blue-200 cursor-grab text-xs flex-shrink-0"></i>
 							}
 							<p class="text-sm font-medium text-blue-900 truncate flex-1">{{ workout.name }}</p>
+							<button (click)="workoutToView = workout" title="View workout"
+								class="text-blue-300 hover:text-blue-500 transition cursor-pointer flex-shrink-0 p-1.5 min-h-[36px] min-w-[36px] flex items-center justify-center">
+								<i class="fa-sharp fa-solid fa-eye text-xs"></i>
+							</button>
 							@if (isEditMode) {
 							<button (click)="removeWorkoutFromBlock(day.dayName, 'evening', workout)"
 								class="text-blue-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-1.5 -mr-1 min-h-[36px] min-w-[36px] flex items-center justify-center">
@@ -552,16 +616,26 @@
 				<div class="space-y-2">
 					@if (pinnedWorkouts.length > 0) {
 						@for (workout of pinnedWorkouts; track workout._id) {
-						<div (click)="addItem(workout)"
-							class="flex items-center justify-between px-4 py-4 bg-zinc-900 rounded-xl hover:bg-zinc-800 cursor-pointer transition">
-							<div class="min-w-0">
+						<div class="flex items-center justify-between px-4 py-4 bg-zinc-900 rounded-xl hover:bg-zinc-800 transition">
+							<div class="min-w-0 flex-1 cursor-pointer" (click)="addItem(workout)">
 								<div class="flex items-center gap-1.5 mb-0.5">
 									<i class="fa-sharp fa-solid fa-thumbtack text-zinc-400 text-[9px]"></i>
 									<p class="text-sm font-medium text-white truncate">{{ workout.name }}</p>
 								</div>
 								<p class="text-xs text-zinc-400">{{ workout.exercises.length }} exercises</p>
 							</div>
-							<span class="text-xs px-2.5 py-1 rounded-full bg-white/10 text-white font-medium flex-shrink-0 ml-3">Add</span>
+							<div class="flex items-center gap-1.5 flex-shrink-0 ml-3">
+								<button (click)="workoutToView = workout" title="View workout"
+									class="text-xs px-2.5 py-1 rounded-full bg-white/10 text-white hover:bg-white/20 font-medium transition cursor-pointer flex items-center gap-1">
+									<i class="fa-sharp fa-solid fa-eye text-[9px]"></i>
+									View
+								</button>
+								<button (click)="addItem(workout)"
+									class="text-xs px-2.5 py-1 rounded-full bg-white/10 text-white hover:bg-white/20 font-medium transition cursor-pointer flex items-center gap-1">
+									<i class="fa-sharp fa-solid fa-plus text-[9px]"></i>
+									Add
+								</button>
+							</div>
 						</div>
 						}
 					}
@@ -569,13 +643,23 @@
 						<div class="border-t border-zinc-100 pt-2"></div>
 					}
 					@for (workout of otherWorkouts; track workout._id) {
-					<div (click)="addItem(workout)"
-						class="flex items-center justify-between px-4 py-4 bg-zinc-50 rounded-xl hover:bg-zinc-100 cursor-pointer transition">
-						<div class="min-w-0">
+					<div class="flex items-center justify-between px-4 py-4 bg-zinc-50 rounded-xl hover:bg-zinc-100 transition">
+						<div class="min-w-0 flex-1 cursor-pointer" (click)="addItem(workout)">
 							<p class="text-sm font-medium text-zinc-800 truncate">{{ workout.name }}</p>
 							<p class="text-xs text-zinc-400 mt-0.5">{{ workout.exercises.length }} exercises</p>
 						</div>
-						<span class="text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-medium flex-shrink-0 ml-3">Add</span>
+						<div class="flex items-center gap-1.5 flex-shrink-0 ml-3">
+							<button (click)="workoutToView = workout" title="View workout"
+								class="text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 font-medium transition cursor-pointer flex items-center gap-1">
+								<i class="fa-sharp fa-solid fa-eye text-[9px]"></i>
+								View
+							</button>
+							<button (click)="addItem(workout)"
+								class="text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 font-medium transition cursor-pointer flex items-center gap-1">
+								<i class="fa-sharp fa-solid fa-plus text-[9px]"></i>
+								Add
+							</button>
+						</div>
 					</div>
 					}
 				</div>
