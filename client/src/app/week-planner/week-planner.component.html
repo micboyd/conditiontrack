@@ -187,7 +187,12 @@
 			<!-- Day header -->
 			<div class="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
 				<div>
-					<h2 class="text-base font-semibold text-zinc-900">{{ day.dayName }}</h2>
+					<div class="flex items-center gap-2">
+						<h2 class="text-base font-semibold text-zinc-900">{{ day.dayName }}</h2>
+						@if (isTodayDate(i)) {
+							<span class="px-2 py-1 bg-violet-600 text-white text-xs font-semibold rounded-full">TODAY</span>
+						}
+					</div>
 					<p class="text-xs text-zinc-400 mt-0.5">{{ dayDate(i) }}</p>
 				</div>
 				@if (isEditMode && !day.note && editingNoteDay !== day.dayName) {

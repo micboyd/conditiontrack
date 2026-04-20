@@ -95,7 +95,7 @@
 	<div class="flex gap-1.5 overflow-x-auto pb-1 mb-4 -mx-1 px-1 scrollbar-hide">
 		@for (day of dayColumns; track day.name) {
 		<button (click)="selectedMobileDay = day.name"
-			class="flex flex-col items-center px-3 py-2 rounded-xl flex-shrink-0 transition cursor-pointer min-w-[56px]"
+			class="flex flex-col items-center px-3 py-2 rounded-xl flex-shrink-0 transition cursor-pointer min-w-[56px] relative"
 			[class]="selectedMobileDay === day.name
 				? 'bg-zinc-900 text-white'
 				: day.isToday
@@ -103,6 +103,9 @@
 					: 'bg-white text-zinc-600 hover:bg-zinc-100'">
 			<span class="text-[10px] font-bold uppercase tracking-wide">{{ day.abbr }}</span>
 			<span class="text-base font-bold leading-tight">{{ day.dayNum }}</span>
+			@if (day.isToday && selectedMobileDay !== day.name) {
+				<span class="absolute -top-1 -right-1 px-1.5 py-0.5 bg-violet-600 text-white text-[9px] font-bold rounded-full">TODAY</span>
+			}
 		</button>
 		}
 	</div>
@@ -187,6 +190,9 @@
 			<p class="text-xs mt-2" [class]="day.isToday ? 'text-violet-400 font-medium' : 'text-zinc-400'">
 				{{ day.month }}
 			</p>
+			@if (day.isToday) {
+				<span class="inline-block mt-2 px-2 py-1 bg-violet-600 text-white text-[9px] font-bold rounded-full">TODAY</span>
+			}
 			@if (i < 6) {
 			<button (click)="copyDayToNext(day.name)"
 				title="Copy to {{ dayColumns[i + 1].name }}"

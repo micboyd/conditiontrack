@@ -1,7 +1,7 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DayPlan, TimeBlockKey, WeekPlan } from './models/WeekPlan';
-import { addDays, addWeeks, format, startOfWeek, subWeeks, parseISO } from 'date-fns';
+import { addDays, addWeeks, format, startOfWeek, subWeeks, parseISO, isToday } from 'date-fns';
 
 import { ConditioningLibraryService } from '../conditioning/conditioning-library/conditioning-library.service';
 import { ConditioningSession } from '../conditioning/models/ConditioningSession';
@@ -282,6 +282,10 @@ export class WeekPlannerComponent implements OnInit {
 
 	dayDate(index: number): string {
 		return format(addDays(this.currentWeekStart, index), 'do MMM');
+	}
+
+	isTodayDate(index: number): boolean {
+		return isToday(addDays(this.currentWeekStart, index));
 	}
 
 	getBlocksForWeek(): { block: TrainingBlock; startDay: number; endDay: number }[] {
