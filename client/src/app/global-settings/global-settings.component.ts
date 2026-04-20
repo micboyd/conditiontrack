@@ -25,6 +25,7 @@ export class GlobalSettingsComponent implements OnInit {
 	savedBmr: number | null = null;
 	bmrSaving = false;
 	bmrSaved = false;
+	bmrMode: 'calculator' | 'manual' = 'calculator';
 
 	constructor(
 		private fb: FormBuilder,
@@ -44,6 +45,7 @@ export class GlobalSettingsComponent implements OnInit {
 			age:    [null, [Validators.min(1), Validators.max(120)]],
 			weight: [null, [Validators.min(1)]],
 			height: [null, [Validators.min(1)]],
+			manualBmr: [null, [Validators.min(1)]],
 		});
 
 		this.bmrForm.valueChanges.subscribe(() => this.recalcBmr());
@@ -82,6 +84,10 @@ export class GlobalSettingsComponent implements OnInit {
 		if (value) this.form.get('calories')?.setValue(value);
 	}
 
+	onBmrModeChange(selected: string[]): void {
+		this.bmrMode = selected[0] === 'Calculator' ? 'calculator' : 'manual';
+	}
+
 	onSubmit(): void {
 		if (!this.form.valid) return;
 		const id = localStorage.getItem('id') ?? '';
@@ -98,13 +104,14 @@ export class GlobalSettingsComponent implements OnInit {
 	}
 
 	saveBmr(): void {
-		if (!this.calculatedBmr) return;
+		const value = this.bmrMode === 'calculator' ? this.calculatedBmr : this.bmrForm.get('manualBmr')?.value;
+		if (!value) return;
 		const id = localStorage.getItem('id') ?? '';
 		this.bmrSaving = true;
 		this.bmrSaved = false;
-		this.userService.updateBmr(id, this.calculatedBmr).subscribe({
+		this.userService.updateBmr(id, value).subscribe({
 			next: () => {
-				this.savedBmr = this.calculatedBmr;
+				this.savedBmr = value;
 				this.bmrSaving = false;
 				this.bmrSaved = true;
 				setTimeout(() => this.bmrSaved = false, 2500);
