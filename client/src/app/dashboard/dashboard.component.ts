@@ -756,6 +756,14 @@ export class DashboardComponent implements OnInit {
 		return this.viewDayCardio.some(r => r.sessionId === sessionId);
 	}
 
+	isWorkoutPlannedToday(workoutId: string): boolean {
+		return this.viewDayPlanned.workouts.some(w => w._id === workoutId);
+	}
+
+	isCardioPlannedToday(sessionId: string): boolean {
+		return this.viewDayPlanned.conditioning.some(s => s._id === sessionId);
+	}
+
 	openLogWorkoutForPlanned(workout: Workout): void {
 		this.openLogWorkout();
 		// Use setTimeout to allow drawer to open first

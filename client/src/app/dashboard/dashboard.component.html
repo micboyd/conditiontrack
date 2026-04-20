@@ -326,9 +326,16 @@
 						}
 						@for (record of viewDayWorkouts; track record._id) {
 						<li class="flex items-center justify-between py-3">
-							<div class="min-w-0">
-								<p class="text-sm font-medium text-zinc-800 truncate">{{ getWorkoutName(record.workoutId) }}</p>
-								<p class="text-xs text-zinc-400 mt-0.5">{{ record.duration | number:'1.0-0' }} min</p>
+							<div class="min-w-0 flex items-center gap-2">
+								@if (isWorkoutPlannedToday(record.workoutId)) {
+								<div class="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+									<i class="fa-sharp fa-solid fa-check text-emerald-500 text-[8px]"></i>
+								</div>
+								}
+								<div class="min-w-0">
+									<p class="text-sm font-medium text-zinc-800 truncate">{{ getWorkoutName(record.workoutId) }}</p>
+									<p class="text-xs text-zinc-400 mt-0.5">{{ record.duration | number:'1.0-0' }} min</p>
+								</div>
 							</div>
 							<button (click)="removeWorkoutRecord(record)" class="text-zinc-300 hover:text-red-400 transition cursor-pointer ml-3 flex-shrink-0 p-2 -mr-2">
 								<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
@@ -376,11 +383,18 @@
 						}
 						@for (record of viewDayCardio; track record._id) {
 						<li class="flex items-center justify-between py-3">
-							<div class="min-w-0">
-								<p class="text-sm font-medium text-zinc-800 truncate">{{ getCardioName(record.sessionId) }}</p>
-								<p class="text-xs text-zinc-400 mt-0.5">
-									{{ record.duration | number:'1.0-0' }} min@if (record.caloriesBurned) { · {{ record.caloriesBurned | number:'1.0-0' }} kcal burned }
-								</p>
+							<div class="min-w-0 flex items-center gap-2">
+								@if (isCardioPlannedToday(record.sessionId)) {
+								<div class="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+									<i class="fa-sharp fa-solid fa-check text-emerald-500 text-[8px]"></i>
+								</div>
+								}
+								<div class="min-w-0">
+									<p class="text-sm font-medium text-zinc-800 truncate">{{ getCardioName(record.sessionId) }}</p>
+									<p class="text-xs text-zinc-400 mt-0.5">
+										{{ record.duration | number:'1.0-0' }} min@if (record.caloriesBurned) { · {{ record.caloriesBurned | number:'1.0-0' }} kcal burned }
+									</p>
+								</div>
 							</div>
 							<button (click)="removeCardioRecord(record)" class="text-zinc-300 hover:text-red-400 transition cursor-pointer ml-3 flex-shrink-0 p-2 -mr-2">
 								<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
