@@ -1,0 +1,98 @@
+@if (loading) {
+    <div class="flex items-center justify-center py-24 text-zinc-400">
+        <i class="fa-sharp fa-solid fa-spinner-third fa-spin text-2xl mr-3"></i>
+        Loading data...
+    </div>
+}
+
+@if (loadError) {
+    <div class="text-center py-16 text-zinc-400">
+        <i class="fa-sharp fa-solid fa-triangle-exclamation text-3xl mb-4 block"></i>
+        <p>Could not load data. Please refresh and try again.</p>
+    </div>
+}
+
+@if (!loading && !loadError) {
+
+    @if (hasBodyCompData) {
+
+        <!-- Controls -->
+        <div class="bg-white rounded-2xl shadow-sm p-4 mb-6">
+            <div class="flex flex-wrap gap-4 items-end">
+
+                <!-- Metric toggles -->
+                <div>
+                    <label class="block text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wide">Metrics</label>
+                    <div class="flex gap-2">
+                        <button (click)="toggleMetric('weight')"
+                            class="px-3.5 py-1.5 rounded-md text-sm font-medium border transition cursor-pointer"
+                            [class.bg-zinc-900]="showWeight"
+                            [class.text-white]="showWeight"
+                            [class.border-zinc-900]="showWeight"
+                            [class.text-zinc-500]="!showWeight"
+                            [class.border-zinc-200]="!showWeight"
+                            [class.bg-white]="!showWeight">
+                            Weight
+                        </button>
+                        <button (click)="toggleMetric('muscle')"
+                            class="px-3.5 py-1.5 rounded-md text-sm font-medium border transition cursor-pointer"
+                            [class.bg-zinc-700]="showMuscle"
+                            [class.text-white]="showMuscle"
+                            [class.border-zinc-700]="showMuscle"
+                            [class.text-zinc-500]="!showMuscle"
+                            [class.border-zinc-200]="!showMuscle"
+                            [class.bg-white]="!showMuscle">
+                            Muscle
+                        </button>
+                        <button (click)="toggleMetric('bodyFat')"
+                            class="px-3.5 py-1.5 rounded-md text-sm font-medium border transition cursor-pointer"
+                            [class.bg-zinc-500]="showBodyFat"
+                            [class.text-white]="showBodyFat"
+                            [class.border-zinc-500]="showBodyFat"
+                            [class.text-zinc-500]="!showBodyFat"
+                            [class.border-zinc-200]="!showBodyFat"
+                            [class.bg-white]="!showBodyFat">
+                            Body Fat
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Time range -->
+                <div>
+                    <label class="block text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wide">Time Range</label>
+                    <div class="flex gap-1 bg-zinc-100 rounded-lg p-1">
+                        @for (r of bodyCompRanges; track r) {
+                            <button
+                                (click)="onBodyCompRangeChange(r)"
+                                class="px-3.5 py-1.5 rounded-md text-sm font-medium transition cursor-pointer"
+                                [class.bg-white]="bodyCompRange === r"
+                                [class.text-zinc-900]="bodyCompRange === r"
+                                [class.shadow-sm]="bodyCompRange === r"
+                                [class.text-zinc-500]="bodyCompRange !== r">
+                                {{ r }}
+                            </button>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 mb-10">
+            <canvas baseChart
+                [type]="'line'"
+                [data]="bodyCompChartData"
+                [options]="bodyCompChartOptions">
+            </canvas>
+        </div>
+
+    } @else {
+        <div class="bg-white rounded-2xl shadow-sm p-12 text-center">
+            <i class="fa-sharp fa-solid fa-weight-scale text-4xl text-zinc-200 mb-4 block"></i>
+            <p class="text-zinc-500 font-medium">Not enough data yet</p>
+            <p class="text-zinc-400 text-sm mt-1">Log at least 2 measurements to see your body composition trend.</p>
+        </div>
+    }
+
+}

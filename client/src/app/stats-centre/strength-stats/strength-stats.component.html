@@ -1,0 +1,454 @@
+@if (loading) {
+    <div class="flex items-center justify-center py-24 text-zinc-400">
+        <i class="fa-sharp fa-solid fa-spinner-third fa-spin text-2xl mr-3"></i>
+        Loading data...
+    </div>
+}
+
+@if (loadError) {
+    <div class="text-center py-16 text-zinc-400">
+        <i class="fa-sharp fa-solid fa-triangle-exclamation text-3xl mb-4 block"></i>
+        <p>Could not load data. Please refresh and try again.</p>
+    </div>
+}
+
+@if (!loading && !loadError) {
+
+    <!-- Personal Bests -->
+    <div class="bg-zinc-900 rounded-2xl px-6 py-6 mb-8">
+        <div class="flex items-center justify-between mb-5">
+            <div>
+                <p class="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1">All-Time</p>
+                <h2 class="text-base font-semibold text-white">Personal Bests</h2>
+            </div>
+            <i class="fa-sharp fa-solid fa-trophy text-zinc-600 text-xl"></i>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            @for (slot of [0, 1, 2, 3]; track slot) {
+            <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+                <app-select
+                    [options]="exerciseOptions"
+                    placeholder="Select..."
+                    [ngModel]="pbSelectedExercises[slot]"
+                    (ngModelChange)="setPbExercise(slot, $event)">
+                </app-select>
+                @if (pbSelectedExercises[slot]) {
+                    @if (getPersonalBest(pbSelectedExercises[slot]) !== null) {
+                        <div class="mt-4">
+                            <p class="text-3xl font-bold text-white leading-none tracking-tight">
+                                {{ getPersonalBest(pbSelectedExercises[slot]) }}<span class="text-sm font-normal text-zinc-500 ml-1">kg</span>
+                            </p>
+                            <p class="text-[10px] text-zinc-500 uppercase tracking-wide mt-1.5">Max weight</p>
+                            @let e1rm = getEstimated1RM(pbSelectedExercises[slot]);
+                            @if (e1rm) {
+                                <div class="mt-3 pt-3 border-t border-white/10">
+                                    <p class="text-lg font-bold text-violet-400 leading-none">
+                                        {{ e1rm }}<span class="text-xs font-normal text-zinc-600 ml-1">kg</span>
+                                    </p>
+                                    <p class="text-[10px] text-zinc-600 uppercase tracking-wide mt-1">Est. 1RM</p>
+                                </div>
+                            }
+                        </div>
+                    } @else {
+                        <p class="text-sm text-zinc-600 mt-4">No records yet</p>
+                    }
+                } @else {
+                    <p class="text-2xl font-bold text-zinc-700 mt-4">—</p>
+                }
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Strength Progression -->
+    <div class="mb-3">
+        <h2 class="text-base font-semibold text-zinc-900">Strength Progression</h2>
+        <p class="text-xs text-zinc-400 mt-0.5">{{ chartMode === 'maxWeight' ? 'Max weight lifted per session for a given exercise.' : 'Estimated one-rep max (Epley formula) per session.' }}</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm p-4 mb-6">
+        <div class="flex flex-wrap gap-4 items-end">
+            <div class="flex-1 min-w-[200px]">
+                <label class="block text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wide">Exercise</label>
+                <app-select
+                    [options]="exerciseOptions"
+                    placeholder="Select an exercise..."
+                    (valueChange)="onExerciseChange($event)">
+                </app-select>
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wide">Metric</label>
+                <div class="flex gap-1 bg-zinc-100 rounded-lg p-1">
+                    <button (click)="onChartModeChange('maxWeight')"
+                        class="px-3.5 py-1.5 rounded-md text-sm font-medium transition cursor-pointer"
+                        [class.bg-white]="chartMode === 'maxWeight'"
+                        [class.text-zinc-900]="chartMode === 'maxWeight'"
+                        [class.shadow-sm]="chartMode === 'maxWeight'"
+                        [class.text-zinc-500]="chartMode !== 'maxWeight'">
+                        Max Weight
+                    </button>
+                    <button (click)="onChartModeChange('est1rm')"
+                        class="px-3.5 py-1.5 rounded-md text-sm font-medium transition cursor-pointer"
+                        [class.bg-white]="chartMode === 'est1rm'"
+                        [class.text-zinc-900]="chartMode === 'est1rm'"
+                        [class.shadow-sm]="chartMode === 'est1rm'"
+                        [class.text-zinc-500]="chartMode !== 'est1rm'">
+                        Est. 1RM
+                    </button>
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wide">Time Range</label>
+                <div class="flex gap-1 bg-zinc-100 rounded-lg p-1">
+                    @for (range of ranges; track range.key) {
+                        <button (click)="onRangeChange(range.key)"
+                            class="px-3.5 py-1.5 rounded-md text-sm font-medium transition cursor-pointer"
+                            [class.bg-white]="selectedRange === range.key"
+                            [class.text-zinc-900]="selectedRange === range.key"
+                            [class.shadow-sm]="selectedRange === range.key"
+                            [class.text-zinc-500]="selectedRange !== range.key">
+                            {{ range.label }}
+                        </button>
+                    }
+                </div>
+            </div>
+            @if (selectedRange === 'block') {
+                <div class="flex-1 min-w-[200px]">
+                    <label class="block text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wide">Training Block</label>
+                    <app-select
+                        [options]="blockOptions"
+                        placeholder="Select a block..."
+                        (valueChange)="onBlockChange($event)">
+                    </app-select>
+                </div>
+            }
+        </div>
+    </div>
+
+    @if (selectedExerciseName && hasData) {
+        <div class="bg-white rounded-2xl shadow-sm p-6 mb-10">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h2 class="font-semibold text-zinc-900">{{ selectedExerciseName }}</h2>
+                    <p class="text-xs text-zinc-400 mt-0.5">{{ chartMode === 'maxWeight' ? 'Max weight per session' : 'Estimated 1RM per session (Epley)' }}</p>
+                </div>
+                @if (selectedRange === 'block' && selectedBlock) {
+                    <span class="text-xs text-zinc-400">{{ selectedBlock.dateRangeLabel }}</span>
+                }
+            </div>
+            <canvas baseChart [type]="'line'" [data]="chartData" [options]="chartOptions"></canvas>
+        </div>
+    }
+
+    @if (selectedExerciseName && !hasData) {
+        <div class="bg-white rounded-2xl shadow-sm p-12 text-center mb-10">
+            <i class="fa-sharp fa-solid fa-chart-line text-4xl text-zinc-200 mb-4 block"></i>
+            <p class="text-zinc-500 font-medium">No records found</p>
+            <p class="text-zinc-400 text-sm mt-1">
+                @if (selectedRange === 'block' && !selectedBlockId) {
+                    Select a training block above to set the date range.
+                } @else {
+                    No workout records include <strong>{{ selectedExerciseName }}</strong> in this period.
+                }
+            </p>
+        </div>
+    }
+
+    @if (!selectedExerciseName) {
+        <div class="bg-white rounded-2xl shadow-sm p-12 text-center mb-10">
+            <i class="fa-sharp fa-solid fa-dumbbell text-4xl text-zinc-200 mb-4 block"></i>
+            <p class="text-zinc-500 font-medium">Select an exercise above</p>
+            <p class="text-zinc-400 text-sm mt-1">Your weight progression chart will appear here.</p>
+        </div>
+    }
+
+    <!-- ── Workout Comparison ──────────────────────────────────────────────── -->
+
+    <div class="mb-3">
+        <h2 class="text-base font-semibold text-zinc-900">Workout Comparison</h2>
+        <p class="text-xs text-zinc-400 mt-0.5">Pick two sessions of the same workout and compare them set by set.</p>
+    </div>
+
+    <!-- Step 1: Workout selector -->
+    <div class="bg-white rounded-2xl shadow-sm p-4 mb-4">
+        <label class="block text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wide">Workout</label>
+        <div class="max-w-sm">
+            <app-select
+                [options]="compWorkoutOptions"
+                placeholder="Select a workout..."
+                (valueChange)="onCompWorkoutChange($event)">
+            </app-select>
+        </div>
+    </div>
+
+    @if (compWorkoutId) {
+
+        <!-- Step 2 & 3: Two pickers -->
+        <div class="grid grid-cols-1 lg:grid-cols-[1fr_48px_1fr] gap-3 mb-6">
+
+            <!-- Slot A -->
+            <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <div class="px-4 pt-4 pb-3 border-b border-zinc-50">
+                    <div class="flex items-center gap-2">
+                        <span class="w-5 h-5 rounded-full bg-zinc-900 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">A</span>
+                        <span class="text-sm font-semibold text-zinc-800">Session A</span>
+                        @if (compSlotA.record) {
+                            <span class="ml-auto text-[11px] text-zinc-400">{{ formatRecordDateShort(compSlotA.record.date) }}</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="p-4">
+                    <!-- Month pills -->
+                    <p class="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-2">Pick a month</p>
+                    <div class="flex flex-wrap gap-1.5 mb-4">
+                        @for (month of compAvailableMonths; track month) {
+                            <button (click)="selectCompMonth('A', month)"
+                                class="px-3 py-1 rounded-full text-xs font-medium transition cursor-pointer"
+                                [class.bg-zinc-900]="compSlotA.month === month"
+                                [class.text-white]="compSlotA.month === month"
+                                [class.bg-zinc-100]="compSlotA.month !== month"
+                                [class.text-zinc-600]="compSlotA.month !== month"
+                                [class.hover:bg-zinc-200]="compSlotA.month !== month">
+                                {{ formatMonthLabel(month) }}
+                            </button>
+                        }
+                    </div>
+
+                    <!-- Record list for selected month -->
+                    @if (compSlotA.month) {
+                        <p class="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-2">Pick a session</p>
+                        <div class="space-y-2">
+                            @for (record of compRecordsForMonth(compSlotA.month); track record._id) {
+                                @let isSelected = compSlotA.record?._id === record._id;
+                                <button (click)="selectCompRecord('A', record)"
+                                    class="w-full text-left px-3.5 py-3 rounded-xl border transition cursor-pointer"
+                                    [class.border-zinc-900]="isSelected"
+                                    [class.bg-zinc-900]="isSelected"
+                                    [class.border-zinc-100]="!isSelected"
+                                    [class.bg-zinc-50]="!isSelected"
+                                    [class.hover:border-zinc-300]="!isSelected">
+                                    <p class="text-sm font-semibold" [class.text-white]="isSelected" [class.text-zinc-800]="!isSelected">
+                                        {{ formatRecordDate(record.date) }}
+                                    </p>
+                                    <div class="flex items-center gap-3 mt-1">
+                                        <span class="text-xs" [class.text-zinc-400]="isSelected" [class.text-zinc-400]="!isSelected">
+                                            <i class="fa-sharp fa-solid fa-dumbbell mr-1 text-[10px]"></i>{{ record.exercises.length }} exercises
+                                        </span>
+                                        @if (record.duration) {
+                                            <span class="text-xs" [class.text-zinc-400]="isSelected" [class.text-zinc-500]="!isSelected">
+                                                <i class="fa-sharp fa-regular fa-clock mr-1 text-[10px]"></i>{{ record.duration }} min
+                                            </span>
+                                        }
+                                        <span class="text-xs" [class.text-zinc-400]="isSelected" [class.text-zinc-500]="!isSelected">
+                                            {{ recordVolume(record) | number }} kg vol
+                                        </span>
+                                    </div>
+                                </button>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- VS badge -->
+            <div class="flex items-center justify-center">
+                <div class="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center lg:mt-16">
+                    <span class="text-xs font-black text-zinc-400 tracking-tight">VS</span>
+                </div>
+            </div>
+
+            <!-- Slot B -->
+            <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <div class="px-4 pt-4 pb-3 border-b border-zinc-50">
+                    <div class="flex items-center gap-2">
+                        <span class="w-5 h-5 rounded-full bg-violet-600 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">B</span>
+                        <span class="text-sm font-semibold text-zinc-800">Session B</span>
+                        @if (compSlotB.record) {
+                            <span class="ml-auto text-[11px] text-zinc-400">{{ formatRecordDateShort(compSlotB.record.date) }}</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="p-4">
+                    <p class="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-2">Pick a month</p>
+                    <div class="flex flex-wrap gap-1.5 mb-4">
+                        @for (month of compAvailableMonths; track month) {
+                            <button (click)="selectCompMonth('B', month)"
+                                class="px-3 py-1 rounded-full text-xs font-medium transition cursor-pointer"
+                                [class.bg-violet-600]="compSlotB.month === month"
+                                [class.text-white]="compSlotB.month === month"
+                                [class.bg-zinc-100]="compSlotB.month !== month"
+                                [class.text-zinc-600]="compSlotB.month !== month"
+                                [class.hover:bg-zinc-200]="compSlotB.month !== month">
+                                {{ formatMonthLabel(month) }}
+                            </button>
+                        }
+                    </div>
+
+                    @if (compSlotB.month) {
+                        <p class="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-2">Pick a session</p>
+                        <div class="space-y-2">
+                            @for (record of compRecordsForMonth(compSlotB.month); track record._id) {
+                                @let isSelected = compSlotB.record?._id === record._id;
+                                <button (click)="selectCompRecord('B', record)"
+                                    class="w-full text-left px-3.5 py-3 rounded-xl border transition cursor-pointer"
+                                    [class.border-violet-600]="isSelected"
+                                    [class.bg-violet-600]="isSelected"
+                                    [class.border-zinc-100]="!isSelected"
+                                    [class.bg-zinc-50]="!isSelected"
+                                    [class.hover:border-zinc-300]="!isSelected">
+                                    <p class="text-sm font-semibold" [class.text-white]="isSelected" [class.text-zinc-800]="!isSelected">
+                                        {{ formatRecordDate(record.date) }}
+                                    </p>
+                                    <div class="flex items-center gap-3 mt-1">
+                                        <span class="text-xs text-zinc-400">
+                                            <i class="fa-sharp fa-solid fa-dumbbell mr-1 text-[10px]"></i>{{ record.exercises.length }} exercises
+                                        </span>
+                                        @if (record.duration) {
+                                            <span class="text-xs text-zinc-400">
+                                                <i class="fa-sharp fa-regular fa-clock mr-1 text-[10px]"></i>{{ record.duration }} min
+                                            </span>
+                                        }
+                                        <span class="text-xs text-zinc-400">
+                                            {{ recordVolume(record) | number }} kg vol
+                                        </span>
+                                    </div>
+                                </button>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Step 4: Comparison results -->
+        @if (compReady) {
+            @let recA = compSlotA.record!;
+            @let recB = compSlotB.record!;
+            @let volA = recordVolume(recA);
+            @let volB = recordVolume(recB);
+
+            <!-- Summary header -->
+            <div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-4">
+                <div class="grid grid-cols-[1fr_48px_1fr]">
+
+                    <div class="p-4 sm:p-5">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-5 h-5 rounded-full bg-zinc-900 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">A</span>
+                            <span class="text-sm font-semibold text-zinc-800">{{ formatRecordDateShort(recA.date) }}</span>
+                        </div>
+                        <p class="text-2xl font-bold text-zinc-900 leading-none">{{ volA | number }}</p>
+                        <p class="text-xs text-zinc-400 mt-1">kg total volume</p>
+                        @if (recA.duration) {
+                            <p class="text-xs text-zinc-400 mt-2"><i class="fa-sharp fa-regular fa-clock mr-1"></i>{{ recA.duration }} min</p>
+                        }
+                    </div>
+
+                    <div class="flex items-center justify-center border-x border-zinc-50">
+                        <span class="text-xs font-black text-zinc-300 tracking-tight">VS</span>
+                    </div>
+
+                    <div class="p-4 sm:p-5">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-5 h-5 rounded-full bg-violet-600 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">B</span>
+                            <span class="text-sm font-semibold text-zinc-800">{{ formatRecordDateShort(recB.date) }}</span>
+                        </div>
+                        <div class="flex items-end gap-2">
+                            <p class="text-2xl font-bold text-zinc-900 leading-none">{{ volB | number }}</p>
+                            <span class="text-sm font-semibold pb-0.5" [class]="deltaClass(volA, volB)">
+                                {{ deltaLabel(volA, volB) }}
+                            </span>
+                        </div>
+                        <p class="text-xs text-zinc-400 mt-1">kg total volume</p>
+                        @if (recB.duration) {
+                            <p class="text-xs text-zinc-400 mt-2"><i class="fa-sharp fa-regular fa-clock mr-1"></i>{{ recB.duration }} min</p>
+                        }
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Exercise-by-exercise breakdown -->
+            <div class="space-y-3 mb-10">
+                @for (ex of compResults; track ex.name) {
+                    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+
+                        <!-- Exercise header -->
+                        <div class="px-4 py-3 bg-zinc-50 border-b border-zinc-100 flex items-center justify-between">
+                            <p class="text-sm font-semibold text-zinc-800">{{ ex.name }}</p>
+                            <div class="flex items-center gap-4 text-xs text-zinc-400">
+                                <span>Max: <span class="font-semibold text-zinc-700">{{ ex.maxA }}</span> → <span class="font-semibold" [class]="deltaClass(ex.maxA, ex.maxB)">{{ ex.maxB }} kg</span></span>
+                            </div>
+                        </div>
+
+                        <!-- Set rows -->
+                        <div class="divide-y divide-zinc-50">
+
+                            <!-- Column headers -->
+                            <div class="grid grid-cols-[32px_1fr_1fr] px-4 py-2">
+                                <span></span>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-4 h-4 rounded-full bg-zinc-900 text-white text-[9px] font-bold flex items-center justify-center">A</span>
+                                    <span class="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Session A</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-4 h-4 rounded-full bg-violet-600 text-white text-[9px] font-bold flex items-center justify-center">B</span>
+                                    <span class="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Session B</span>
+                                </div>
+                            </div>
+
+                            @for (row of compSetRows(ex); track $index) {
+                                <div class="grid grid-cols-[32px_1fr_1fr] px-4 py-2.5 items-center">
+                                    <span class="text-xs text-zinc-300 font-medium">{{ $index + 1 }}</span>
+
+                                    <!-- Set A -->
+                                    @if (row.setA) {
+                                        <span class="text-sm text-zinc-700">
+                                            {{ row.setA.reps }}<span class="text-zinc-400 mx-0.5">×</span>{{ row.setA.weight }} kg
+                                        </span>
+                                    } @else {
+                                        <span class="text-sm text-zinc-300">—</span>
+                                    }
+
+                                    <!-- Set B + delta -->
+                                    @if (row.setB) {
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm text-zinc-700">
+                                                {{ row.setB.reps }}<span class="text-zinc-400 mx-0.5">×</span>{{ row.setB.weight }} kg
+                                            </span>
+                                            @if (row.setA) {
+                                                <span class="text-xs font-semibold" [class]="deltaClass(row.setA.weight, row.setB.weight)">
+                                                    {{ deltaLabel(row.setA.weight, row.setB.weight) }}
+                                                </span>
+                                            }
+                                        </div>
+                                    } @else {
+                                        <span class="text-sm text-zinc-300">—</span>
+                                    }
+                                </div>
+                            }
+
+                            <!-- Volume footer -->
+                            <div class="grid grid-cols-[32px_1fr_1fr] px-4 py-2.5 bg-zinc-50 items-center">
+                                <span class="text-[10px] text-zinc-400 font-semibold uppercase tracking-wide col-span-1">Vol</span>
+                                <span class="text-sm font-semibold text-zinc-700">{{ ex.volA | number }} kg</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-semibold text-zinc-700">{{ ex.volB | number }} kg</span>
+                                    <span class="text-xs font-semibold" [class]="deltaClass(ex.volA, ex.volB)">
+                                        {{ deltaLabel(ex.volA, ex.volB) }}
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                }
+            </div>
+
+        }
+
+    }
+
+}

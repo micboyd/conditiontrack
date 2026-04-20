@@ -5,11 +5,18 @@
 
 <div class="flex items-center justify-between mb-7">
 	<h2 class="text-xl font-semibold text-zinc-900">Photos</h2>
-	<button (click)="openUpload()"
-		class="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium px-5 py-3 rounded-full transition cursor-pointer min-h-[44px]">
-		<i class="fa-sharp fa-solid fa-plus text-xs"></i>
-		Add Photo
-	</button>
+	<div class="flex items-center gap-3">
+		<button (click)="toggleBlur()"
+			class="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-zinc-200 hover:bg-zinc-50 transition-colors text-sm font-medium text-zinc-700">
+			<i [class]="blurImages ? 'fa-sharp fa-solid fa-eye-slash' : 'fa-sharp fa-solid fa-eye'"></i>
+			{{ blurImages ? 'Unblur' : 'Blur' }}
+		</button>
+		<button (click)="openUpload()"
+			class="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium px-5 py-3 rounded-full transition cursor-pointer min-h-[44px]">
+			<i class="fa-sharp fa-solid fa-plus text-xs"></i>
+			Add Photo
+		</button>
+	</div>
 </div>
 
 @if (loading) {
@@ -43,7 +50,8 @@
 							@for (imageUrl of photo.imageUrls; track imageUrl; let idx = $index) {
 								<div class="group relative rounded-xl overflow-hidden bg-zinc-100 aspect-square">
 									<img [src]="imageUrl" [alt]="'Progress photo ' + formatDate(photo.date) + ' (' + (idx + 1) + ')'"
-										class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+										class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+									[style.filter]="blurImages ? 'blur(8px)' : 'none'" />
 
 									<!-- Hover overlay -->
 									<div class="absolute inset-0 bg-gradient-to-t from-zinc-900/80 via-zinc-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-3">

@@ -30,6 +30,9 @@ import { TrainingBlocksComponent } from './training-blocks/training-blocks.compo
 import { VerifyEmailComponent } from './authentication/verify-email/verify-email.component';
 import { SetupChecklistComponent } from './setup-checklist/setup-checklist.component';
 import { StatsCentreComponent } from './stats-centre/stats-centre.component';
+import { StrengthStatsComponent } from './stats-centre/strength-stats/strength-stats.component';
+import { BodyCompositionStatsComponent } from './stats-centre/body-composition-stats/body-composition-stats.component';
+import { CardioStatsComponent } from './stats-centre/cardio-stats/cardio-stats.component';
 
 const routes: Routes = [
 	// Login remains at top level
@@ -153,6 +156,12 @@ const routes: Routes = [
 				path: 'stats-centre',
 				component: StatsCentreComponent,
 				canActivate: [AuthGuard],
+				children: [
+					{ path: '', redirectTo: 'strength', pathMatch: 'full' },
+					{ path: 'strength', component: StrengthStatsComponent, canActivate: [AuthGuard] },
+					{ path: 'body-composition', component: BodyCompositionStatsComponent, canActivate: [AuthGuard] },
+					{ path: 'cardio', component: CardioStatsComponent, canActivate: [AuthGuard] },
+				],
 			},
 			{
 				path: 'progress',

@@ -1,287 +1,31 @@
-<app-container>
+<!-- Light page header with tabs -->
+<div class="bg-white border-b border-zinc-100">
+	<app-container [noPadding]="true"><div class="pt-6 sm:pt-8">
+		<h1 class="text-2xl sm:text-3xl font-bold text-zinc-900 mb-1">Stats Centre</h1>
+		<p class="text-sm text-zinc-400 mb-6">Track your progress over time.</p>
+		<div class="flex gap-0 overflow-x-auto pb-px">
+			<a routerLink="/stats-centre/strength"
+				routerLinkActive="border-b-2 border-zinc-900 text-zinc-900 font-semibold"
+				class="px-4 py-3 text-sm text-zinc-400 hover:text-zinc-700 transition -mb-px font-medium whitespace-nowrap">
+				Strength
+			</a>
+			<a routerLink="/stats-centre/body-composition"
+				routerLinkActive="border-b-2 border-zinc-900 text-zinc-900 font-semibold"
+				class="px-4 py-3 text-sm text-zinc-400 hover:text-zinc-700 transition -mb-px font-medium whitespace-nowrap">
+				Body Composition
+			</a>
+			<a routerLink="/stats-centre/cardio"
+				routerLinkActive="border-b-2 border-zinc-900 text-zinc-900 font-semibold"
+				class="px-4 py-3 text-sm text-zinc-400 hover:text-zinc-700 transition -mb-px font-medium whitespace-nowrap">
+				Cardio
+			</a>
+		</div>
+	</div></app-container>
+</div>
 
-    <!-- Page header -->
-    <div class="mb-6">
-        <h1 class="text-2xl font-bold text-zinc-900">Stats Centre</h1>
-        <p class="text-sm text-zinc-500 mt-1">Track your progress over time.</p>
-    </div>
-
-    <!-- Loading -->
-    @if (loading) {
-        <div class="flex items-center justify-center py-24 text-zinc-400">
-            <i class="fa-sharp fa-solid fa-spinner-third fa-spin text-2xl mr-3"></i>
-            Loading data...
-        </div>
-    }
-
-    <!-- Load error -->
-    @if (loadError) {
-        <div class="text-center py-16 text-zinc-400">
-            <i class="fa-sharp fa-solid fa-triangle-exclamation text-3xl mb-3 block"></i>
-            <p>Could not load data. Please refresh and try again.</p>
-        </div>
-    }
-
-    @if (!loading && !loadError) {
-
-        <!-- ── Personal Bests ─────────────────────────────────────────────────── -->
-
-        <div class="bg-zinc-900 rounded-2xl px-6 py-6 mb-8">
-            <div class="flex items-center justify-between mb-5">
-                <div>
-                    <p class="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1">All-Time</p>
-                    <h2 class="text-base font-semibold text-white">Personal Bests</h2>
-                </div>
-                <i class="fa-sharp fa-solid fa-trophy text-zinc-600 text-xl"></i>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                @for (slot of [0, 1, 2, 3]; track slot) {
-                <div class="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <app-select
-                        [options]="exerciseOptions"
-                        placeholder="Select..."
-                        [ngModel]="pbSelectedExercises[slot]"
-                        (ngModelChange)="setPbExercise(slot, $event)">
-                    </app-select>
-                    @if (pbSelectedExercises[slot]) {
-                        @if (getPersonalBest(pbSelectedExercises[slot]) !== null) {
-                            <div class="mt-4">
-                                <p class="text-3xl font-bold text-white leading-none tracking-tight">
-                                    {{ getPersonalBest(pbSelectedExercises[slot]) }}<span class="text-sm font-normal text-zinc-500 ml-1">kg</span>
-                                </p>
-                                <p class="text-[10px] text-zinc-500 uppercase tracking-wide mt-1.5">Max weight</p>
-                                @let e1rm = getEstimated1RM(pbSelectedExercises[slot]);
-                                @if (e1rm) {
-                                    <div class="mt-3 pt-3 border-t border-white/10">
-                                        <p class="text-lg font-bold text-violet-400 leading-none">
-                                            {{ e1rm }}<span class="text-xs font-normal text-zinc-600 ml-1">kg</span>
-                                        </p>
-                                        <p class="text-[10px] text-zinc-600 uppercase tracking-wide mt-1">Est. 1RM</p>
-                                    </div>
-                                }
-                            </div>
-                        } @else {
-                            <p class="text-sm text-zinc-600 mt-4">No records yet</p>
-                        }
-                    } @else {
-                        <p class="text-2xl font-bold text-zinc-700 mt-4">—</p>
-                    }
-                </div>
-                }
-            </div>
-        </div>
-
-        <!-- ── Strength Progression ─────────────────────────────────────────── -->
-
-        <div class="mb-3">
-            <h2 class="text-base font-semibold text-zinc-900">Strength Progression</h2>
-            <p class="text-xs text-zinc-400 mt-0.5">{{ chartMode === 'maxWeight' ? 'Max weight lifted per session for a given exercise.' : 'Estimated one-rep max (Epley formula) per session.' }}</p>
-        </div>
-
-        <!-- Controls -->
-        <div class="bg-white rounded-2xl shadow-sm p-4 mb-6">
-            <div class="flex flex-wrap gap-4 items-end">
-
-                <!-- Exercise selector -->
-                <div class="flex-1 min-w-[200px]">
-                    <label class="block text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wide">Exercise</label>
-                    <app-select
-                        [options]="exerciseOptions"
-                        placeholder="Select an exercise..."
-                        (valueChange)="onExerciseChange($event)">
-                    </app-select>
-                </div>
-
-                <!-- Metric toggle -->
-                <div>
-                    <label class="block text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wide">Metric</label>
-                    <div class="flex gap-1 bg-zinc-100 rounded-lg p-1">
-                        <button
-                            (click)="onChartModeChange('maxWeight')"
-                            class="px-3.5 py-1.5 rounded-md text-sm font-medium transition cursor-pointer"
-                            [class.bg-white]="chartMode === 'maxWeight'"
-                            [class.text-zinc-900]="chartMode === 'maxWeight'"
-                            [class.shadow-sm]="chartMode === 'maxWeight'"
-                            [class.text-zinc-500]="chartMode !== 'maxWeight'">
-                            Max Weight
-                        </button>
-                        <button
-                            (click)="onChartModeChange('est1rm')"
-                            class="px-3.5 py-1.5 rounded-md text-sm font-medium transition cursor-pointer"
-                            [class.bg-white]="chartMode === 'est1rm'"
-                            [class.text-zinc-900]="chartMode === 'est1rm'"
-                            [class.shadow-sm]="chartMode === 'est1rm'"
-                            [class.text-zinc-500]="chartMode !== 'est1rm'">
-                            Est. 1RM
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Time range pills -->
-                <div>
-                    <label class="block text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wide">Time Range</label>
-                    <div class="flex gap-1 bg-zinc-100 rounded-lg p-1">
-                        @for (range of ranges; track range.key) {
-                            <button
-                                (click)="onRangeChange(range.key)"
-                                class="px-3.5 py-1.5 rounded-md text-sm font-medium transition cursor-pointer"
-                                [class.bg-white]="selectedRange === range.key"
-                                [class.text-zinc-900]="selectedRange === range.key"
-                                [class.shadow-sm]="selectedRange === range.key"
-                                [class.text-zinc-500]="selectedRange !== range.key">
-                                {{ range.label }}
-                            </button>
-                        }
-                    </div>
-                </div>
-
-                <!-- Block selector -->
-                @if (selectedRange === 'block') {
-                    <div class="flex-1 min-w-[200px]">
-                        <label class="block text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wide">Training Block</label>
-                        <app-select
-                            [options]="blockOptions"
-                            placeholder="Select a block..."
-                            (valueChange)="onBlockChange($event)">
-                        </app-select>
-                    </div>
-                }
-
-            </div>
-        </div>
-
-        <!-- Chart -->
-        @if (selectedExerciseName && hasData) {
-            <div class="bg-white rounded-2xl shadow-sm p-6 mb-10">
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <h2 class="font-semibold text-zinc-900">{{ selectedExerciseName }}</h2>
-                        <p class="text-xs text-zinc-400 mt-0.5">{{ chartMode === 'maxWeight' ? 'Max weight per session' : 'Estimated 1RM per session (Epley)' }}</p>
-                    </div>
-                    @if (selectedRange === 'block' && selectedBlock) {
-                        <span class="text-xs text-zinc-400">{{ selectedBlock.dateRangeLabel }}</span>
-                    }
-                </div>
-                <canvas baseChart
-                    [type]="'line'"
-                    [data]="chartData"
-                    [options]="chartOptions">
-                </canvas>
-            </div>
-        }
-
-        <!-- No data for selected exercise in range -->
-        @if (selectedExerciseName && !hasData) {
-            <div class="bg-white rounded-2xl shadow-sm p-12 text-center mb-10">
-                <i class="fa-sharp fa-solid fa-chart-line text-4xl text-zinc-200 mb-4 block"></i>
-                <p class="text-zinc-500 font-medium">No records found</p>
-                <p class="text-zinc-400 text-sm mt-1">
-                    @if (selectedRange === 'block' && !selectedBlockId) {
-                        Select a training block above to set the date range.
-                    } @else {
-                        No workout records include <strong>{{ selectedExerciseName }}</strong> in this period.
-                    }
-                </p>
-            </div>
-        }
-
-        <!-- Prompt: no exercise selected -->
-        @if (!selectedExerciseName) {
-            <div class="bg-white rounded-2xl shadow-sm p-12 text-center mb-10">
-                <i class="fa-sharp fa-solid fa-dumbbell text-4xl text-zinc-200 mb-4 block"></i>
-                <p class="text-zinc-500 font-medium">Select an exercise above</p>
-                <p class="text-zinc-400 text-sm mt-1">Your weight progression chart will appear here.</p>
-            </div>
-        }
-
-        <!-- ── Body Composition ─────────────────────────────────────────────── -->
-
-        <div class="mb-3">
-            <h2 class="text-base font-semibold text-zinc-900">Body Composition</h2>
-            <p class="text-xs text-zinc-400 mt-0.5">Weight, muscle mass, and body fat trends from your measurements.</p>
-        </div>
-
-        @if (hasBodyCompData) {
-
-            <!-- Body comp controls -->
-            <div class="bg-white rounded-2xl shadow-sm p-4 mb-6">
-                <div class="flex flex-wrap gap-4 items-end">
-
-                    <!-- Metric toggles -->
-                    <div>
-                        <label class="block text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wide">Metrics</label>
-                        <div class="flex gap-2">
-                            <button (click)="toggleMetric('weight')"
-                                class="px-3.5 py-1.5 rounded-md text-sm font-medium border transition cursor-pointer"
-                                [class.bg-zinc-900]="showWeight"
-                                [class.text-white]="showWeight"
-                                [class.border-zinc-900]="showWeight"
-                                [class.text-zinc-500]="!showWeight"
-                                [class.border-zinc-200]="!showWeight"
-                                [class.bg-white]="!showWeight">
-                                Weight
-                            </button>
-                            <button (click)="toggleMetric('muscle')"
-                                class="px-3.5 py-1.5 rounded-md text-sm font-medium border transition cursor-pointer"
-                                [class.bg-zinc-700]="showMuscle"
-                                [class.text-white]="showMuscle"
-                                [class.border-zinc-700]="showMuscle"
-                                [class.text-zinc-500]="!showMuscle"
-                                [class.border-zinc-200]="!showMuscle"
-                                [class.bg-white]="!showMuscle">
-                                Muscle
-                            </button>
-                            <button (click)="toggleMetric('bodyFat')"
-                                class="px-3.5 py-1.5 rounded-md text-sm font-medium border transition cursor-pointer"
-                                [class.bg-zinc-500]="showBodyFat"
-                                [class.text-white]="showBodyFat"
-                                [class.border-zinc-500]="showBodyFat"
-                                [class.text-zinc-500]="!showBodyFat"
-                                [class.border-zinc-200]="!showBodyFat"
-                                [class.bg-white]="!showBodyFat">
-                                Body Fat
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Time range -->
-                    <div>
-                        <label class="block text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wide">Time Range</label>
-                        <div class="flex gap-1 bg-zinc-100 rounded-lg p-1">
-                            @for (r of bodyCompRanges; track r) {
-                                <button
-                                    (click)="onBodyCompRangeChange(r)"
-                                    class="px-3.5 py-1.5 rounded-md text-sm font-medium transition cursor-pointer"
-                                    [class.bg-white]="bodyCompRange === r"
-                                    [class.text-zinc-900]="bodyCompRange === r"
-                                    [class.shadow-sm]="bodyCompRange === r"
-                                    [class.text-zinc-500]="bodyCompRange !== r">
-                                    {{ r }}
-                                </button>
-                            }
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- Body comp chart -->
-            <div class="bg-white rounded-2xl shadow-sm p-6 mb-10">
-                <canvas baseChart
-                    [type]="'line'"
-                    [data]="bodyCompChartData"
-                    [options]="bodyCompChartOptions">
-                </canvas>
-            </div>
-
-        } @else {
-            <div class="bg-white rounded-2xl shadow-sm p-12 text-center mb-10">
-                <i class="fa-sharp fa-solid fa-weight-scale text-4xl text-zinc-200 mb-4 block"></i>
-                <p class="text-zinc-500 font-medium">Not enough data yet</p>
-                <p class="text-zinc-400 text-sm mt-1">Log at least 2 measurements to see your body composition trend.</p>
-            </div>
-        }
-
-    }
-
-</app-container>
+<!-- Content -->
+<div class="bg-zinc-50 min-h-screen">
+	<app-container [noPadding]="true"><div class="py-5 sm:py-8">
+		<router-outlet></router-outlet>
+	</div></app-container>
+</div>

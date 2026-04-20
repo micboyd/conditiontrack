@@ -1,3 +1,12 @@
+<!-- Privacy Toggle -->
+<div class="flex justify-end mb-4">
+    <button (click)="toggleBlur()"
+        class="flex items-center gap-2 px-4 py-2 rounded-lg border border-zinc-200 hover:bg-zinc-50 transition-colors text-sm font-medium text-zinc-700">
+        <i [class]="blurImages ? 'fa-sharp fa-solid fa-eye-slash' : 'fa-sharp fa-solid fa-eye'"></i>
+        {{ blurImages ? 'Unblur images' : 'Blur images' }}
+    </button>
+</div>
+
 <!-- Loading -->
 @if (loading) {
     <app-loading-indicator [loading]="true"></app-loading-indicator>
@@ -45,6 +54,7 @@
                         <div class="flex-1 min-h-0 overflow-hidden">
                             <img [src]="url" [alt]="'Photo ' + ($index + 1)"
                                 class="w-full h-full object-cover cursor-pointer"
+                                [style.filter]="blurImages ? 'blur(8px)' : 'none'"
                                 (click)="openLightbox(m.photoUrls, $index)" />
                         </div>
                         }
@@ -142,6 +152,7 @@
 
     <img [src]="lightboxUrl" alt="Progress photo"
         class="max-w-full max-h-[85vh] rounded-xl object-contain shadow-2xl"
+        [style.filter]="blurImages ? 'blur(8px)' : 'none'"
         (click)="$event.stopPropagation()" />
 
     @if (lightboxPhotos.length > 1) {

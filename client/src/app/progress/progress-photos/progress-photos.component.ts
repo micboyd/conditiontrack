@@ -26,6 +26,7 @@ export class ProgressPhotosComponent implements OnInit {
     photos: ProgressPhoto[] = [];
     loading = true;
     deleteConfirmId: DeleteConfirm | null = null;
+    blurImages = true;
 
     constructor(private progressPhotosService: ProgressPhotosService) {}
 
@@ -100,5 +101,9 @@ export class ProgressPhotosComponent implements OnInit {
         } catch {
             return dateStr;
         }
+    }
+
+    toggleBlur(): void {
+        this.blurImages = !this.blurImages;
     }
 }

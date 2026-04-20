@@ -14,6 +14,7 @@ export class TimelineComponent implements OnInit {
     lightboxUrl: string | null = null;
     lightboxPhotos: string[] = [];
     lightboxIndex = 0;
+    blurImages = true;
 
     constructor(private measurementsService: MeasurementsService) {}
 
@@ -87,6 +88,10 @@ export class TimelineComponent implements OnInit {
         this.lightboxUrl = null;
         this.lightboxPhotos = [];
         this.lightboxIndex = 0;
+    }
+
+    toggleBlur(): void {
+        this.blurImages = !this.blurImages;
     }
 
     statCount(m: Measurement): number {
