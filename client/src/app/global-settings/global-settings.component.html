@@ -14,7 +14,7 @@
 	<app-loading-indicator [loading]="true"></app-loading-indicator>
 } @else {
 
-<div class="flex flex-col lg:flex-row lg:items-start gap-5 max-w-4xl">
+<div class="flex flex-col lg:flex-row lg:items-start gap-5 max-w-6xl">
 	<div class="bg-white rounded-2xl shadow-sm overflow-hidden lg:flex-1">
 
 		<!-- Card header -->
@@ -264,6 +264,78 @@
 
 			</form>
 			}
+		</div>
+	</div>
+
+	<!-- Daily Deficit Target -->
+	<div class="bg-white rounded-2xl shadow-sm overflow-hidden lg:flex-1">
+
+		<!-- Card header -->
+		<div class="px-6 py-5 border-b border-zinc-100 flex items-center gap-3">
+			<div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0">
+				<i class="fa-sharp fa-solid fa-chart-line text-emerald-600 text-sm"></i>
+			</div>
+			<div>
+				<h2 class="text-base font-semibold text-zinc-900">Daily Deficit Goal</h2>
+				<p class="text-xs text-zinc-400">Target for weekly projections</p>
+			</div>
+		</div>
+
+		<div class="px-6 py-6">
+			@if (savedDailyDeficit) {
+				<div class="mb-5 flex items-center justify-between px-4 py-3 bg-emerald-50 rounded-xl border border-emerald-100">
+					<div>
+						<p class="text-xs font-semibold uppercase tracking-widest text-emerald-400 mb-0.5">Current Daily Deficit</p>
+						<p class="text-2xl font-bold text-zinc-900">{{ savedDailyDeficit | number:'1.0-0' }} <span class="text-sm font-normal text-zinc-400">kcal / day</span></p>
+						<p class="text-[11px] text-emerald-600 mt-1">~{{ (savedDailyDeficit * 7 / 3500) | number:'1.0-1' }}lb per week</p>
+					</div>
+					<i class="fa-sharp fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+				</div>
+			}
+
+			<form [formGroup]="dailyDeficitForm" class="space-y-4">
+
+				<!-- Daily Deficit Input -->
+				<div>
+					<label class="block text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-2">Daily Deficit Target</label>
+					<div class="relative">
+						<input formControlName="dailyDeficitTarget" type="number" min="0" placeholder="0"
+							class="w-full px-4 py-3 pr-14 rounded-xl border border-zinc-200 text-sm font-medium placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition" />
+						<span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-zinc-400 font-medium">kcal</span>
+					</div>
+					<p class="text-[11px] text-zinc-500 mt-2">
+						@if (dailyDeficitForm.get('dailyDeficitTarget')?.value > 0) {
+							<span class="text-emerald-600">
+								~{{ (dailyDeficitForm.get('dailyDeficitTarget')?.value * 7 / 3500) | number:'1.0-1' }}lb per week
+							</span>
+						} @else {
+							Enter a value to see weekly projection
+						}
+					</p>
+				</div>
+
+				<!-- Save button -->
+				<div class="flex items-center gap-4 pt-2">
+					<button type="button" (click)="saveDailyDeficitTarget()" [disabled]="dailyDeficitSaving || !dailyDeficitForm.get('dailyDeficitTarget')?.value"
+						class="px-6 py-3 bg-zinc-900 text-white text-sm font-medium rounded-full hover:bg-zinc-700 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+						@if (dailyDeficitSaving) {
+							<span class="flex items-center gap-1.5">
+								<i class="fa-sharp fa-solid fa-spinner fa-spin text-xs"></i>
+								Saving...
+							</span>
+						} @else {
+							Save Deficit
+						}
+					</button>
+					@if (dailyDeficitSaved) {
+						<span class="flex items-center gap-1.5 text-sm text-emerald-500">
+							<i class="fa-sharp fa-solid fa-check text-xs"></i>
+							Saved
+						</span>
+					}
+				</div>
+
+			</form>
 		</div>
 	</div>
 </div>

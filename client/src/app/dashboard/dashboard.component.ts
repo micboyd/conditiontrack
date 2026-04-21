@@ -48,6 +48,7 @@ export class DashboardComponent implements OnInit {
 
 	// Dashboard tab
 	activeTab: 'day' | 'week' = 'day';
+	weeklyCaloriesView: 'summary' | 'breakdown' = 'summary';
 
 	// Day navigation
 	viewDate: Date = new Date();
@@ -335,7 +336,10 @@ export class DashboardComponent implements OnInit {
 	}
 
 	get weeklyTotalCaloriesBurned(): number {
-		return this.caloriesThisWeek + this.weeklyExtraCaloriesBurned;
+		const bmrDaily = this.user?.bmr ?? 0;
+		const daysInWeek = 7;
+		const bmrThisWeek = bmrDaily * daysInWeek;
+		return this.caloriesThisWeek + this.weeklyExtraCaloriesBurned + bmrThisWeek;
 	}
 
 	/** Weekly calorie intake target (macroGoal or BMR × 7). */
@@ -349,7 +353,7 @@ export class DashboardComponent implements OnInit {
 	}
 
 	get weeklyCalorieBalance(): number {
-		return this.weeklyCaloriesEaten - this.weeklyTotalCaloriesBurned - (this.user?.bmr ?? 0) * 7;
+		return this.weeklyCaloriesEaten - this.weeklyTotalCaloriesBurned;
 	}
 
 	get weeklyCaloriesInPct(): number {
@@ -360,6 +364,91 @@ export class DashboardComponent implements OnInit {
 	get weeklyCaloriesOutPct(): number {
 		if (!this.weeklyMaintenance) return 0;
 		return Math.min(100, (this.weeklyTotalCaloriesBurned / this.weeklyMaintenance) * 100);
+	}
+
+	// ── Weekly on-track prediction ───────────────────────────────────────────
+
+	/** Number of completed days (with at least one meal or burn logged) */
+	get completedDaysThisWeek(): number {
+		const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
+		let count = 0;
+		for (let i = 0; i < 7; i++) {
+			const date = addDays(weekStart, i);
+			const dateStr = format(date, 'yyyy-MM-dd');
+			if (dateStr > this.todayStr) break;
+			const hasMeals = this.weeklyDailyLogs.some(log => log.date === dateStr && log.meals.length > 0);
+			const hasWorkout = this.workoutRecords.some(r => this.toDateStr(r.date) === dateStr);
+			const hasCardio = this.conditioningRecords.some(r => this.toDateStr(r.date) === dateStr);
+			if (hasMeals || hasWorkout || hasCardio) count++;
+		}
+		return count;
+	}
+
+	/** Days remaining in the current week */
+	get daysRemainingThisWeek(): number {
+		const weekEnd = endOfWeek(new Date(), { weekStartsOn: 1 });
+		const remaining = Math.max(0, Math.ceil((weekEnd.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)));
+		return remaining;
+	}
+
+	/** Average daily calorie deficit/surplus based on records so far */
+	get averageDailyDeficit(): number {
+		const daysCompleted = this.completedDaysThisWeek || 1;
+		const currentDeficit = this.weeklyCalorieBalance;
+		return currentDeficit / daysCompleted;
+	}
+
+	/** Projected weekly calorie balance if current pace continues */
+	get projectedWeeklyDeficit(): number {
+		const bmrDaily = this.user?.bmr ?? 0;
+		const currentDeficit = this.weeklyCalorieBalance;
+		const daysRemaining = this.daysRemainingThisWeek;
+		const avgDailyDeficit = this.averageDailyDeficit;
+		return currentDeficit + (avgDailyDeficit * daysRemaining);
+	}
+
+	/** Status object for weekly on-track indicator */
+	get weeklyOnTrackStatus(): { status: 'on-track' | 'ahead' | 'behind'; message: string } {
+		const dailyDeficitTarget = this.user?.dailyDeficitTarget ?? 0;
+		const targetDeficit = -(dailyDeficitTarget * 7);
+		const projected = this.projectedWeeklyDeficit;
+		const daysCompleted = this.completedDaysThisWeek;
+
+		// Only show status if daily deficit target is set
+		if (!dailyDeficitTarget) {
+			return { status: 'on-track', message: 'Set daily deficit in settings' };
+		}
+
+		// Only show status if at least 2 days of data
+		if (daysCompleted < 2) {
+			return { status: 'on-track', message: 'Log more data to see forecast' };
+		}
+
+		const diff = projected - targetDeficit;
+		const lbs = Math.abs(projected) / 3500;
+		if (Math.abs(diff) <= 250) {
+			return { status: 'on-track', message: `On track for ~${lbs.toFixed(1)}lb loss` };
+		} else if (diff > 0) {
+			return { status: 'behind', message: `Might miss goal by ~${(Math.abs(diff) / 3500).toFixed(1)}lb` };
+		} else {
+			return { status: 'ahead', message: `Ahead of goal by ~${(Math.abs(diff) / 3500).toFixed(1)}lb` };
+		}
+	}
+
+	// ── Daily breakdown ─────────────────────────────────────────────────────
+
+	/** Get calories out per day (BMR + activity) for the current week */
+	getDailyCaloriesOut(dateStr: string): number {
+		const bmrDaily = this.user?.bmr ?? 0;
+		const workoutCals = this.workoutRecords
+			.filter(r => this.toDateStr(r.date) === dateStr)
+			.reduce((sum, r) => sum + (r.caloriesBurned ?? 0), 0);
+		const cardioCals = this.conditioningRecords
+			.filter(r => this.toDateStr(r.date) === dateStr)
+			.reduce((sum, r) => sum + (r.caloriesBurned ?? 0), 0);
+		const extraCals = this.weeklyDailyLogs
+			.find(log => log.date === dateStr)?.extraCaloriesBurned ?? 0;
+		return bmrDaily + workoutCals + cardioCals + extraCals;
 	}
 
 	// ── Recent activity ──────────────────────────────────────────────────────

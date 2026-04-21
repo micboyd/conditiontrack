@@ -20,6 +20,7 @@ export interface UserProfile {
 	createdAt?: string;
 	macroGoals?: MacroGoals;
 	bmr?: number;
+	dailyDeficitTarget?: number;
 }
 
 @Injectable({
@@ -44,5 +45,9 @@ export class UserService {
 
 	updateBmr(id: string, bmr: number): Observable<UserProfile> {
 		return this.http.put<UserProfile>(`${this._apiUrl}/${id}`, { bmr });
+	}
+
+	updateDailyDeficitTarget(id: string, dailyDeficitTarget: number): Observable<UserProfile> {
+		return this.http.put<UserProfile>(`${this._apiUrl}/${id}`, { dailyDeficitTarget });
 	}
 }

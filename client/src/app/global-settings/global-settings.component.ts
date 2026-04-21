@@ -27,6 +27,11 @@ export class GlobalSettingsComponent implements OnInit {
 	bmrSaved = false;
 	bmrMode: 'calculator' | 'manual' = 'calculator';
 
+	dailyDeficitForm!: FormGroup;
+	savedDailyDeficit: number | null = null;
+	dailyDeficitSaving = false;
+	dailyDeficitSaved = false;
+
 	constructor(
 		private fb: FormBuilder,
 		private userService: UserService,
@@ -48,6 +53,10 @@ export class GlobalSettingsComponent implements OnInit {
 			manualBmr: [null, [Validators.min(1)]],
 		});
 
+		this.dailyDeficitForm = this.fb.group({
+			dailyDeficitTarget: [0, [Validators.min(0)]],
+		});
+
 		this.bmrForm.valueChanges.subscribe(() => this.recalcBmr());
 
 		const id = localStorage.getItem('id') ?? '';
@@ -59,6 +68,10 @@ export class GlobalSettingsComponent implements OnInit {
 				}
 				if (user.bmr) {
 					this.savedBmr = user.bmr;
+				}
+				if (user.dailyDeficitTarget) {
+					this.savedDailyDeficit = user.dailyDeficitTarget;
+					this.dailyDeficitForm.get('dailyDeficitTarget')?.setValue(user.dailyDeficitTarget);
 				}
 				this.loading = false;
 			},
@@ -117,6 +130,23 @@ export class GlobalSettingsComponent implements OnInit {
 				setTimeout(() => this.bmrSaved = false, 2500);
 			},
 			error: () => { this.bmrSaving = false; },
+		});
+	}
+
+	saveDailyDeficitTarget(): void {
+		const value = this.dailyDeficitForm.get('dailyDeficitTarget')?.value;
+		if (value === null || value === undefined) return;
+		const id = localStorage.getItem('id') ?? '';
+		this.dailyDeficitSaving = true;
+		this.dailyDeficitSaved = false;
+		this.userService.updateDailyDeficitTarget(id, value).subscribe({
+			next: () => {
+				this.savedDailyDeficit = value;
+				this.dailyDeficitSaving = false;
+				this.dailyDeficitSaved = true;
+				setTimeout(() => this.dailyDeficitSaved = false, 2500);
+			},
+			error: () => { this.dailyDeficitSaving = false; },
 		});
 	}
 }
