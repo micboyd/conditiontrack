@@ -440,15 +440,12 @@ export class DashboardComponent implements OnInit {
 	/** Get calories out per day (BMR + activity) for the current week */
 	getDailyCaloriesOut(dateStr: string): number {
 		const bmrDaily = this.user?.bmr ?? 0;
-		const workoutCals = this.workoutRecords
-			.filter(r => this.toDateStr(r.date) === dateStr)
-			.reduce((sum, r) => sum + (r.caloriesBurned ?? 0), 0);
 		const cardioCals = this.conditioningRecords
 			.filter(r => this.toDateStr(r.date) === dateStr)
 			.reduce((sum, r) => sum + (r.caloriesBurned ?? 0), 0);
 		const extraCals = this.weeklyDailyLogs
 			.find(log => log.date === dateStr)?.extraCaloriesBurned ?? 0;
-		return bmrDaily + workoutCals + cardioCals + extraCals;
+		return bmrDaily + cardioCals + extraCals;
 	}
 
 	// ── Recent activity ──────────────────────────────────────────────────────
