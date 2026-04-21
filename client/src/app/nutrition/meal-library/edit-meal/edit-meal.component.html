@@ -3,6 +3,50 @@
 		{{ selectedMeal ? 'Edit Meal' : 'New Meal' }}
 	</h2>
 
+	@if (!selectedMeal) {
+		<!-- Entry mode toggle -->
+		<div class="flex gap-1 bg-zinc-100 rounded-lg p-1 mb-5">
+			<button type="button" (click)="entryMode = 'manual'"
+				class="flex-1 py-2 text-xs font-medium rounded-md transition cursor-pointer"
+				[class]="entryMode === 'manual' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'">
+				Manual Entry
+			</button>
+			<button type="button" (click)="entryMode = 'scan'"
+				class="flex-1 py-2 text-xs font-medium rounded-md transition cursor-pointer"
+				[class]="entryMode === 'scan' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'">
+				<i class="fa-sharp fa-solid fa-camera mr-1.5"></i>Scan Label
+			</button>
+		</div>
+
+		<!-- Scan panel -->
+		@if (entryMode === 'scan') {
+			<div class="mb-5">
+				@if (scanLoading) {
+					<div class="flex flex-col items-center justify-center gap-3 py-10 bg-zinc-50 rounded-xl border border-zinc-200">
+						<app-loading-indicator [spinner]="true" [loading]="true"></app-loading-indicator>
+						<p class="text-sm text-zinc-500">Scanning label…</p>
+					</div>
+				} @else {
+					<label class="flex flex-col items-center justify-center gap-3 py-10 bg-zinc-50 hover:bg-zinc-100 rounded-xl border-2 border-dashed border-zinc-300 cursor-pointer transition">
+						<i class="fa-sharp fa-solid fa-camera text-3xl text-zinc-400"></i>
+						<div class="text-center">
+							<p class="text-sm font-medium text-zinc-700">Take photo or upload image</p>
+							<p class="text-xs text-zinc-400 mt-0.5">Macros will fill in automatically</p>
+						</div>
+						<input type="file" accept="image/*" capture="environment" class="hidden"
+							(change)="onScanFileSelected($event)" />
+					</label>
+				}
+				@if (scanError) {
+					<p class="flex items-center gap-1.5 text-xs text-red-500 mt-2">
+						<i class="fa-sharp fa-solid fa-circle-exclamation text-[10px]"></i>
+						{{ scanError }}
+					</p>
+				}
+			</div>
+		}
+	}
+
 	<form [formGroup]="mealForm" (ngSubmit)="onSubmit()" class="space-y-5">
 
 		<!-- Name -->

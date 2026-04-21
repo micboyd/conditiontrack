@@ -17,6 +17,9 @@ export class EditMealComponent implements OnInit, OnChanges {
 	@Output() closeEditModeEvent = new EventEmitter<void>();
 
 	selectedMealTypes: string[] = [];
+	entryMode: 'manual' | 'scan' = 'manual';
+	scanLoading = false;
+	scanError: string | null = null;
 
 	constructor(private fb: FormBuilder, public mealService: MealLibraryService) {}
 
@@ -48,6 +51,23 @@ export class EditMealComponent implements OnInit, OnChanges {
 
 	closeEditMode(): void {
 		this.closeEditModeEvent.emit();
+	}
+
+	onScanFileSelected(event: Event): void {
+		const file = (event.target as HTMLInputElement).files?.[0];
+		if (!file) return;
+		this.scanLoading = true;
+		this.scanError = null;
+		this.mealService.scanNutritionLabel(file).subscribe({
+			next: (macros) => {
+				this.mealForm.patchValue(macros);
+				this.scanLoading = false;
+			},
+			error: (err) => {
+				this.scanError = err?.error?.error ?? 'Could not read label. Try a clearer photo.';
+				this.scanLoading = false;
+			},
+		});
 	}
 
 	onSubmit(): void {

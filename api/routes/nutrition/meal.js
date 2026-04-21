@@ -1,7 +1,48 @@
 const express = require('express');
+const multer = require('multer');
+const mindee = require('mindee');
 const Meal = require('../../models/nutrition/Meal');
 
 const router = express.Router();
+
+const memUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024 } });
+const mindeeClient = new mindee.Client({ apiKey: process.env.MINDEE_API_KEY });
+
+// Scan a nutrition label image and return extracted macros
+router.post('/scan-label', (req, res) => {
+    memUpload.single('image')(req, res, async (err) => {
+        if (err) return res.status(400).json({ error: err.message });
+        if (!req.file) return res.status(400).json({ error: 'Image is required.' });
+
+        try {
+            const mimeToExt = { 'image/jpeg': 'jpg', 'image/jpg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
+            const ext = mimeToExt[req.file.mimetype] || 'jpg';
+            const inputSource = new mindee.Base64Input({
+                inputString: req.file.buffer.toString('base64'),
+                filename: `label.${ext}`,
+            });
+
+            const response = await mindeeClient.enqueueAndGetResult(
+                mindee.product.Extraction,
+                inputSource,
+                { modelId: process.env.MINDEE_MODEL_ID },
+            );
+
+            const fields = response.inference.result.fields;
+            const perServing = (key) => fields.get(key)?.fields?.get('per_serving')?.value ?? null;
+            const round = (v) => (v != null ? Math.round(v) : 0);
+
+            res.json({
+                calories: round(perServing('calories')),
+                protein:  round(perServing('protein')),
+                carbs:    round(perServing('total_carbohydrate')),
+                fat:      round(perServing('total_fat')),
+            });
+        } catch (scanErr) {
+            res.status(500).json({ error: scanErr.message });
+        }
+    });
+});
 
 // Create a new Meal
 router.post('/', async (req, res) => {

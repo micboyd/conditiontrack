@@ -29,5 +29,13 @@ export class MealLibraryService {
 	deleteMeal(mealId: string): Observable<void> {
 		return this.http.delete<void>(`${environment.baseApiUrl}/nutrition/meal/${mealId}`);
 	}
+
+	scanNutritionLabel(file: File): Observable<{ calories: number; protein: number; carbs: number; fat: number }> {
+		const formData = new FormData();
+		formData.append('image', file);
+		return this.http.post<{ calories: number; protein: number; carbs: number; fat: number }>(
+			`${environment.baseApiUrl}/nutrition/meal/scan-label`, formData
+		);
+	}
 }
 
