@@ -596,6 +596,9 @@
 								[class]="getDailyBreakdown(day.dateStr).calsOut > 0 ? 'text-orange-300' : 'text-zinc-600'">
 								{{ getDailyBreakdown(day.dateStr).calsOut > 0 ? (getDailyBreakdown(day.dateStr).calsOut | number:'1.0-0') : '–' }}
 							</p>
+							@if (getDailyBreakdown(day.dateStr).activityCals > 0) {
+								<p class="text-[7px] text-zinc-500 mt-0.5 leading-tight">+{{ getDailyBreakdown(day.dateStr).activityCals | number:'1.0-0' }} act</p>
+							}
 						</div>
 
 						<!-- Difference -->

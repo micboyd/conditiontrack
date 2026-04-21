@@ -450,7 +450,7 @@ export class DashboardComponent implements OnInit {
 
 	// ── Daily breakdown ─────────────────────────────────────────────────────
 
-	getDailyBreakdown(dateStr: string): { calsIn: number; calsOut: number; diff: number } {
+	getDailyBreakdown(dateStr: string): { calsIn: number; calsOut: number; diff: number; bmr: number; activityCals: number } {
 		const log = this.weeklyDailyLogs.find(l => l.date === dateStr);
 		const calsIn = log
 			? log.meals
@@ -473,8 +473,9 @@ export class DashboardComponent implements OnInit {
 			.filter(r => this.toDateStr(r.date) === dateStr)
 			.reduce((sum, r) => sum + (r.caloriesBurned ?? 0), 0);
 		const extraCals = log?.extraCaloriesBurned ?? 0;
-		const calsOut = bmr + cardioCals + extraCals;
-		return { calsIn, calsOut, diff: calsIn - calsOut };
+		const activityCals = cardioCals + extraCals;
+		const calsOut = bmr + activityCals;
+		return { calsIn, calsOut, diff: calsIn - calsOut, bmr, activityCals };
 	}
 
 	/** Get calories out per day (BMR only if day is done, plus activity) */
