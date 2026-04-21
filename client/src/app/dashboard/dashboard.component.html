@@ -516,21 +516,15 @@
 
 				<!-- Calories Out -->
 				<div class="mb-5">
-					<div class="flex items-baseline justify-between mb-2">
+					<div class="flex items-baseline justify-between">
 						<span class="text-xs font-medium text-zinc-400">Calories Out</span>
 						<span class="text-xs text-zinc-500">
 							<span class="text-white font-semibold text-sm">{{ weeklyTotalCaloriesBurned | number:'1.0-0' }}</span>
-							@if (weeklyMaintenance > 0) {
-								<span class="ml-1">/ {{ weeklyMaintenance | number:'1.0-0' }} maintenance</span>
-							}
+							<span class="ml-1">kcal</span>
 						</span>
 					</div>
-					@if (weeklyMaintenance > 0) {
-					<div class="h-2 bg-white/10 rounded-full overflow-hidden">
-						<div class="h-full bg-orange-400 rounded-full transition-all duration-500"
-							[style.width.%]="weeklyCaloriesOutPct">
-						</div>
-					</div>
+					@if (user?.bmr && completedPastDaysThisWeek > 0) {
+						<p class="text-[10px] text-zinc-600 mt-1">incl. {{ (user!.bmr! * completedPastDaysThisWeek) | number:'1.0-0' }} kcal BMR ({{ completedPastDaysThisWeek }} days)</p>
 					}
 				</div>
 

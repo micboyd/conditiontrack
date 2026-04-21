@@ -335,10 +335,20 @@ export class DashboardComponent implements OnInit {
 		return this.weeklyDailyLogs.reduce((sum, log) => sum + (log.extraCaloriesBurned ?? 0), 0);
 	}
 
+	/** Number of week days that have fully completed (strictly before today) */
+	get completedPastDaysThisWeek(): number {
+		const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
+		let count = 0;
+		for (let i = 0; i < 7; i++) {
+			const dateStr = format(addDays(weekStart, i), 'yyyy-MM-dd');
+			if (dateStr < this.todayStr) count++;
+		}
+		return count;
+	}
+
 	get weeklyTotalCaloriesBurned(): number {
 		const bmrDaily = this.user?.bmr ?? 0;
-		const daysInWeek = 7;
-		const bmrThisWeek = bmrDaily * daysInWeek;
+		const bmrThisWeek = bmrDaily * this.completedPastDaysThisWeek;
 		return this.caloriesThisWeek + this.weeklyExtraCaloriesBurned + bmrThisWeek;
 	}
 
@@ -437,9 +447,9 @@ export class DashboardComponent implements OnInit {
 
 	// ── Daily breakdown ─────────────────────────────────────────────────────
 
-	/** Get calories out per day (BMR + activity) for the current week */
+	/** Get calories out per day (BMR only if day is done, plus activity) */
 	getDailyCaloriesOut(dateStr: string): number {
-		const bmrDaily = this.user?.bmr ?? 0;
+		const bmrDaily = dateStr < this.todayStr ? (this.user?.bmr ?? 0) : 0;
 		const cardioCals = this.conditioningRecords
 			.filter(r => this.toDateStr(r.date) === dateStr)
 			.reduce((sum, r) => sum + (r.caloriesBurned ?? 0), 0);
