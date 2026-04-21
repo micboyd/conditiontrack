@@ -349,7 +349,10 @@ export class DashboardComponent implements OnInit {
 	get weeklyTotalCaloriesBurned(): number {
 		const bmrDaily = this.user?.bmr ?? 0;
 		const bmrThisWeek = bmrDaily * this.completedPastDaysThisWeek;
-		return this.caloriesThisWeek + this.weeklyExtraCaloriesBurned + bmrThisWeek;
+		const now = new Date();
+		const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
+		const todayPartialBmr = Math.round((bmrDaily / 1440) * minutesSinceMidnight);
+		return this.caloriesThisWeek + this.weeklyExtraCaloriesBurned + bmrThisWeek + todayPartialBmr;
 	}
 
 	/** Weekly calorie intake target (macroGoal or BMR × 7). */
@@ -447,15 +450,36 @@ export class DashboardComponent implements OnInit {
 
 	// ── Daily breakdown ─────────────────────────────────────────────────────
 
-	/** Get calories out per day (BMR only if day is done, plus activity) */
-	getDailyCaloriesOut(dateStr: string): number {
-		const bmrDaily = dateStr < this.todayStr ? (this.user?.bmr ?? 0) : 0;
+	getDailyBreakdown(dateStr: string): { calsIn: number; calsOut: number; diff: number } {
+		const log = this.weeklyDailyLogs.find(l => l.date === dateStr);
+		const calsIn = log
+			? log.meals
+				.map(id => this.allMeals.find(m => m._id === id))
+				.filter((m): m is Meal => !!m)
+				.reduce((sum, m) => sum + m.calories, 0)
+			: 0;
+		const bmrDaily = this.user?.bmr ?? 0;
+		let bmr: number;
+		if (dateStr < this.todayStr) {
+			bmr = bmrDaily;
+		} else if (dateStr === this.todayStr) {
+			const now = new Date();
+			const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
+			bmr = Math.round((bmrDaily / 1440) * minutesSinceMidnight);
+		} else {
+			bmr = 0;
+		}
 		const cardioCals = this.conditioningRecords
 			.filter(r => this.toDateStr(r.date) === dateStr)
 			.reduce((sum, r) => sum + (r.caloriesBurned ?? 0), 0);
-		const extraCals = this.weeklyDailyLogs
-			.find(log => log.date === dateStr)?.extraCaloriesBurned ?? 0;
-		return bmrDaily + cardioCals + extraCals;
+		const extraCals = log?.extraCaloriesBurned ?? 0;
+		const calsOut = bmr + cardioCals + extraCals;
+		return { calsIn, calsOut, diff: calsIn - calsOut };
+	}
+
+	/** Get calories out per day (BMR only if day is done, plus activity) */
+	getDailyCaloriesOut(dateStr: string): number {
+		return this.getDailyBreakdown(dateStr).calsOut;
 	}
 
 	// ── Recent activity ──────────────────────────────────────────────────────
