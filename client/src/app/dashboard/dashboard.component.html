@@ -710,38 +710,6 @@
 </div>
 </div>
 
-<!-- ─── Active Goals ──────────────────────────────────────────────────────── -->
-@if (activeGoals.length > 0) {
-<div class="border-t-2 border-dashed border-zinc-200 mt-2">
-	<div class="max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-12 pt-6 pb-8">
-		<div class="flex items-center justify-between mb-3">
-			<p class="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Active Goals</p>
-			<a routerLink="/goals" class="text-[10px] font-medium text-zinc-400 hover:text-zinc-700 transition">
-				View all
-			</a>
-		</div>
-		<div class="space-y-3">
-			@for (goal of activeGoals.slice(0, 4); track goal._id) {
-				<div class="bg-white border border-zinc-100 rounded-xl px-4 py-3">
-					<div class="flex items-center justify-between mb-1.5">
-						<p class="text-xs font-semibold text-zinc-800 truncate mr-2">{{ goal.title }}</p>
-						<span class="text-[11px] font-medium text-zinc-500 flex-shrink-0">
-							{{ getGoalCurrent(goal) | number:'1.0-1' }}/{{ goal.targetValue | number:'1.0-1' }} {{ goal.unit }}
-						</span>
-					</div>
-					<div class="h-1.5 bg-zinc-200 rounded-full overflow-hidden">
-						<div class="h-full rounded-full transition-all duration-500"
-							[ngClass]="getGoalProgress(goal) >= 100 ? 'bg-green-500' : 'bg-zinc-900'"
-							[style.width.%]="getGoalProgress(goal)">
-						</div>
-					</div>
-				</div>
-			}
-		</div>
-	</div>
-</div>
-}
-
 <!-- ─── Meal Picker Drawer ────────────────────────────────────────────────── -->
 <app-side-drawer #mealPickerDrawer side="right">
 	<div class="p-6 flex flex-col h-full">
