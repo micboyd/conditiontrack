@@ -572,47 +572,54 @@
 			}
 
 			@if (weeklyCaloriesView === 'breakdown') {
-			<!-- Daily breakdown grid -->
-			<div class="grid grid-cols-7 gap-1.5">
+			<!-- Daily breakdown rows -->
+			<div class="space-y-2">
 				@for (day of currentWeekDays; track day.dateStr) {
-					<div class="bg-white/5 rounded-lg px-2 py-3 text-center border"
-						[ngClass]="day.isToday ? 'border-white/20' : 'border-white/10'">
-						<p class="text-[10px] font-semibold uppercase text-zinc-400 mb-2.5"
-							[class.text-white]="day.isToday">{{ day.label }}</p>
+					<div class="flex items-center gap-4 px-4 py-4 rounded-xl border"
+						[ngClass]="day.isToday ? 'border-white/20 bg-white/5' : 'border-white/10'">
+
+						<!-- Day label -->
+						<div class="w-14 flex-shrink-0">
+							<p class="text-xs font-semibold uppercase tracking-wide"
+								[class]="day.isToday ? 'text-white' : 'text-zinc-500'">{{ day.label }}</p>
+							<p class="text-2xl font-bold leading-tight"
+								[class]="day.isToday ? 'text-white' : 'text-zinc-400'">{{ day.dayNum }}</p>
+						</div>
 
 						<!-- Calories In -->
-						<div class="mb-2">
-							<p class="text-[9px] text-zinc-500 mb-0.5">In</p>
-							<p class="text-xs font-bold leading-tight"
+						<div class="flex-1">
+							<p class="text-xs text-zinc-500 mb-1">In</p>
+							<p class="text-xl font-bold leading-none"
 								[class]="getDailyBreakdown(day.dateStr).calsIn > 0 ? 'text-white' : 'text-zinc-600'">
 								{{ getDailyBreakdown(day.dateStr).calsIn > 0 ? (getDailyBreakdown(day.dateStr).calsIn | number:'1.0-0') : '–' }}
 							</p>
 						</div>
 
 						<!-- Calories Out -->
-						<div class="mb-2">
-							<p class="text-[9px] text-zinc-500 mb-0.5">Out</p>
-							<p class="text-xs font-bold leading-tight"
+						<div class="flex-1">
+							<p class="text-xs text-zinc-500 mb-1">Out</p>
+							<p class="text-xl font-bold leading-none"
 								[class]="getDailyBreakdown(day.dateStr).calsOut > 0 ? 'text-orange-300' : 'text-zinc-600'">
 								{{ getDailyBreakdown(day.dateStr).calsOut > 0 ? (getDailyBreakdown(day.dateStr).calsOut | number:'1.0-0') : '–' }}
 							</p>
 							@if (getDailyBreakdown(day.dateStr).activityCals > 0) {
-								<p class="text-[8px] text-zinc-500 mt-0.5 leading-tight">+{{ getDailyBreakdown(day.dateStr).activityCals | number:'1.0-0' }} act</p>
+								<p class="text-xs text-zinc-500 mt-1">+{{ getDailyBreakdown(day.dateStr).activityCals | number:'1.0-0' }} act</p>
 							}
 						</div>
 
-						<!-- Difference -->
-						<div class="pt-2 border-t border-white/10">
-							<p class="text-[9px] text-zinc-500 mb-0.5">Δ</p>
+						<!-- Net -->
+						<div class="text-right flex-shrink-0 min-w-[70px]">
+							<p class="text-xs text-zinc-500 mb-1">Net</p>
 							@if (getDailyBreakdown(day.dateStr).calsIn === 0 && getDailyBreakdown(day.dateStr).calsOut === 0) {
-								<p class="text-xs font-bold text-zinc-600">–</p>
+								<p class="text-xl font-bold text-zinc-600">–</p>
 							} @else {
-								<p class="text-xs font-bold leading-tight"
+								<p class="text-xl font-bold leading-none"
 									[class]="getDailyBreakdown(day.dateStr).diff < -50 ? 'text-emerald-400' : getDailyBreakdown(day.dateStr).diff > 50 ? 'text-amber-400' : 'text-white'">
 									{{ getDailyBreakdown(day.dateStr).diff > 0 ? '+' : '' }}{{ getDailyBreakdown(day.dateStr).diff | number:'1.0-0' }}
 								</p>
 							}
 						</div>
+
 					</div>
 				}
 			</div>
