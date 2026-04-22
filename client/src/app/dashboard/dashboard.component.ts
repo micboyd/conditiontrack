@@ -240,16 +240,19 @@ export class DashboardComponent implements OnInit {
 	}
 
 	openExtraCalInput(): void {
-		this.extraCalInput = this.viewDateLog?.extraCaloriesBurned ?? null;
+		const stored = this.viewDateLog?.extraCaloriesBurned ?? 0;
+		// Pre-fill with the gross watch number (stored net + already-logged cardio)
+		this.extraCalInput = stored > 0 ? stored + this.dayCardioCalories : null;
 		this.showExtraCalInput = true;
 	}
 
 	saveExtraCalories(): void {
 		const userId = localStorage.getItem('id') ?? '';
-		const calories = this.extraCalInput ?? 0;
+		// Subtract logged cardio so we don't double-count
+		const net = Math.max(0, (this.extraCalInput ?? 0) - this.dayCardioCalories);
 		this.extraCaloriesSaving = true;
 
-		const update = { extraCaloriesBurned: calories };
+		const update = { extraCaloriesBurned: net };
 
 		const obs = this.viewDateLog?._id
 			? this.dailyLogService.updateLog(this.viewDateLog._id, update)
@@ -514,6 +517,26 @@ export class DashboardComponent implements OnInit {
 		const activityCals = cardioCals + extraCals;
 		const calsOut = bmr + activityCals;
 		return { calsIn, calsOut, diff: calsIn - calsOut, bmr, activityCals };
+	}
+
+	/** Average daily deficit (negative = deficit) across completed past days with data. */
+	get averageDailyDeficit(): number | null {
+		const pastDays = this.currentWeekDays
+			.filter(d => d.dateStr < this.todayStr)
+			.map(d => this.getDailyBreakdown(d.dateStr))
+			.filter(b => b.calsIn > 0 || b.activityCals > 0);
+		if (pastDays.length === 0) return null;
+		const total = pastDays.reduce((sum, b) => sum + b.diff, 0);
+		return Math.round(total / pastDays.length);
+	}
+
+	get averageDailyDeficitDayCount(): number {
+		return this.currentWeekDays
+			.filter(d => d.dateStr < this.todayStr)
+			.filter(d => {
+				const b = this.getDailyBreakdown(d.dateStr);
+				return b.calsIn > 0 || b.activityCals > 0;
+			}).length;
 	}
 
 	/** Get calories out per day (BMR only if day is done, plus activity) */
