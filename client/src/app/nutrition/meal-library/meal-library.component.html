@@ -17,55 +17,8 @@
 </div>
 
 <!-- ── Filters ──────────────────────────────────────────────────────────── -->
-<div class="mb-5 space-y-3">
-
-	<!-- Search -->
-	<div class="relative">
-		<i class="fa-sharp fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-sm pointer-events-none"></i>
-		<input type="text"
-			[value]="searchQuery"
-			(input)="onSearchInput($any($event.target).value)"
-			placeholder="Search meals…"
-			class="w-full pl-10 pr-4 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition" />
-	</div>
-
-	<!-- Category chips -->
-	<div class="flex flex-wrap gap-2">
-		<button (click)="setCategory('')"
-			class="px-4 py-2 rounded-full text-xs font-medium transition cursor-pointer"
-			[class]="selectedCategory === '' ? 'bg-zinc-900 text-white' : 'bg-white border border-zinc-200 text-zinc-600 hover:border-zinc-400'">
-			All
-		</button>
-		@for (cat of categories; track cat) {
-			<button (click)="setCategory(cat)"
-				class="px-4 py-2 rounded-full text-xs font-medium transition cursor-pointer"
-				[class]="selectedCategory === cat ? 'bg-zinc-900 text-white' : 'bg-white border border-zinc-200 text-zinc-600 hover:border-zinc-400'">
-				{{ cat }}
-			</button>
-		}
-	</div>
-
-	<!-- Calorie range -->
-	<div class="flex items-center gap-2">
-		<input type="number" min="0" placeholder="Min kcal"
-			[(ngModel)]="calorieMinInput"
-			class="w-28 px-3 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition" />
-		<span class="text-zinc-400 text-xs">–</span>
-		<input type="number" min="0" placeholder="Max kcal"
-			[(ngModel)]="calorieMaxInput"
-			class="w-28 px-3 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition" />
-		<button (click)="applyCalorieRange()"
-			class="px-4 py-2.5 bg-zinc-900 text-white text-xs font-medium rounded-xl hover:bg-zinc-800 transition cursor-pointer">
-			Apply
-		</button>
-		@if (calorieMin != null || calorieMax != null) {
-			<button (click)="clearCalorieRange()"
-				class="px-4 py-2.5 bg-white border border-zinc-200 text-zinc-500 text-xs font-medium rounded-xl hover:border-zinc-400 transition cursor-pointer">
-				Clear
-			</button>
-		}
-	</div>
-
+<div class="mb-5">
+	<app-meal-filter (filterChange)="onFilterChange($event)"></app-meal-filter>
 </div>
 
 @if (loading) {
@@ -74,7 +27,7 @@
 	</div>
 } @else if (allMeals.length === 0) {
 	<div class="bg-white rounded-2xl px-6 py-16 text-center text-sm text-zinc-400">
-		@if (searchQuery || selectedCategory || calorieMin != null || calorieMax != null) {
+		@if (hasActiveFilters) {
 			No meals match your filters.
 		} @else {
 			No meals yet. Add your first meal to start tracking nutrition.

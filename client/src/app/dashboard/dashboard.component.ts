@@ -10,6 +10,7 @@ import { DailyLog } from '../nutrition/models/DailyLog';
 import { DailyLogService } from '../shared/services/daily-log.service';
 import { DayPlan } from '../week-planner/models/WeekPlan';
 import { Meal } from '../nutrition/models/Meal';
+import { MealFilterValue } from '../shared/components/meal-filter/meal-filter.component';
 import { MealLibraryService } from '../nutrition/meal-library/meal-library.service';
 import { SideDrawerComponent } from '../shared/components/side-drawer/side-drawer.component';
 import { UserProfile, UserService } from '../shared/services/user.service';
@@ -59,7 +60,7 @@ export class DashboardComponent implements OnInit {
 	extraCalInput: number | null = null;
 	extraCaloriesSaving = false;
 
-	mealSearchQuery = '';
+	mealPickerFilter: MealFilterValue = { search: '', category: '', calorieMin: null, calorieMax: null };
 
 
 	// Workout logging state
@@ -727,11 +728,18 @@ export class DashboardComponent implements OnInit {
 	}
 
 	get filteredMealLibrary(): Meal[] {
-		const q = this.mealSearchQuery.trim().toLowerCase();
-		if (!q) return this.allMeals;
-		return this.allMeals.filter(
-			(m) => m.name.toLowerCase().includes(q) || m.category.toLowerCase().includes(q),
-		);
+		const { search, category, calorieMin, calorieMax } = this.mealPickerFilter;
+		return this.allMeals.filter(m => {
+			if (search && !m.name.toLowerCase().includes(search.toLowerCase())) return false;
+			if (category && m.category !== category) return false;
+			if (calorieMin != null && m.calories < calorieMin) return false;
+			if (calorieMax != null && m.calories > calorieMax) return false;
+			return true;
+		});
+	}
+
+	onMealPickerFilterChange(filter: MealFilterValue): void {
+		this.mealPickerFilter = filter;
 	}
 
 	get mealAlreadyLoggedIds(): Set<string> {

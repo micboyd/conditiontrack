@@ -1,8 +1,7 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { Meal } from '../models/Meal';
+import { MealFilterValue } from '../../shared/components/meal-filter/meal-filter.component';
 import { MealLibraryService } from './meal-library.service';
 import { SideDrawerComponent } from '../../shared/components/side-drawer/side-drawer.component';
 
@@ -11,7 +10,7 @@ import { SideDrawerComponent } from '../../shared/components/side-drawer/side-dr
 	templateUrl: './meal-library.component.html',
 	standalone: false,
 })
-export class MealLibraryComponent implements OnInit, OnDestroy {
+export class MealLibraryComponent implements OnInit {
 	@ViewChild(SideDrawerComponent) drawer!: SideDrawerComponent;
 
 	loading = false;
@@ -19,40 +18,18 @@ export class MealLibraryComponent implements OnInit, OnDestroy {
 	drawerOpen = false;
 	private _allMeals: Meal[] = [];
 
-	// Filter state
-	searchQuery = '';
-	selectedCategory = '';
-	calorieMin: number | null = null;
-	calorieMax: number | null = null;
-	calorieMinInput: number | null = null;
-	calorieMaxInput: number | null = null;
-
 	// Pagination state
 	currentPage = 1;
 	totalPages = 1;
 	total = 0;
 	readonly pageSize = 10;
 
-	readonly categories = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
-
-	private searchSubject = new Subject<string>();
-	private searchSub!: Subscription;
+	private currentFilter: MealFilterValue = { search: '', category: '', calorieMin: null, calorieMax: null };
 
 	constructor(public mealService: MealLibraryService) {}
 
 	ngOnInit(): void {
-		this.searchSub = this.searchSubject.pipe(
-			debounceTime(300),
-			distinctUntilChanged(),
-		).subscribe(() => {
-			this.currentPage = 1;
-			this.loadMeals();
-		});
 		this.loadMeals();
-	}
-
-	ngOnDestroy(): void {
-		this.searchSub?.unsubscribe();
 	}
 
 	get allMeals(): Meal[] {
@@ -63,13 +40,25 @@ export class MealLibraryComponent implements OnInit, OnDestroy {
 		return Array.from({ length: this.totalPages }, (_, i) => i + 1);
 	}
 
+	get hasActiveFilters(): boolean {
+		const f = this.currentFilter;
+		return !!(f.search || f.category || f.calorieMin != null || f.calorieMax != null);
+	}
+
+	onFilterChange(filter: MealFilterValue): void {
+		this.currentFilter = filter;
+		this.currentPage = 1;
+		this.loadMeals();
+	}
+
 	loadMeals(): void {
+		const f = this.currentFilter;
 		this.loading = true;
 		this.mealService.searchMeals({
-			search: this.searchQuery || undefined,
-			category: this.selectedCategory || undefined,
-			calorieMin: this.calorieMin,
-			calorieMax: this.calorieMax,
+			search: f.search || undefined,
+			category: f.category || undefined,
+			calorieMin: f.calorieMin,
+			calorieMax: f.calorieMax,
 			page: this.currentPage,
 			limit: this.pageSize,
 		}).subscribe({
@@ -81,33 +70,6 @@ export class MealLibraryComponent implements OnInit, OnDestroy {
 			},
 			error: () => { this.loading = false; },
 		});
-	}
-
-	onSearchInput(value: string): void {
-		this.searchQuery = value;
-		this.searchSubject.next(value);
-	}
-
-	setCategory(category: string): void {
-		this.selectedCategory = category;
-		this.currentPage = 1;
-		this.loadMeals();
-	}
-
-	applyCalorieRange(): void {
-		this.calorieMin = this.calorieMinInput;
-		this.calorieMax = this.calorieMaxInput;
-		this.currentPage = 1;
-		this.loadMeals();
-	}
-
-	clearCalorieRange(): void {
-		this.calorieMinInput = null;
-		this.calorieMaxInput = null;
-		this.calorieMin = null;
-		this.calorieMax = null;
-		this.currentPage = 1;
-		this.loadMeals();
 	}
 
 	goToPage(page: number): void {
