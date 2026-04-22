@@ -43,9 +43,11 @@
 					<div class="min-w-0">
 						<p class="text-sm font-semibold text-zinc-900 truncate">{{ meal.name }}</p>
 						<p class="text-sm text-zinc-500 mt-0.5">{{ meal.calories | number:'1.0-0' }} kcal · P{{ meal.protein | number:'1.0-1' }}g · C{{ meal.carbs | number:'1.0-1' }}g · F{{ meal.fat | number:'1.0-1' }}g</p>
-						@if(meal.category){
-							<span class="inline-block mt-1.5 text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-500 font-medium">{{ meal.category }}</span>
-						}
+						<div class="flex flex-wrap gap-1 mt-1.5">
+							@for (cat of meal.categories; track cat) {
+								<span class="inline-block text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-500 font-medium">{{ cat }}</span>
+							}
+						</div>
 					</div>
 					<div class="flex items-center gap-1 text-zinc-400 flex-shrink-0">
 						<button (click)="openDrawer(meal)" class="min-h-[44px] min-w-[44px] flex items-center justify-center hover:text-zinc-700 transition cursor-pointer"><i class="fa-sharp fa-solid fa-pen-to-square"></i></button>
@@ -75,23 +77,27 @@
 				<tr class="hover:bg-zinc-50 transition-colors">
 					<td class="px-6 py-5 text-sm text-zinc-900 font-semibold">{{ meal.name }}</td>
 					<td class="px-6 py-5">
-						@switch (meal.category) {
-							@case ('Breakfast') {
-								<span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700">Breakfast</span>
+						<div class="flex flex-wrap gap-1">
+							@for (cat of meal.categories; track cat) {
+								@switch (cat) {
+									@case ('Breakfast') {
+										<span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700">Breakfast</span>
+									}
+									@case ('Lunch') {
+										<span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">Lunch</span>
+									}
+									@case ('Dinner') {
+										<span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700">Dinner</span>
+									}
+									@case ('Snack') {
+										<span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700">Snack</span>
+									}
+									@default {
+										<span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-zinc-100 text-zinc-600">{{ cat }}</span>
+									}
+								}
 							}
-							@case ('Lunch') {
-								<span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">Lunch</span>
-							}
-							@case ('Dinner') {
-								<span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700">Dinner</span>
-							}
-							@case ('Snack') {
-								<span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700">Snack</span>
-							}
-							@default {
-								<span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-zinc-100 text-zinc-600">{{ meal.category }}</span>
-							}
-						}
+						</div>
 					</td>
 					<td class="px-6 py-5 text-sm text-zinc-700 font-medium">{{ meal.calories | number:'1.0-0' }} kcal</td>
 					<td class="px-6 py-5 text-sm text-zinc-700 font-medium">{{ meal.protein | number:'1.0-1' }}g</td>

@@ -763,9 +763,11 @@
 						<div class="min-w-0">
 							<p class="text-sm font-medium text-zinc-800 truncate">{{ meal.name }}</p>
 							<p class="text-xs text-zinc-400 mt-0.5">{{ meal.calories }} kcal · P{{ meal.protein }}g · C{{ meal.carbs }}g · F{{ meal.fat }}g</p>
-							@if (meal.category) {
-								<span class="inline-block mt-1.5 text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-500 font-medium">{{ meal.category }}</span>
-							}
+							<div class="flex flex-wrap gap-1 mt-1.5">
+								@for (cat of meal.categories; track cat) {
+									<span class="inline-block text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-500 font-medium">{{ cat }}</span>
+								}
+							</div>
 						</div>
 						@if (mealAlreadyLoggedIds.has(meal._id)) {
 							<i class="fa-sharp fa-solid fa-check text-emerald-500 text-sm ml-3 flex-shrink-0"></i>

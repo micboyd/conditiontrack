@@ -8,7 +8,8 @@ const mealSchema = new mongoose.Schema({
     protein: { type: Number, required: true, min: 0 },
     carbs: { type: Number, required: true, min: 0 },
     description: { type: String, default: '' },
-    category: { type: String, default: '' }
+    category: { type: String, default: '' },
+    categories: { type: [String], default: [] }
 });
 
 module.exports = mongoose.model('Meal', mealSchema);

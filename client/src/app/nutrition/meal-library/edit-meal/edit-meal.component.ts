@@ -33,15 +33,19 @@ export class EditMealComponent implements OnInit, OnChanges {
 		}
 	}
 
+	categoriesInvalid = false;
+
 	private initForm(): void {
 		this.mealForm = Meal.createFormGroup(this.fb, this.selectedMeal ?? new Meal(null));
-		this.selectedMealTypes = this.selectedMeal?.category ? [this.selectedMeal.category] : [];
+		this.selectedMealTypes = this.selectedMeal?.categories?.length
+			? [...this.selectedMeal.categories]
+			: [];
+		this.categoriesInvalid = false;
 	}
 
 	updateCategory(event: string[]): void {
 		this.selectedMealTypes = event;
-		this.mealForm.get('category')?.setValue(event[0] ?? '');
-		this.mealForm.get('category')?.markAsTouched();
+		this.categoriesInvalid = false;
 	}
 
 	isInvalid(controlName: string): boolean {
@@ -72,16 +76,18 @@ export class EditMealComponent implements OnInit, OnChanges {
 
 	onSubmit(): void {
 		this.mealForm.markAllAsTouched();
-		if (this.mealForm.invalid) return;
+		this.categoriesInvalid = this.selectedMealTypes.length === 0;
+		if (this.mealForm.invalid || this.categoriesInvalid) return;
 
+		const payload = { ...this.mealForm.value, categories: this.selectedMealTypes };
 		this.formLoading = true;
 		if (this.selectedMeal) {
-			this.mealService.updateMeal(this.selectedMeal._id, this.mealForm.value).subscribe(() => {
+			this.mealService.updateMeal(this.selectedMeal._id, payload).subscribe(() => {
 				this.closeEditModeEvent.emit();
 				this.formLoading = false;
 			});
 		} else {
-			this.mealService.createMeal(this.mealForm.value).subscribe(() => {
+			this.mealService.createMeal(payload).subscribe(() => {
 				this.closeEditModeEvent.emit();
 				this.formLoading = false;
 			});
