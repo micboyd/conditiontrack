@@ -445,19 +445,13 @@ export class DashboardComponent implements OnInit {
 		return remaining;
 	}
 
-	/** Average daily calorie deficit/surplus based on records so far */
-	get averageDailyDeficit(): number {
-		const daysCompleted = this.completedDaysThisWeek || 1;
-		const currentDeficit = this.weeklyCalorieBalance;
-		return currentDeficit / daysCompleted;
-	}
 
 	/** Projected weekly calorie balance if current pace continues */
 	get projectedWeeklyDeficit(): number {
 		const bmrDaily = this.user?.bmr ?? 0;
 		const currentDeficit = this.weeklyCalorieBalance;
 		const daysRemaining = this.daysRemainingThisWeek;
-		const avgDailyDeficit = this.averageDailyDeficit;
+		const avgDailyDeficit = this.averageDailyDeficit ?? 0;
 		return currentDeficit + (avgDailyDeficit * daysRemaining);
 	}
 

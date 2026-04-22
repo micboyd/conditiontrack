@@ -7,7 +7,7 @@
 	}
 </app-side-drawer>
 
-<div class="flex items-center justify-between mb-7">
+<div class="flex items-center justify-between mb-6">
 	<h2 class="text-xl font-semibold text-zinc-900">Meal Library</h2>
 	<button (click)="openDrawer(null)"
 		class="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium px-5 py-3 rounded-full transition cursor-pointer min-h-[44px]">
@@ -16,13 +16,69 @@
 	</button>
 </div>
 
+<!-- ── Filters ──────────────────────────────────────────────────────────── -->
+<div class="mb-5 space-y-3">
+
+	<!-- Search -->
+	<div class="relative">
+		<i class="fa-sharp fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-sm pointer-events-none"></i>
+		<input type="text"
+			[value]="searchQuery"
+			(input)="onSearchInput($any($event.target).value)"
+			placeholder="Search meals…"
+			class="w-full pl-10 pr-4 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition" />
+	</div>
+
+	<!-- Category chips -->
+	<div class="flex flex-wrap gap-2">
+		<button (click)="setCategory('')"
+			class="px-4 py-2 rounded-full text-xs font-medium transition cursor-pointer"
+			[class]="selectedCategory === '' ? 'bg-zinc-900 text-white' : 'bg-white border border-zinc-200 text-zinc-600 hover:border-zinc-400'">
+			All
+		</button>
+		@for (cat of categories; track cat) {
+			<button (click)="setCategory(cat)"
+				class="px-4 py-2 rounded-full text-xs font-medium transition cursor-pointer"
+				[class]="selectedCategory === cat ? 'bg-zinc-900 text-white' : 'bg-white border border-zinc-200 text-zinc-600 hover:border-zinc-400'">
+				{{ cat }}
+			</button>
+		}
+	</div>
+
+	<!-- Calorie range -->
+	<div class="flex items-center gap-2">
+		<input type="number" min="0" placeholder="Min kcal"
+			[(ngModel)]="calorieMinInput"
+			class="w-28 px-3 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition" />
+		<span class="text-zinc-400 text-xs">–</span>
+		<input type="number" min="0" placeholder="Max kcal"
+			[(ngModel)]="calorieMaxInput"
+			class="w-28 px-3 py-2.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition" />
+		<button (click)="applyCalorieRange()"
+			class="px-4 py-2.5 bg-zinc-900 text-white text-xs font-medium rounded-xl hover:bg-zinc-800 transition cursor-pointer">
+			Apply
+		</button>
+		@if (calorieMin != null || calorieMax != null) {
+			<button (click)="clearCalorieRange()"
+				class="px-4 py-2.5 bg-white border border-zinc-200 text-zinc-500 text-xs font-medium rounded-xl hover:border-zinc-400 transition cursor-pointer">
+				Clear
+			</button>
+		}
+	</div>
+
+</div>
+
 @if (loading) {
 	<div class="py-8">
 		<app-loading-indicator [loading]="true"></app-loading-indicator>
 	</div>
 } @else if (allMeals.length === 0) {
 	<div class="bg-white rounded-2xl px-6 py-16 text-center text-sm text-zinc-400">
-		No meals yet. Add your first meal to start tracking nutrition.
+		@if (searchQuery || selectedCategory || calorieMin != null || calorieMax != null) {
+			No meals match your filters.
+		} @else {
+			No meals yet. Add your first meal to start tracking nutrition.
+		}
 	</div>
 } @else {
 
@@ -103,4 +159,35 @@
 			</tbody>
 		</table>
 	</div>
+
+	<!-- Pager -->
+	@if (totalPages > 1 || total > 0) {
+	<div class="mt-5 flex items-center justify-between">
+		<p class="text-xs text-zinc-400">{{ total }} result{{ total === 1 ? '' : 's' }} · Page {{ currentPage }} of {{ totalPages }}</p>
+		<div class="flex items-center gap-1">
+			<button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"
+				class="w-9 h-9 flex items-center justify-center rounded-lg border text-zinc-500 transition"
+				[class]="currentPage === 1 ? 'border-zinc-100 text-zinc-300 cursor-not-allowed' : 'border-zinc-200 bg-white hover:bg-zinc-50 cursor-pointer'">
+				<i class="fa-sharp fa-solid fa-chevron-left text-xs"></i>
+			</button>
+			@for (p of pages; track p) {
+				@if (totalPages <= 7 || p === 1 || p === totalPages || (p >= currentPage - 1 && p <= currentPage + 1)) {
+					<button (click)="goToPage(p)"
+						class="w-9 h-9 flex items-center justify-center rounded-lg border text-xs font-medium transition cursor-pointer"
+						[class]="p === currentPage ? 'bg-zinc-900 border-zinc-900 text-white' : 'bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50'">
+						{{ p }}
+					</button>
+				} @else if (p === currentPage - 2 || p === currentPage + 2) {
+					<span class="w-9 h-9 flex items-center justify-center text-xs text-zinc-400">…</span>
+				}
+			}
+			<button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"
+				class="w-9 h-9 flex items-center justify-center rounded-lg border text-zinc-500 transition"
+				[class]="currentPage === totalPages ? 'border-zinc-100 text-zinc-300 cursor-not-allowed' : 'border-zinc-200 bg-white hover:bg-zinc-50 cursor-pointer'">
+				<i class="fa-sharp fa-solid fa-chevron-right text-xs"></i>
+			</button>
+		</div>
+	</div>
+	}
+
 }

@@ -66,11 +66,31 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Read all Meals for a user
+// Read all Meals for a user (with optional search, filter, pagination)
 router.get('/user/:userId', async (req, res) => {
     try {
-        const meals = await Meal.find({ userId: req.params.userId });
-        res.json(meals);
+        const { search, category, calorieMin, calorieMax, page = 1, limit = 10 } = req.query;
+
+        const filter = { userId: req.params.userId };
+
+        if (search) filter.name = { $regex: search, $options: 'i' };
+        if (category) filter.category = category;
+        if (calorieMin || calorieMax) {
+            filter.calories = {};
+            if (calorieMin) filter.calories.$gte = Number(calorieMin);
+            if (calorieMax) filter.calories.$lte = Number(calorieMax);
+        }
+
+        const pageNum = Math.max(1, parseInt(page, 10));
+        const limitNum = Math.max(1, parseInt(limit, 10));
+        const skip = (pageNum - 1) * limitNum;
+
+        const [meals, total] = await Promise.all([
+            Meal.find(filter).skip(skip).limit(limitNum),
+            Meal.countDocuments(filter),
+        ]);
+
+        res.json({ meals, total, page: pageNum, totalPages: Math.ceil(total / limitNum) });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
