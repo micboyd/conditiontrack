@@ -331,25 +331,42 @@ export class DashboardComponent implements OnInit {
 		}, 0);
 	}
 
-	get daysLoggedThisWeek(): number {
+	private get pastDailyLogs(): DailyLog[] {
 		return this.weeklyDailyLogs.filter(log =>
-			log.meals.length > 0 || (log.extraCaloriesBurned ?? 0) > 0
-		).length;
+			log.date < this.todayStr && (log.meals.length > 0 || (log.extraCaloriesBurned ?? 0) > 0)
+		);
+	}
+
+	get daysLoggedThisWeek(): number {
+		return this.pastDailyLogs.length;
 	}
 
 	get dailyAverageCaloriesEaten(): number {
 		const days = this.daysLoggedThisWeek;
-		return days > 0 ? Math.round(this.weeklyCaloriesEaten / days) : 0;
+		if (days === 0) return 0;
+		const total = this.pastDailyLogs.reduce((sum, log) => {
+			return sum + log.meals
+				.map(id => this.allMeals.find(m => m._id === id))
+				.filter((m): m is Meal => !!m)
+				.reduce((s, m) => s + m.calories, 0);
+		}, 0);
+		return Math.round(total / days);
 	}
 
 	get dailyAverageCaloriesBurned(): number {
-		const days = this.daysLoggedThisWeek;
-		if (days === 0) return 0;
-		const activeDaysWithBurn = new Set<string>();
-		this.conditioningRecords.filter(r => this.isThisWeek(r.date)).forEach(r => activeDaysWithBurn.add(this.toDateStr(r.date)));
-		this.weeklyDailyLogs.filter(l => (l.extraCaloriesBurned ?? 0) > 0).forEach(l => activeDaysWithBurn.add(l.date));
-		const burnDays = activeDaysWithBurn.size || days;
-		return Math.round(this.weeklyTotalCaloriesBurned / burnDays);
+		const pastDates = new Set(this.pastDailyLogs.map(l => l.date));
+		const activePastDays = new Set<string>();
+		this.conditioningRecords
+			.filter(r => this.toDateStr(r.date) < this.todayStr && this.isThisWeek(r.date))
+			.forEach(r => activePastDays.add(this.toDateStr(r.date)));
+		this.pastDailyLogs.filter(l => (l.extraCaloriesBurned ?? 0) > 0).forEach(l => activePastDays.add(l.date));
+		const burnDays = activePastDays.size || pastDates.size;
+		if (burnDays === 0) return 0;
+		const totalBurned = this.conditioningRecords
+			.filter(r => this.toDateStr(r.date) < this.todayStr && this.isThisWeek(r.date))
+			.reduce((sum, r) => sum + (r.caloriesBurned ?? 0), 0)
+			+ this.pastDailyLogs.reduce((sum, l) => sum + (l.extraCaloriesBurned ?? 0), 0);
+		return Math.round(totalBurned / burnDays);
 	}
 
 	get weeklyExtraCaloriesBurned(): number {
