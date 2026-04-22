@@ -731,7 +731,7 @@ export class DashboardComponent implements OnInit {
 		const { search, category, calorieMin, calorieMax } = this.mealPickerFilter;
 		return this.allMeals.filter(m => {
 			if (search && !m.name.toLowerCase().includes(search.toLowerCase())) return false;
-			if (category && m.category !== category) return false;
+			if (category && !m.categories?.includes(category)) return false;
 			if (calorieMin != null && m.calories < calorieMin) return false;
 			if (calorieMax != null && m.calories > calorieMax) return false;
 			return true;

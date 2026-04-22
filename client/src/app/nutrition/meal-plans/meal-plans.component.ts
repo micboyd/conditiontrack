@@ -236,7 +236,7 @@ export class MealPlansComponent implements OnInit {
 	get filteredPickerMeals(): Meal[] {
 		return this.allMeals.filter(m => {
 			const matchSearch = !this.pickerSearch || m.name.toLowerCase().includes(this.pickerSearch.toLowerCase());
-			const matchCat = this.pickerCategory === 'All' || m.category === this.pickerCategory;
+			const matchCat = this.pickerCategory === 'All' || m.categories?.includes(this.pickerCategory);
 			return matchSearch && matchCat;
 		});
 	}
