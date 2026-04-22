@@ -512,6 +512,9 @@
 						</div>
 					</div>
 					}
+					@if (daysLoggedThisWeek > 0) {
+					<p class="text-[10px] text-zinc-600 mt-1.5">~{{ dailyAverageCaloriesEaten | number:'1.0-0' }} kcal/day avg · {{ daysLoggedThisWeek }} day{{ daysLoggedThisWeek === 1 ? '' : 's' }} logged</p>
+					}
 				</div>
 
 				<!-- Calories Out -->
@@ -525,6 +528,9 @@
 					</div>
 					@if (user?.bmr && completedPastDaysThisWeek > 0) {
 						<p class="text-xs text-zinc-600 mt-1">incl. {{ (user!.bmr! * completedPastDaysThisWeek) | number:'1.0-0' }} kcal BMR ({{ completedPastDaysThisWeek }} days)</p>
+					}
+					@if (weeklyTotalCaloriesBurned > 0) {
+					<p class="text-[10px] text-zinc-600 mt-1.5">~{{ dailyAverageCaloriesBurned | number:'1.0-0' }} kcal/day avg</p>
 					}
 				</div>
 

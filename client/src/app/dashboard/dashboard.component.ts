@@ -331,6 +331,27 @@ export class DashboardComponent implements OnInit {
 		}, 0);
 	}
 
+	get daysLoggedThisWeek(): number {
+		return this.weeklyDailyLogs.filter(log =>
+			log.meals.length > 0 || (log.extraCaloriesBurned ?? 0) > 0
+		).length;
+	}
+
+	get dailyAverageCaloriesEaten(): number {
+		const days = this.daysLoggedThisWeek;
+		return days > 0 ? Math.round(this.weeklyCaloriesEaten / days) : 0;
+	}
+
+	get dailyAverageCaloriesBurned(): number {
+		const days = this.daysLoggedThisWeek;
+		if (days === 0) return 0;
+		const activeDaysWithBurn = new Set<string>();
+		this.conditioningRecords.filter(r => this.isThisWeek(r.date)).forEach(r => activeDaysWithBurn.add(this.toDateStr(r.date)));
+		this.weeklyDailyLogs.filter(l => (l.extraCaloriesBurned ?? 0) > 0).forEach(l => activeDaysWithBurn.add(l.date));
+		const burnDays = activeDaysWithBurn.size || days;
+		return Math.round(this.weeklyTotalCaloriesBurned / burnDays);
+	}
+
 	get weeklyExtraCaloriesBurned(): number {
 		return this.weeklyDailyLogs.reduce((sum, log) => sum + (log.extraCaloriesBurned ?? 0), 0);
 	}
