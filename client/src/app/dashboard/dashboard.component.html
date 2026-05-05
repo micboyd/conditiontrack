@@ -601,8 +601,8 @@
 						<div class="flex-1">
 							<p class="text-xs text-zinc-500 mb-1">In</p>
 							<p class="text-xl font-bold leading-none"
-								[class]="getDailyBreakdown(day.dateStr).calsIn > 0 ? 'text-white' : 'text-zinc-600'">
-								{{ getDailyBreakdown(day.dateStr).calsIn > 0 ? (getDailyBreakdown(day.dateStr).calsIn | number:'1.0-0') : '–' }}
+								[class]="dailyBreakdowns[day.dateStr]?.calsIn > 0 ? 'text-white' : 'text-zinc-600'">
+								{{ dailyBreakdowns[day.dateStr]?.calsIn > 0 ? (dailyBreakdowns[day.dateStr].calsIn | number:'1.0-0') : '–' }}
 							</p>
 						</div>
 
@@ -610,23 +610,23 @@
 						<div class="flex-1">
 							<p class="text-xs text-zinc-500 mb-1">Out</p>
 							<p class="text-xl font-bold leading-none"
-								[class]="getDailyBreakdown(day.dateStr).calsOut > 0 ? 'text-orange-300' : 'text-zinc-600'">
-								{{ getDailyBreakdown(day.dateStr).calsOut > 0 ? (getDailyBreakdown(day.dateStr).calsOut | number:'1.0-0') : '–' }}
+								[class]="dailyBreakdowns[day.dateStr]?.calsOut > 0 ? 'text-orange-300' : 'text-zinc-600'">
+								{{ dailyBreakdowns[day.dateStr]?.calsOut > 0 ? (dailyBreakdowns[day.dateStr].calsOut | number:'1.0-0') : '–' }}
 							</p>
-							@if (getDailyBreakdown(day.dateStr).activityCals > 0) {
-								<p class="text-xs text-zinc-500 mt-1">+{{ getDailyBreakdown(day.dateStr).activityCals | number:'1.0-0' }} act</p>
+							@if (dailyBreakdowns[day.dateStr]?.activityCals > 0) {
+								<p class="text-xs text-zinc-500 mt-1">+{{ dailyBreakdowns[day.dateStr].activityCals | number:'1.0-0' }} act</p>
 							}
 						</div>
 
 						<!-- Net -->
 						<div class="text-right flex-shrink-0 min-w-[70px]">
 							<p class="text-xs text-zinc-500 mb-1">Net</p>
-							@if (getDailyBreakdown(day.dateStr).calsIn === 0 && getDailyBreakdown(day.dateStr).calsOut === 0) {
+							@if (!dailyBreakdowns[day.dateStr] || (dailyBreakdowns[day.dateStr].calsIn === 0 && dailyBreakdowns[day.dateStr].calsOut === 0)) {
 								<p class="text-xl font-bold text-zinc-600">–</p>
 							} @else {
 								<p class="text-xl font-bold leading-none"
-									[class]="getDailyBreakdown(day.dateStr).diff < -50 ? 'text-emerald-400' : getDailyBreakdown(day.dateStr).diff > 50 ? 'text-amber-400' : 'text-white'">
-									{{ getDailyBreakdown(day.dateStr).diff > 0 ? '+' : '' }}{{ getDailyBreakdown(day.dateStr).diff | number:'1.0-0' }}
+									[class]="dailyBreakdowns[day.dateStr].diff < -50 ? 'text-emerald-400' : dailyBreakdowns[day.dateStr].diff > 50 ? 'text-amber-400' : 'text-white'">
+									{{ dailyBreakdowns[day.dateStr].diff > 0 ? '+' : '' }}{{ dailyBreakdowns[day.dateStr].diff | number:'1.0-0' }}
 								</p>
 							}
 						</div>

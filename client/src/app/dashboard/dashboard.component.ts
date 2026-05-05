@@ -91,6 +91,8 @@ export class DashboardComponent implements OnInit {
 	goalAutoValues = new Map<string, number>();
 	private measurements: Measurement[] = [];
 
+	dailyBreakdowns: Record<string, { calsIn: number; calsOut: number; diff: number; bmr: number; activityCals: number }> = {};
+
 
 	constructor(
 		private fb: FormBuilder,
@@ -142,6 +144,7 @@ export class DashboardComponent implements OnInit {
 				const weekDateStrs = new Set(this.currentWeekDays.map(d => d.dateStr));
 				this.weeklyDailyLogs = [...data.monthLogs, ...data.prevMonthLogs]
 					.filter(l => weekDateStrs.has(l.date));
+				this.computeDailyBreakdowns();
 				this.loading = false;
 				this.goalsService.resolveAutoValues(this.activeGoals).subscribe(map => {
 					this.goalAutoValues = map;
@@ -262,6 +265,9 @@ export class DashboardComponent implements OnInit {
 		obs.subscribe({
 			next: (log) => {
 				this.viewDateLog = log;
+				this.weeklyDailyLogs = this.weeklyDailyLogs.map(l => l.date === log.date ? log : l);
+				if (!this.weeklyDailyLogs.some(l => l.date === log.date)) this.weeklyDailyLogs = [...this.weeklyDailyLogs, log];
+				this.computeDailyBreakdowns();
 				this.showExtraCalInput = false;
 				this.extraCaloriesSaving = false;
 			},
@@ -514,12 +520,20 @@ export class DashboardComponent implements OnInit {
 		return { calsIn, calsOut, diff: calsIn - calsOut, bmr, activityCals };
 	}
 
+	private computeDailyBreakdowns(): void {
+		const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
+		for (let i = 0; i < 7; i++) {
+			const dateStr = format(addDays(weekStart, i), 'yyyy-MM-dd');
+			this.dailyBreakdowns[dateStr] = this.getDailyBreakdown(dateStr);
+		}
+	}
+
 	/** Average daily deficit (negative = deficit) across completed past days with data. */
 	get averageDailyDeficit(): number | null {
 		const pastDays = this.currentWeekDays
 			.filter(d => d.dateStr < this.todayStr)
-			.map(d => this.getDailyBreakdown(d.dateStr))
-			.filter(b => b.calsIn > 0 || b.activityCals > 0);
+			.map(d => this.dailyBreakdowns[d.dateStr])
+			.filter((b): b is NonNullable<typeof b> => !!b && (b.calsIn > 0 || b.activityCals > 0));
 		if (pastDays.length === 0) return null;
 		const total = pastDays.reduce((sum, b) => sum + b.diff, 0);
 		return Math.round(total / pastDays.length);
@@ -529,14 +543,14 @@ export class DashboardComponent implements OnInit {
 		return this.currentWeekDays
 			.filter(d => d.dateStr < this.todayStr)
 			.filter(d => {
-				const b = this.getDailyBreakdown(d.dateStr);
-				return b.calsIn > 0 || b.activityCals > 0;
+				const b = this.dailyBreakdowns[d.dateStr];
+				return b && (b.calsIn > 0 || b.activityCals > 0);
 			}).length;
 	}
 
 	/** Get calories out per day (BMR only if day is done, plus activity) */
 	getDailyCaloriesOut(dateStr: string): number {
-		return this.getDailyBreakdown(dateStr).calsOut;
+		return (this.dailyBreakdowns[dateStr] ?? this.getDailyBreakdown(dateStr)).calsOut;
 	}
 
 	// ── Recent activity ──────────────────────────────────────────────────────
@@ -898,6 +912,7 @@ export class DashboardComponent implements OnInit {
 		this.cardioLogLoading = true;
 		this.conditioningRecordService.createConditioningRecord(this.cardioLogForm.value).subscribe((record) => {
 			this.conditioningRecords = [...this.conditioningRecords, record];
+			this.computeDailyBreakdowns();
 			this.cardioLogLoading = false;
 			this.logCardioDrawer.close();
 		});
@@ -912,6 +927,7 @@ export class DashboardComponent implements OnInit {
 	removeCardioRecord(record: ConditioningRecord): void {
 		this.conditioningRecordService.deleteConditioningRecord(record._id).subscribe(() => {
 			this.conditioningRecords = this.conditioningRecords.filter(r => r._id !== record._id);
+			this.computeDailyBreakdowns();
 		});
 	}
 

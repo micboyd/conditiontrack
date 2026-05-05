@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { addDays, addWeeks, format, isToday, parseISO, startOfWeek, subWeeks } from 'date-fns';
 import { Meal } from '../models/Meal';
 import { MacroGoals, UserService } from '../../shared/services/user.service';
@@ -12,7 +12,7 @@ import { SideDrawerComponent } from '../../shared/components/side-drawer/side-dr
 	templateUrl: './meal-plans.component.html',
 	standalone: false,
 })
-export class MealPlansComponent implements OnInit {
+export class MealPlansComponent implements OnInit, OnDestroy {
 	@ViewChild(SideDrawerComponent) drawer!: SideDrawerComponent;
 
 	readonly DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -54,11 +54,17 @@ export class MealPlansComponent implements OnInit {
 	pickerSearch = '';
 	pickerCategory = 'All';
 
+	private savedTimer?: ReturnType<typeof setTimeout>;
+
 	constructor(
 		private mealLibraryService: MealLibraryService,
 		private mealPlansService: MealPlansService,
 		private userService: UserService,
 	) {}
+
+	ngOnDestroy(): void {
+		clearTimeout(this.savedTimer);
+	}
 
 	ngOnInit(): void {
 		const id = localStorage.getItem('id') ?? '';
@@ -301,7 +307,8 @@ export class MealPlansComponent implements OnInit {
 				this.plan = saved;
 				this.saving = false;
 				this.saved = true;
-				setTimeout(() => (this.saved = false), 2000);
+				clearTimeout(this.savedTimer);
+				this.savedTimer = setTimeout(() => (this.saved = false), 2000);
 			},
 			error: () => { this.saving = false; },
 		});

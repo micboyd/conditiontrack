@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { MacroGoals, UserService } from '../shared/services/user.service';
 import { SelectOption } from '../shared/components/select/select.component';
 
@@ -13,7 +14,7 @@ const GENDER_OPTIONS: SelectOption[] = [
 	templateUrl: './global-settings.component.html',
 	standalone: false,
 })
-export class GlobalSettingsComponent implements OnInit {
+export class GlobalSettingsComponent implements OnInit, OnDestroy {
 	readonly genderOptions = GENDER_OPTIONS;
 	form!: FormGroup;
 	loading = false;
@@ -31,6 +32,11 @@ export class GlobalSettingsComponent implements OnInit {
 	savedDailyDeficit: number | null = null;
 	dailyDeficitSaving = false;
 	dailyDeficitSaved = false;
+
+	private valueChangesSub!: Subscription;
+	private savedTimer?: ReturnType<typeof setTimeout>;
+	private bmrSavedTimer?: ReturnType<typeof setTimeout>;
+	private dailyDeficitSavedTimer?: ReturnType<typeof setTimeout>;
 
 	constructor(
 		private fb: FormBuilder,
@@ -57,7 +63,7 @@ export class GlobalSettingsComponent implements OnInit {
 			dailyDeficitTarget: [0, [Validators.min(0)]],
 		});
 
-		this.bmrForm.valueChanges.subscribe(() => this.recalcBmr());
+		this.valueChangesSub = this.bmrForm.valueChanges.subscribe(() => this.recalcBmr());
 
 		const id = localStorage.getItem('id') ?? '';
 		this.loading = true;
@@ -101,6 +107,13 @@ export class GlobalSettingsComponent implements OnInit {
 		this.bmrMode = selected[0] === 'Calculator' ? 'calculator' : 'manual';
 	}
 
+	ngOnDestroy(): void {
+		this.valueChangesSub?.unsubscribe();
+		clearTimeout(this.savedTimer);
+		clearTimeout(this.bmrSavedTimer);
+		clearTimeout(this.dailyDeficitSavedTimer);
+	}
+
 	onSubmit(): void {
 		if (!this.form.valid) return;
 		const id = localStorage.getItem('id') ?? '';
@@ -110,7 +123,8 @@ export class GlobalSettingsComponent implements OnInit {
 			next: () => {
 				this.saving = false;
 				this.saved = true;
-				setTimeout(() => this.saved = false, 2500);
+				clearTimeout(this.savedTimer);
+				this.savedTimer = setTimeout(() => this.saved = false, 2500);
 			},
 			error: () => { this.saving = false; },
 		});
@@ -127,7 +141,8 @@ export class GlobalSettingsComponent implements OnInit {
 				this.savedBmr = value;
 				this.bmrSaving = false;
 				this.bmrSaved = true;
-				setTimeout(() => this.bmrSaved = false, 2500);
+				clearTimeout(this.bmrSavedTimer);
+				this.bmrSavedTimer = setTimeout(() => this.bmrSaved = false, 2500);
 			},
 			error: () => { this.bmrSaving = false; },
 		});
@@ -144,7 +159,8 @@ export class GlobalSettingsComponent implements OnInit {
 				this.savedDailyDeficit = value;
 				this.dailyDeficitSaving = false;
 				this.dailyDeficitSaved = true;
-				setTimeout(() => this.dailyDeficitSaved = false, 2500);
+				clearTimeout(this.dailyDeficitSavedTimer);
+				this.dailyDeficitSavedTimer = setTimeout(() => this.dailyDeficitSaved = false, 2500);
 			},
 			error: () => { this.dailyDeficitSaving = false; },
 		});
