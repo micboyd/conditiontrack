@@ -21,6 +21,9 @@ import { StrengthComponent } from './strength/strength.component';
 import { StyleguideComponent } from './styleguide/styleguide.component';
 import { WorkoutRecordsComponent } from './strength/workout-records/workout-records.component';
 import { WeekPlannerComponent } from './week-planner/week-planner.component';
+import { WeekTemplatesListComponent } from './week-planner/week-templates-list/week-templates-list.component';
+import { WeekTemplateEditorComponent } from './week-planner/week-template-editor/week-template-editor.component';
+import { WeekScheduleComponent } from './week-planner/week-schedule/week-schedule.component';
 import { WorkoutLibraryComponent } from './strength/workout-library/workout-library.component';
 import { ComparisonToolComponent } from './progress/comparison-tool/comparison-tool.component';
 import { ProgressComponent } from './progress/progress.component';
@@ -157,6 +160,30 @@ const routes: Routes = [
 				component: WeekPlannerComponent,
 				canActivate: [AuthGuard],
 				data: { title: 'Week Planner' },
+			},
+			{
+				path: 'week-planner/templates',
+				component: WeekTemplatesListComponent,
+				canActivate: [AuthGuard],
+				data: { title: 'Week Templates' },
+			},
+			{
+				path: 'week-planner/templates/new',
+				component: WeekTemplateEditorComponent,
+				canActivate: [AuthGuard],
+				data: { title: 'New Template' },
+			},
+			{
+				path: 'week-planner/templates/:id',
+				component: WeekTemplateEditorComponent,
+				canActivate: [AuthGuard],
+				data: { title: 'Edit Template' },
+			},
+			{
+				path: 'week-planner/schedule',
+				component: WeekScheduleComponent,
+				canActivate: [AuthGuard],
+				data: { title: 'Week Schedule' },
 			},
 			{
 				path: 'training-blocks',

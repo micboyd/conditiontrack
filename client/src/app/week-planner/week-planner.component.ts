@@ -1,5 +1,6 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { DayPlan, TimeBlockKey, WeekPlan } from './models/WeekPlan';
 import { addDays, addWeeks, format, startOfWeek, subWeeks, parseISO, isToday } from 'date-fns';
 
@@ -9,6 +10,7 @@ import { SideDrawerComponent } from '../shared/components/side-drawer/side-drawe
 import { TrainingBlock } from '../training-blocks/models/TrainingBlock';
 import { TrainingBlocksService } from '../training-blocks/training-blocks.service';
 import { WeekPlannerService } from './week-planner.service';
+import { WeekTemplateService } from './week-template.service';
 import { Workout } from '../strength/models/Workout';
 import { WorkoutService } from '../strength/workout-library/workout.service';
 import { forkJoin } from 'rxjs';
@@ -32,6 +34,13 @@ export class WeekPlannerComponent implements OnInit {
 	pasting = false;
 	sessionToView: ConditioningSession | null = null;
 	workoutToView: Workout | null = null;
+
+	saveAsTemplateOpen = false;
+	templateNameInput = '';
+	templateDescriptionInput = '';
+	savingTemplate = false;
+	savedTemplate = false;
+	saveTemplateError = false;
 
 	copiedWeekPlan: WeekPlan | null = null;
 	copiedFromWeekStart: string | null = null;
@@ -60,7 +69,9 @@ export class WeekPlannerComponent implements OnInit {
 	];
 
 	constructor(
+		private route: ActivatedRoute,
 		private weekPlannerService: WeekPlannerService,
+		private weekTemplateService: WeekTemplateService,
 		private workoutService: WorkoutService,
 		private conditioningLibraryService: ConditioningLibraryService,
 		private trainingBlocksService: TrainingBlocksService,
@@ -96,6 +107,12 @@ export class WeekPlannerComponent implements OnInit {
 	ngOnInit() {
 		this.resourcesLoading = true;
 		this.loadError = false;
+
+		// Support ?week=yyyy-MM-dd from the schedule "View" link
+		const weekParam = this.route.snapshot.queryParamMap.get('week');
+		if (weekParam) {
+			this.currentWeekStart = startOfWeek(parseISO(weekParam), { weekStartsOn: 1 });
+		}
 
 		forkJoin({
 			conditioningSessions: this.conditioningLibraryService.getAllConditioningSessions(),
@@ -315,6 +332,48 @@ export class WeekPlannerComponent implements OnInit {
 			day.evening.workouts.length > 0 ||
 			day.evening.conditioning.length > 0
 		);
+	}
+
+	openSaveAsTemplate() {
+		this.templateNameInput = '';
+		this.templateDescriptionInput = '';
+		this.savedTemplate = false;
+		this.saveTemplateError = false;
+		this.saveAsTemplateOpen = true;
+	}
+
+	cancelSaveAsTemplate() {
+		this.saveAsTemplateOpen = false;
+	}
+
+	confirmSaveAsTemplate() {
+		if (!this.templateNameInput.trim()) return;
+
+		this.savingTemplate = true;
+		this.savedTemplate = false;
+		this.saveTemplateError = false;
+
+		const payload = {
+			userId: this._weekPlan.userId,
+			name: this.templateNameInput.trim(),
+			description: this.templateDescriptionInput.trim(),
+			days: this._weekPlan.payload().days,
+		};
+
+		this.weekTemplateService.createTemplate(payload).subscribe({
+			next: () => {
+				this.savingTemplate = false;
+				this.savedTemplate = true;
+				setTimeout(() => {
+					this.saveAsTemplateOpen = false;
+					this.savedTemplate = false;
+				}, 1500);
+			},
+			error: () => {
+				this.savingTemplate = false;
+				this.saveTemplateError = true;
+			},
+		});
 	}
 
 	retryLoad() {
