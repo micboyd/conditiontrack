@@ -1,9 +1,9 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DayPlan, TimeBlockKey, WeekPlan } from './models/WeekPlan';
-import { addDays, addWeeks, format, startOfWeek, subWeeks, parseISO, isToday } from 'date-fns';
+import { addDays, addWeeks, format, isToday, parseISO, startOfWeek, subWeeks } from 'date-fns';
 
+import { ActivatedRoute } from '@angular/router';
 import { ConditioningLibraryService } from '../conditioning/conditioning-library/conditioning-library.service';
 import { ConditioningSession } from '../conditioning/models/ConditioningSession';
 import { SideDrawerComponent } from '../shared/components/side-drawer/side-drawer.component';
@@ -22,7 +22,7 @@ export type BlockSelection = 'overarching' | TimeBlockKey;
 	templateUrl: './week-planner.component.html',
 	standalone: false,
 })
-export class WeekPlannerComponent implements OnInit {
+export class WeekPlannerComponent implements OnInit, OnDestroy {
 	@ViewChild(SideDrawerComponent) drawer: SideDrawerComponent;
 
 	resourcesLoading = false;
@@ -30,6 +30,9 @@ export class WeekPlannerComponent implements OnInit {
 	saved = false;
 	saveError = false;
 	loadError = false;
+
+	private savedTimer?: ReturnType<typeof setTimeout>;
+	private saveErrorTimer?: ReturnType<typeof setTimeout>;
 	isEditMode = false;
 	pasting = false;
 	sessionToView: ConditioningSession | null = null;
@@ -132,6 +135,11 @@ export class WeekPlannerComponent implements OnInit {
 		});
 	}
 
+	ngOnDestroy(): void {
+		clearTimeout(this.savedTimer);
+		clearTimeout(this.saveErrorTimer);
+	}
+
 	prevWeek(): void {
 		this.currentWeekStart = subWeeks(this.currentWeekStart, 1);
 		this.getWeekPlan();
@@ -207,12 +215,14 @@ export class WeekPlannerComponent implements OnInit {
 				this._weekPlan = new WeekPlan(saved);
 				this.saving = false;
 				this.saved = true;
-				setTimeout(() => this.saved = false, 2000);
+				clearTimeout(this.savedTimer);
+				this.savedTimer = setTimeout(() => this.saved = false, 2000);
 			},
 			error: () => {
 				this.saving = false;
 				this.saveError = true;
-				setTimeout(() => this.saveError = false, 3000);
+				clearTimeout(this.saveErrorTimer);
+				this.saveErrorTimer = setTimeout(() => this.saveError = false, 3000);
 			},
 		});
 	}

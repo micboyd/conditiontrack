@@ -10,6 +10,7 @@ import { DailyLog } from '../nutrition/models/DailyLog';
 import { DailyLogService } from '../shared/services/daily-log.service';
 import { DayPlan } from '../week-planner/models/WeekPlan';
 import { Meal } from '../nutrition/models/Meal';
+import { MealFilterValue } from '../shared/components/meal-filter/meal-filter.component';
 import { MealLibraryService } from '../nutrition/meal-library/meal-library.service';
 import { SideDrawerComponent } from '../shared/components/side-drawer/side-drawer.component';
 import { UserProfile, UserService } from '../shared/services/user.service';
@@ -59,7 +60,7 @@ export class DashboardComponent implements OnInit {
 	extraCalInput: number | null = null;
 	extraCaloriesSaving = false;
 
-	mealSearchQuery = '';
+	mealPickerFilter: MealFilterValue = { search: '', category: '', calorieMin: null, calorieMax: null };
 
 
 	// Workout logging state
@@ -89,6 +90,8 @@ export class DashboardComponent implements OnInit {
 	activeGoals: Goal[] = [];
 	goalAutoValues = new Map<string, number>();
 	private measurements: Measurement[] = [];
+
+	dailyBreakdowns: Record<string, { calsIn: number; calsOut: number; diff: number; bmr: number; activityCals: number }> = {};
 
 
 	constructor(
@@ -141,6 +144,7 @@ export class DashboardComponent implements OnInit {
 				const weekDateStrs = new Set(this.currentWeekDays.map(d => d.dateStr));
 				this.weeklyDailyLogs = [...data.monthLogs, ...data.prevMonthLogs]
 					.filter(l => weekDateStrs.has(l.date));
+				this.computeDailyBreakdowns();
 				this.loading = false;
 				this.goalsService.resolveAutoValues(this.activeGoals).subscribe(map => {
 					this.goalAutoValues = map;
@@ -240,16 +244,19 @@ export class DashboardComponent implements OnInit {
 	}
 
 	openExtraCalInput(): void {
-		this.extraCalInput = this.viewDateLog?.extraCaloriesBurned ?? null;
+		const stored = this.viewDateLog?.extraCaloriesBurned ?? 0;
+		// Pre-fill with the gross watch number (stored net + already-logged cardio)
+		this.extraCalInput = stored > 0 ? stored + this.dayCardioCalories : null;
 		this.showExtraCalInput = true;
 	}
 
 	saveExtraCalories(): void {
 		const userId = localStorage.getItem('id') ?? '';
-		const calories = this.extraCalInput ?? 0;
+		// Subtract logged cardio so we don't double-count
+		const net = Math.max(0, (this.extraCalInput ?? 0) - this.dayCardioCalories);
 		this.extraCaloriesSaving = true;
 
-		const update = { extraCaloriesBurned: calories };
+		const update = { extraCaloriesBurned: net };
 
 		const obs = this.viewDateLog?._id
 			? this.dailyLogService.updateLog(this.viewDateLog._id, update)
@@ -258,6 +265,9 @@ export class DashboardComponent implements OnInit {
 		obs.subscribe({
 			next: (log) => {
 				this.viewDateLog = log;
+				this.weeklyDailyLogs = this.weeklyDailyLogs.map(l => l.date === log.date ? log : l);
+				if (!this.weeklyDailyLogs.some(l => l.date === log.date)) this.weeklyDailyLogs = [...this.weeklyDailyLogs, log];
+				this.computeDailyBreakdowns();
 				this.showExtraCalInput = false;
 				this.extraCaloriesSaving = false;
 			},
@@ -329,6 +339,44 @@ export class DashboardComponent implements OnInit {
 				.reduce((sum, m) => sum + m.calories, 0);
 			return total + mealCals;
 		}, 0);
+	}
+
+	private get pastDailyLogs(): DailyLog[] {
+		return this.weeklyDailyLogs.filter(log =>
+			log.date < this.todayStr && (log.meals.length > 0 || (log.extraCaloriesBurned ?? 0) > 0)
+		);
+	}
+
+	get daysLoggedThisWeek(): number {
+		return this.pastDailyLogs.length;
+	}
+
+	get dailyAverageCaloriesEaten(): number {
+		const days = this.daysLoggedThisWeek;
+		if (days === 0) return 0;
+		const total = this.pastDailyLogs.reduce((sum, log) => {
+			return sum + log.meals
+				.map(id => this.allMeals.find(m => m._id === id))
+				.filter((m): m is Meal => !!m)
+				.reduce((s, m) => s + m.calories, 0);
+		}, 0);
+		return Math.round(total / days);
+	}
+
+	get dailyAverageCaloriesBurned(): number {
+		const pastDates = new Set(this.pastDailyLogs.map(l => l.date));
+		const activePastDays = new Set<string>();
+		this.conditioningRecords
+			.filter(r => this.toDateStr(r.date) < this.todayStr && this.isThisWeek(r.date))
+			.forEach(r => activePastDays.add(this.toDateStr(r.date)));
+		this.pastDailyLogs.filter(l => (l.extraCaloriesBurned ?? 0) > 0).forEach(l => activePastDays.add(l.date));
+		const burnDays = activePastDays.size || pastDates.size;
+		if (burnDays === 0) return 0;
+		const totalBurned = this.conditioningRecords
+			.filter(r => this.toDateStr(r.date) < this.todayStr && this.isThisWeek(r.date))
+			.reduce((sum, r) => sum + (r.caloriesBurned ?? 0), 0)
+			+ this.pastDailyLogs.reduce((sum, l) => sum + (l.extraCaloriesBurned ?? 0), 0);
+		return Math.round(totalBurned / burnDays);
 	}
 
 	get weeklyExtraCaloriesBurned(): number {
@@ -404,19 +452,13 @@ export class DashboardComponent implements OnInit {
 		return remaining;
 	}
 
-	/** Average daily calorie deficit/surplus based on records so far */
-	get averageDailyDeficit(): number {
-		const daysCompleted = this.completedDaysThisWeek || 1;
-		const currentDeficit = this.weeklyCalorieBalance;
-		return currentDeficit / daysCompleted;
-	}
 
 	/** Projected weekly calorie balance if current pace continues */
 	get projectedWeeklyDeficit(): number {
 		const bmrDaily = this.user?.bmr ?? 0;
 		const currentDeficit = this.weeklyCalorieBalance;
 		const daysRemaining = this.daysRemainingThisWeek;
-		const avgDailyDeficit = this.averageDailyDeficit;
+		const avgDailyDeficit = this.averageDailyDeficit ?? 0;
 		return currentDeficit + (avgDailyDeficit * daysRemaining);
 	}
 
@@ -478,9 +520,37 @@ export class DashboardComponent implements OnInit {
 		return { calsIn, calsOut, diff: calsIn - calsOut, bmr, activityCals };
 	}
 
+	private computeDailyBreakdowns(): void {
+		const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
+		for (let i = 0; i < 7; i++) {
+			const dateStr = format(addDays(weekStart, i), 'yyyy-MM-dd');
+			this.dailyBreakdowns[dateStr] = this.getDailyBreakdown(dateStr);
+		}
+	}
+
+	/** Average daily deficit (negative = deficit) across completed past days with data. */
+	get averageDailyDeficit(): number | null {
+		const pastDays = this.currentWeekDays
+			.filter(d => d.dateStr < this.todayStr)
+			.map(d => this.dailyBreakdowns[d.dateStr])
+			.filter((b): b is NonNullable<typeof b> => !!b && (b.calsIn > 0 || b.activityCals > 0));
+		if (pastDays.length === 0) return null;
+		const total = pastDays.reduce((sum, b) => sum + b.diff, 0);
+		return Math.round(total / pastDays.length);
+	}
+
+	get averageDailyDeficitDayCount(): number {
+		return this.currentWeekDays
+			.filter(d => d.dateStr < this.todayStr)
+			.filter(d => {
+				const b = this.dailyBreakdowns[d.dateStr];
+				return b && (b.calsIn > 0 || b.activityCals > 0);
+			}).length;
+	}
+
 	/** Get calories out per day (BMR only if day is done, plus activity) */
 	getDailyCaloriesOut(dateStr: string): number {
-		return this.getDailyBreakdown(dateStr).calsOut;
+		return (this.dailyBreakdowns[dateStr] ?? this.getDailyBreakdown(dateStr)).calsOut;
 	}
 
 	// ── Recent activity ──────────────────────────────────────────────────────
@@ -672,11 +742,18 @@ export class DashboardComponent implements OnInit {
 	}
 
 	get filteredMealLibrary(): Meal[] {
-		const q = this.mealSearchQuery.trim().toLowerCase();
-		if (!q) return this.allMeals;
-		return this.allMeals.filter(
-			(m) => m.name.toLowerCase().includes(q) || m.category.toLowerCase().includes(q),
-		);
+		const { search, category, calorieMin, calorieMax } = this.mealPickerFilter;
+		return this.allMeals.filter(m => {
+			if (search && !m.name.toLowerCase().includes(search.toLowerCase())) return false;
+			if (category && !m.categories?.includes(category)) return false;
+			if (calorieMin != null && m.calories < calorieMin) return false;
+			if (calorieMax != null && m.calories > calorieMax) return false;
+			return true;
+		});
+	}
+
+	onMealPickerFilterChange(filter: MealFilterValue): void {
+		this.mealPickerFilter = filter;
 	}
 
 	get mealAlreadyLoggedIds(): Set<string> {
@@ -835,6 +912,7 @@ export class DashboardComponent implements OnInit {
 		this.cardioLogLoading = true;
 		this.conditioningRecordService.createConditioningRecord(this.cardioLogForm.value).subscribe((record) => {
 			this.conditioningRecords = [...this.conditioningRecords, record];
+			this.computeDailyBreakdowns();
 			this.cardioLogLoading = false;
 			this.logCardioDrawer.close();
 		});
@@ -849,6 +927,7 @@ export class DashboardComponent implements OnInit {
 	removeCardioRecord(record: ConditioningRecord): void {
 		this.conditioningRecordService.deleteConditioningRecord(record._id).subscribe(() => {
 			this.conditioningRecords = this.conditioningRecords.filter(r => r._id !== record._id);
+			this.computeDailyBreakdowns();
 		});
 	}
 

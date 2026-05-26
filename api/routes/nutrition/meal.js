@@ -47,7 +47,9 @@ router.post('/scan-label', (req, res) => {
 // Create a new Meal
 router.post('/', async (req, res) => {
     try {
-        const newMeal = new Meal(req.body);
+        const body = req.body;
+        if (body.categories?.length) body.category = body.categories[0];
+        const newMeal = new Meal(body);
         const savedMeal = await newMeal.save();
         res.status(201).json(savedMeal);
     } catch (err) {
@@ -58,7 +60,9 @@ router.post('/', async (req, res) => {
 // Update an existing Meal
 router.put('/:id', async (req, res) => {
     try {
-        const updated = await Meal.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const body = req.body;
+        if (body.categories?.length) body.category = body.categories[0];
+        const updated = await Meal.findByIdAndUpdate(req.params.id, body, { new: true });
         if (!updated) return res.status(404).json({ error: 'Meal not found' });
         res.json(updated);
     } catch (err) {
@@ -66,11 +70,40 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Read all Meals for a user
+// Read all Meals for a user (with optional search, filter, pagination)
 router.get('/user/:userId', async (req, res) => {
     try {
-        const meals = await Meal.find({ userId: req.params.userId });
-        res.json(meals);
+        const { search, category, calorieMin, calorieMax, page = 1, limit = 10 } = req.query;
+
+        const filter = { userId: req.params.userId };
+
+        if (search) filter.name = { $regex: search, $options: 'i' };
+        if (category) filter.$or = [{ categories: category }, { category }];
+        if (calorieMin || calorieMax) {
+            filter.calories = {};
+            if (calorieMin) filter.calories.$gte = Number(calorieMin);
+            if (calorieMax) filter.calories.$lte = Number(calorieMax);
+        }
+
+        const pageNum = Math.max(1, parseInt(page, 10));
+        const limitNum = Math.max(1, parseInt(limit, 10));
+        const skip = (pageNum - 1) * limitNum;
+
+        const [rawMeals, total] = await Promise.all([
+            Meal.find(filter).skip(skip).limit(limitNum),
+            Meal.countDocuments(filter),
+        ]);
+
+        // Normalize legacy single-category field to array on read
+        const meals = rawMeals.map(m => {
+            const obj = m.toObject();
+            if (obj.categories.length === 0 && obj.category) {
+                obj.categories = [obj.category];
+            }
+            return obj;
+        });
+
+        res.json({ meals, total, page: pageNum, totalPages: Math.ceil(total / limitNum) });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

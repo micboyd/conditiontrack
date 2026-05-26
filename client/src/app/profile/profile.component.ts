@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { format, parseISO } from 'date-fns';
 import { forkJoin } from 'rxjs';
@@ -12,7 +12,7 @@ import { WorkoutRecordService } from '../strength/workout-records/workout-record
 	templateUrl: './profile.component.html',
 	standalone: false,
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy {
 	@ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement>;
 
 	user: UserProfile | null = null;
@@ -25,6 +25,8 @@ export class ProfileComponent implements OnInit {
 
 	workoutCount = 0;
 	cardioCount = 0;
+
+	private savedTimer?: ReturnType<typeof setTimeout>;
 
 	constructor(
 		private fb: FormBuilder,
@@ -63,6 +65,10 @@ export class ProfileComponent implements OnInit {
 				this.loading = false;
 			},
 		});
+	}
+
+	ngOnDestroy(): void {
+		clearTimeout(this.savedTimer);
 	}
 
 	get initials(): string {
@@ -112,7 +118,8 @@ export class ProfileComponent implements OnInit {
 				this.selectedFile = null;
 				this.saving = false;
 				this.saved = true;
-				setTimeout(() => this.saved = false, 2000);
+				clearTimeout(this.savedTimer);
+				this.savedTimer = setTimeout(() => this.saved = false, 2000);
 			},
 			error: () => { this.saving = false; },
 		});

@@ -9,7 +9,7 @@ export class Meal {
 	protein: number;
 	carbs: number;
 	description: string;
-    category: string;
+	categories: string[];
 
 	constructor(meal?: Partial<Meal> | null) {
         this._id = meal?._id || '';
@@ -20,7 +20,7 @@ export class Meal {
 		this.protein = meal?.protein ?? 0;
 		this.carbs = meal?.carbs ?? 0;
 		this.description = meal?.description || '';
-        this.category = meal?.category || '';
+		this.categories = meal?.categories ?? [];
 	}
 
 	static createFormGroup(fb: FormBuilder, meal?: Meal): FormGroup {
@@ -30,7 +30,6 @@ export class Meal {
 			fat: [meal?.fat ?? 0, [Validators.required, Validators.min(0)]],
 			protein: [meal?.protein ?? 0, [Validators.required, Validators.min(0)]],
 			carbs: [meal?.carbs ?? 0, [Validators.required, Validators.min(0)]],
-            category: [meal?.category || '', Validators.required],
 			description: [meal?.description || ''],
 		});
 	}

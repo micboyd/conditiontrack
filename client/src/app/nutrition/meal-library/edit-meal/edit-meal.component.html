@@ -74,15 +74,15 @@
 			</label>
 			<app-button-toggle
 				[options]="['Breakfast', 'Lunch', 'Dinner', 'Snack']"
-				[singleSelect]="true"
+				[singleSelect]="false"
 				[selected]="selectedMealTypes"
 				(selectionChange)="updateCategory($event)"
-				colorClass="blue">
+				colorClass="zinc">
 			</app-button-toggle>
-			@if (isInvalid('category')) {
+			@if (categoriesInvalid) {
 				<p class="flex items-center gap-1 text-xs text-red-500 mt-1.5">
 					<i class="fa-sharp fa-solid fa-circle-exclamation text-[10px]"></i>
-					Please select a category
+					Please select at least one category
 				</p>
 			}
 		</div>
