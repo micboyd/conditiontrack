@@ -26,6 +26,22 @@ const WEEK_POPULATE_PATHS = [
 	{ path: 'days.evening.conditioning' },
 ];
 
+// Remove applied template from a week
+router.post('/unapply', async (req, res) => {
+	try {
+		const { userId, weekStart } = req.body;
+		const plan = await WeekPlan.findOneAndUpdate(
+			{ userId, weekStart },
+			{ appliedTemplate: { id: '', name: '' } },
+			{ new: true },
+		).populate(WEEK_POPULATE_PATHS);
+		if (!plan) return res.status(404).json({ error: 'Week plan not found' });
+		res.json(plan);
+	} catch (err) {
+		res.status(400).json({ error: err.message });
+	}
+});
+
 // Apply template to a specific week (must be before /:userId to avoid route conflict)
 router.post('/apply', async (req, res) => {
 	try {

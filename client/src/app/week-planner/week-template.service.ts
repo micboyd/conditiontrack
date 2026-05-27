@@ -32,4 +32,8 @@ export class WeekTemplateService {
 	applyTemplate(userId: string, templateId: string, weekStart: string): Observable<WeekPlan> {
 		return this.http.post<WeekPlan>(`${environment.baseApiUrl}/week-planner/template/apply`, { userId, templateId, weekStart });
 	}
+
+	unapplyTemplate(userId: string, weekStart: string): Observable<WeekPlan> {
+		return this.http.post<WeekPlan>(`${environment.baseApiUrl}/week-planner/template/unapply`, { userId, weekStart });
+	}
 }

@@ -34,7 +34,7 @@
 
 	@if (loading) {
 		<app-loading-indicator [loading]="true"></app-loading-indicator>
-	} @else if (loadError) {
+	} @else if (loadError && !months.length) {
 		<div class="bg-white rounded-2xl px-6 py-16 text-center">
 			<div class="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center mx-auto mb-4">
 				<i class="fa-sharp fa-solid fa-triangle-exclamation text-red-400"></i>
@@ -60,13 +60,7 @@
 	<div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-6">
 		<div class="px-5 py-4 border-b border-zinc-100">
 			<p class="text-sm font-semibold text-zinc-900">Template</p>
-			@if (!selectedTemplateId) {
-				<p class="text-xs text-zinc-400 mt-0.5">Choose a template to apply to weeks</p>
-			} @else {
-				<p class="text-xs text-emerald-600 font-medium mt-0.5">
-					<i class="fa-sharp fa-solid fa-check text-[10px] mr-1"></i>{{ selectedTemplateName }}
-				</p>
-			}
+			<p class="text-xs text-zinc-400 mt-0.5">Choose a template to apply to weeks</p>
 		</div>
 		<div class="px-5 py-4 flex items-center gap-2 flex-wrap">
 			@for (template of templates; track template._id) {
@@ -106,6 +100,9 @@
 	</div>
 
 	<!-- Month blocks -->
+	@if (monthsLoading) {
+		<app-loading-indicator [loading]="true"></app-loading-indicator>
+	} @else {
 	@for (month of months; track month.label) {
 	<div class="mb-6">
 		<h3 class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3 px-1">{{ month.label }}</h3>
@@ -178,6 +175,16 @@
 							}
 						</button>
 					}
+					@if (week.plan?.appliedTemplate?.id) {
+						<button (click)="removeTemplate(week)" [disabled]="week.removing"
+							class="flex items-center justify-center w-7 h-7 rounded-full text-zinc-300 hover:text-red-400 hover:bg-red-50 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
+							@if (week.removing) {
+								<i class="fa-sharp fa-solid fa-spinner fa-spin text-[10px]"></i>
+							} @else {
+								<i class="fa-sharp fa-solid fa-xmark text-xs"></i>
+							}
+						</button>
+					}
 					<a [routerLink]="['/week-planner']" [queryParams]="{ week: week.weekStart }"
 						class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-zinc-100 text-zinc-600 hover:bg-zinc-200 rounded-full transition">
 						<i class="fa-sharp fa-solid fa-arrow-right text-[10px]"></i>
@@ -190,6 +197,7 @@
 		</div>
 	</div>
 	}
+	} <!-- end monthsLoading @else -->
 
 	}
 

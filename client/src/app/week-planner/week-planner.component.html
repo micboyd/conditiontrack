@@ -102,48 +102,35 @@
 
 <!-- Save as template modal -->
 @if (saveAsTemplateOpen) {
-<div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-4" (click)="cancelSaveAsTemplate()">
-	<div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 flex flex-col gap-4" (click)="$event.stopPropagation()">
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" (click)="cancelSaveAsTemplate()">
+	<div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 flex flex-col gap-5" (click)="$event.stopPropagation()">
 		<div>
-			<h3 class="text-lg font-semibold text-zinc-900 mb-1">Save as template</h3>
-			<p class="text-sm text-zinc-400">This week's plan will be saved as a reusable template.</p>
+			<h2 class="text-lg font-semibold text-zinc-900">Save as template</h2>
+			<p class="text-sm text-zinc-400 mt-0.5">Give your template a name to get started.</p>
 		</div>
-		<div class="flex flex-col gap-3">
-			<div>
-				<label class="text-xs font-medium text-zinc-500 uppercase tracking-widest block mb-1.5">Template name <span class="text-red-400">*</span></label>
-				<input type="text" [(ngModel)]="templateNameInput"
-					placeholder="e.g. Base Training Week, Race Week..."
-					class="w-full px-4 py-2.5 text-sm border border-zinc-200 rounded-xl outline-none focus:border-zinc-400 transition" />
-			</div>
-			<div>
-				<label class="text-xs font-medium text-zinc-500 uppercase tracking-widest block mb-1.5">Description <span class="text-zinc-300">(optional)</span></label>
-				<input type="text" [(ngModel)]="templateDescriptionInput"
-					placeholder="What's this week for?"
-					class="w-full px-4 py-2.5 text-sm border border-zinc-200 rounded-xl outline-none focus:border-zinc-400 transition" />
-			</div>
-		</div>
+		<input
+			type="text"
+			[(ngModel)]="templateNameInput"
+			placeholder="e.g. Base training week"
+			(keydown.enter)="confirmSaveAsTemplate()"
+			(keydown.escape)="cancelSaveAsTemplate()"
+			autofocus
+			class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 text-sm text-zinc-900 placeholder-zinc-300 outline-none focus:border-zinc-400 transition" />
 		@if (saveTemplateError) {
-			<p class="text-xs text-red-500 flex items-center gap-1.5">
-				<i class="fa-sharp fa-solid fa-triangle-exclamation"></i>
-				Failed to save — try again.
-			</p>
+			<p class="text-xs text-red-500 -mt-2">Something went wrong. Please try again.</p>
 		}
-		<div class="flex items-center justify-end gap-2 pt-1">
-			<button (click)="cancelSaveAsTemplate()"
-				class="px-4 py-2 text-sm font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-full transition cursor-pointer">
+		<div class="flex items-center gap-2 justify-end">
+			<button (click)="cancelSaveAsTemplate()" [disabled]="creatingTemplate"
+				class="px-4 py-2 rounded-full text-sm font-medium text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 transition cursor-pointer disabled:opacity-50">
 				Cancel
 			</button>
-			<button (click)="confirmSaveAsTemplate()"
-				[disabled]="!templateNameInput.trim() || savingTemplate || savedTemplate"
-				class="flex items-center gap-1.5 px-4 py-2 text-sm font-medium bg-zinc-900 text-white hover:bg-zinc-700 rounded-full transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
-				@if (savingTemplate) {
+			<button (click)="confirmSaveAsTemplate()" [disabled]="!templateNameInput.trim() || creatingTemplate"
+				class="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium bg-zinc-900 text-white hover:bg-zinc-700 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+				@if (creatingTemplate) {
 					<i class="fa-sharp fa-solid fa-spinner fa-spin text-xs"></i>
-					Saving...
-				} @else if (savedTemplate) {
-					<i class="fa-sharp fa-solid fa-check text-xs"></i>
-					Saved!
+					Creating...
 				} @else {
-					Save template
+					Create
 				}
 			</button>
 		</div>

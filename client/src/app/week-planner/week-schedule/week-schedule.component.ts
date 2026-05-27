@@ -16,6 +16,7 @@ interface WeekRow {
 	label: string;
 	plan: WeekPlan | null;
 	applying: boolean;
+	removing: boolean;
 	applyError: boolean;
 }
 
@@ -31,6 +32,7 @@ interface MonthBlock {
 })
 export class WeekScheduleComponent implements OnInit {
 	loading = false;
+	monthsLoading = false;
 	loadError = false;
 	months: MonthBlock[] = [];
 	templates: WeekTemplate[] = [];
@@ -108,7 +110,7 @@ export class WeekScheduleComponent implements OnInit {
 	}
 
 	private loadMonths() {
-		this.loading = true;
+		this.monthsLoading = true;
 		const userId = localStorage.getItem('id') ?? '';
 		const startMonth = addMonths(this.currentMonthStart, this.monthOffset * 3);
 
@@ -136,7 +138,7 @@ export class WeekScheduleComponent implements OnInit {
 
 		if (allWeekStarts.length === 0) {
 			this.months = labels.map((label) => ({ label, weeks: [] as WeekRow[] }));
-			this.loading = false;
+			this.monthsLoading = false;
 			return;
 		}
 
@@ -156,13 +158,15 @@ export class WeekScheduleComponent implements OnInit {
 						label: this.buildLabel(ws),
 						plan: planMap.get(ws) ?? null,
 						applying: false,
+						removing: false,
 						applyError: false,
 					})),
 				}));
+				this.monthsLoading = false;
 				this.loading = false;
 			},
 			error: () => {
-				this.loading = false;
+				this.monthsLoading = false;
 				this.loadError = true;
 			},
 		});
@@ -184,6 +188,21 @@ export class WeekScheduleComponent implements OnInit {
 				week.applying = false;
 				week.applyError = true;
 				setTimeout(() => (week.applyError = false), 3000);
+			},
+		});
+	}
+
+	removeTemplate(week: WeekRow) {
+		const userId = localStorage.getItem('id') ?? '';
+		week.removing = true;
+
+		this.weekTemplateService.unapplyTemplate(userId, week.weekStart).subscribe({
+			next: plan => {
+				week.plan = plan;
+				week.removing = false;
+			},
+			error: () => {
+				week.removing = false;
 			},
 		});
 	}

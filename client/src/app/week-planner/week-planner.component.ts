@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DayPlan, TimeBlockKey, WeekPlan } from './models/WeekPlan';
 import { addDays, addWeeks, format, isToday, parseISO, startOfWeek, subWeeks } from 'date-fns';
 
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ConditioningLibraryService } from '../conditioning/conditioning-library/conditioning-library.service';
 import { ConditioningSession } from '../conditioning/models/ConditioningSession';
 import { SideDrawerComponent } from '../shared/components/side-drawer/side-drawer.component';
@@ -40,9 +40,7 @@ export class WeekPlannerComponent implements OnInit, OnDestroy {
 
 	saveAsTemplateOpen = false;
 	templateNameInput = '';
-	templateDescriptionInput = '';
-	savingTemplate = false;
-	savedTemplate = false;
+	creatingTemplate = false;
 	saveTemplateError = false;
 
 	copiedWeekPlan: WeekPlan | null = null;
@@ -73,6 +71,7 @@ export class WeekPlannerComponent implements OnInit, OnDestroy {
 
 	constructor(
 		private route: ActivatedRoute,
+		private router: Router,
 		private weekPlannerService: WeekPlannerService,
 		private weekTemplateService: WeekTemplateService,
 		private workoutService: WorkoutService,
@@ -346,8 +345,6 @@ export class WeekPlannerComponent implements OnInit, OnDestroy {
 
 	openSaveAsTemplate() {
 		this.templateNameInput = '';
-		this.templateDescriptionInput = '';
-		this.savedTemplate = false;
 		this.saveTemplateError = false;
 		this.saveAsTemplateOpen = true;
 	}
@@ -357,30 +354,27 @@ export class WeekPlannerComponent implements OnInit, OnDestroy {
 	}
 
 	confirmSaveAsTemplate() {
-		if (!this.templateNameInput.trim()) return;
+		const name = this.templateNameInput.trim();
+		if (!name) return;
 
-		this.savingTemplate = true;
-		this.savedTemplate = false;
+		this.creatingTemplate = true;
 		this.saveTemplateError = false;
 
 		const payload = {
 			userId: this._weekPlan.userId,
-			name: this.templateNameInput.trim(),
-			description: this.templateDescriptionInput.trim(),
+			name,
+			description: '',
 			days: this._weekPlan.payload().days,
 		};
 
 		this.weekTemplateService.createTemplate(payload).subscribe({
-			next: () => {
-				this.savingTemplate = false;
-				this.savedTemplate = true;
-				setTimeout(() => {
-					this.saveAsTemplateOpen = false;
-					this.savedTemplate = false;
-				}, 1500);
+			next: created => {
+				this.creatingTemplate = false;
+				this.saveAsTemplateOpen = false;
+				this.router.navigate(['/week-planner/templates', created._id]);
 			},
 			error: () => {
-				this.savingTemplate = false;
+				this.creatingTemplate = false;
 				this.saveTemplateError = true;
 			},
 		});
