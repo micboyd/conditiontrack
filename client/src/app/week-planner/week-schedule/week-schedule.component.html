@@ -152,12 +152,13 @@
 
 				<!-- Actions -->
 				<div class="flex items-center gap-2 flex-shrink-0">
-					@if (week.plan?.appliedTemplate?.id === selectedTemplateId && selectedTemplateId) {
+					@if (week.plan?.appliedTemplate?.id) {
 						<span class="flex items-center gap-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full">
 							<i class="fa-sharp fa-solid fa-check text-[10px]"></i>
-							{{ selectedTemplateName }} applied
+							{{ week.plan!.appliedTemplate!.name }} applied
 						</span>
-					} @else if (week.applyError) {
+					}
+					@if (week.applyError) {
 						<span class="flex items-center gap-1.5 text-xs font-medium text-red-500 bg-red-50 px-3 py-1.5 rounded-full">
 							<i class="fa-sharp fa-solid fa-triangle-exclamation text-[10px]"></i>
 							Failed
