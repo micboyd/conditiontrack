@@ -71,6 +71,7 @@ export class DashboardComponent implements OnInit {
 	workoutLogForm!: FormGroup;
 	workoutLogErrors: string[] = [];
 	workoutLogLoading = false;
+	workoutSearchQuery = '';
 
 	// Cardio logging state
 	logCardioStep: 1 | 2 = 1;
@@ -78,6 +79,7 @@ export class DashboardComponent implements OnInit {
 	logCardioSelectedSession: ConditioningSession | null = null;
 	cardioLogForm!: FormGroup;
 	cardioLogLoading = false;
+	cardioSearchQuery = '';
 
 	private workoutRecords: WorkoutRecord[] = [];
 	private conditioningRecords: ConditioningRecord[] = [];
@@ -794,10 +796,23 @@ export class DashboardComponent implements OnInit {
 
 	// ── Workout logging ──────────────────────────────────────────────────────
 
+	get filteredWorkouts(): Workout[] {
+		if (!this.workoutSearchQuery.trim()) return this.workouts;
+		const q = this.workoutSearchQuery.toLowerCase();
+		return this.workouts.filter(w => w.name.toLowerCase().includes(q));
+	}
+
+	get filteredConditioningSessions(): ConditioningSession[] {
+		if (!this.cardioSearchQuery.trim()) return this.conditioningSessions;
+		const q = this.cardioSearchQuery.toLowerCase();
+		return this.conditioningSessions.filter(s => s.name.toLowerCase().includes(q));
+	}
+
 	openLogWorkout(): void {
 		this.logWorkoutStep = 1;
 		this.logWorkoutSelectedWorkout = null;
 		this.workoutLogErrors = [];
+		this.workoutSearchQuery = '';
 		this.logWorkoutDrawer.open();
 	}
 
@@ -894,6 +909,7 @@ export class DashboardComponent implements OnInit {
 	openLogCardio(): void {
 		this.logCardioStep = 1;
 		this.logCardioSelectedSession = null;
+		this.cardioSearchQuery = '';
 		this.logCardioDrawer.open();
 	}
 

@@ -789,13 +789,27 @@
 
 		@if (logWorkoutStep === 1) {
 			<h3 class="text-xl font-semibold text-zinc-900 mb-1">Log Workout</h3>
-			<p class="text-sm text-zinc-400 mb-5">Select a workout from your library</p>
+			<p class="text-sm text-zinc-400 mb-4">Select a workout from your library</p>
+
+			<!-- Search -->
+			<div class="relative mb-4">
+				<i class="fa-sharp fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-sm pointer-events-none"></i>
+				<input type="text" [(ngModel)]="workoutSearchQuery" placeholder="Search workouts..."
+					class="w-full pl-10 pr-10 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition" />
+				@if (workoutSearchQuery) {
+					<button (click)="workoutSearchQuery = ''" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition cursor-pointer p-1">
+						<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
+					</button>
+				}
+			</div>
 
 			<div class="flex-1 overflow-y-auto space-y-2">
 				@if (workouts.length === 0) {
 					<p class="text-sm text-zinc-300 italic text-center py-10">No workouts in your library yet.</p>
+				} @else if (filteredWorkouts.length === 0) {
+					<p class="text-sm text-zinc-400 text-center py-8">No workouts match "{{ workoutSearchQuery }}".</p>
 				} @else {
-					@for (workout of workouts; track workout._id) {
+					@for (workout of filteredWorkouts; track workout._id) {
 						<div (click)="selectWorkoutToLog(workout)"
 							class="flex items-center justify-between px-4 py-4 bg-zinc-50 rounded-xl hover:bg-zinc-100 cursor-pointer transition">
 							<div>
@@ -940,13 +954,27 @@
 
 		@if (logCardioStep === 1) {
 			<h3 class="text-xl font-semibold text-zinc-900 mb-1">Log Cardio</h3>
-			<p class="text-sm text-zinc-400 mb-5">Select a session from your library</p>
+			<p class="text-sm text-zinc-400 mb-4">Select a session from your library</p>
+
+			<!-- Search -->
+			<div class="relative mb-4">
+				<i class="fa-sharp fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-sm pointer-events-none"></i>
+				<input type="text" [(ngModel)]="cardioSearchQuery" placeholder="Search sessions..."
+					class="w-full pl-10 pr-10 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition" />
+				@if (cardioSearchQuery) {
+					<button (click)="cardioSearchQuery = ''" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition cursor-pointer p-1">
+						<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
+					</button>
+				}
+			</div>
 
 			<div class="flex-1 overflow-y-auto space-y-2">
 				@if (conditioningSessions.length === 0) {
 					<p class="text-sm text-zinc-300 italic text-center py-10">No sessions in your library yet.</p>
+				} @else if (filteredConditioningSessions.length === 0) {
+					<p class="text-sm text-zinc-400 text-center py-8">No sessions match "{{ cardioSearchQuery }}".</p>
 				} @else {
-					@for (session of conditioningSessions; track session._id) {
+					@for (session of filteredConditioningSessions; track session._id) {
 						<div (click)="selectSessionToLog(session)"
 							class="flex items-center justify-between px-4 py-4 bg-zinc-50 rounded-xl hover:bg-zinc-100 cursor-pointer transition">
 							<div>
