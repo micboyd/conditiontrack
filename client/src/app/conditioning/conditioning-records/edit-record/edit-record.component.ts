@@ -23,6 +23,8 @@ export class EditRecordComponent implements OnInit {
 	selectedSessionTemplate?: ConditioningSession;
 	recordForm: FormGroup | null = null;
 
+	searchQuery = '';
+
 	private _conditioningSessions: Array<ConditioningSession> = [];
 
 	constructor(
@@ -33,6 +35,12 @@ export class EditRecordComponent implements OnInit {
 
 	get allConditioningSessions(): Array<ConditioningSession> {
 		return this._conditioningSessions;
+	}
+
+	get filteredSessions(): Array<ConditioningSession> {
+		if (!this.searchQuery.trim()) return this._conditioningSessions;
+		const q = this.searchQuery.toLowerCase();
+		return this._conditioningSessions.filter(s => s.name.toLowerCase().includes(q));
 	}
 
 	ngOnInit(): void {
