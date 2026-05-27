@@ -7,12 +7,12 @@
 	} @else if (!selectedWorkoutRecord) {
 
 		<!-- Step 1: Pick a workout -->
-		<div class="p-6">
+		<div class="flex flex-col flex-1 min-h-0 px-6 pt-6">
 			<h2 class="text-base font-semibold text-zinc-900 mb-1">Log Workout</h2>
 			<p class="text-sm text-zinc-400 mb-4">Select a workout to log a session</p>
 
-			<!-- Search -->
-			<div class="relative mb-4">
+			<!-- Search — stays fixed -->
+			<div class="relative mb-4 flex-shrink-0">
 				<i class="fa-sharp fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-sm pointer-events-none"></i>
 				<input type="text" [(ngModel)]="searchQuery" placeholder="Search workouts..."
 					class="w-full pl-10 pr-10 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition" />
@@ -23,7 +23,8 @@
 				}
 			</div>
 
-			<div class="space-y-2">
+			<!-- Scrollable list -->
+			<div class="flex-1 overflow-y-auto space-y-2 pb-6">
 				@if (allWorkouts.length === 0) {
 					<p class="text-sm text-zinc-400 text-center py-8">No workouts in your library yet.</p>
 				} @else if (filteredWorkouts.length === 0) {
