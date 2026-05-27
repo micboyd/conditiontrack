@@ -15,6 +15,7 @@ import { format } from 'date-fns';
 export class EditRecordComponent implements OnInit {
 	@Input() selectedRecord?: ConditioningRecord = null;
 	@Output() closeEditModeEvent = new EventEmitter<void>();
+	@Output() recordSaved = new EventEmitter<ConditioningRecord>();
 	@Output() viewSessionRequested = new EventEmitter<ConditioningSession>();
 
 	formLoading = false;
@@ -100,12 +101,14 @@ export class EditRecordComponent implements OnInit {
 		if (this.selectedRecord) {
 			this.conditioningRecordService
 				.updateConditioningRecord(this.selectedRecord._id, this.recordForm.value)
-				.subscribe(() => {
+				.subscribe((record) => {
+					this.recordSaved.emit(record);
 					this.closeEditModeEvent.emit();
 					this.formLoading = false;
 				});
 		} else {
-			this.conditioningRecordService.createConditioningRecord(this.recordForm.value).subscribe(() => {
+			this.conditioningRecordService.createConditioningRecord(this.recordForm.value).subscribe((record) => {
+				this.recordSaved.emit(record);
 				this.closeEditModeEvent.emit();
 				this.formLoading = false;
 			});

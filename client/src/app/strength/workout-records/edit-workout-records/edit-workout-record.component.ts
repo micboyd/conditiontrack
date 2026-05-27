@@ -16,11 +16,17 @@ export class EditWorkoutRecordsComponent implements OnInit {
 	selectedWorkout: Workout | null = null;
 
 	@Input() selectedWorkoutRecord: WorkoutRecord | null = null;
+	@Input() initialDate?: string;
+	@Input() maxDate?: string;
+	@Input() lastRecord: WorkoutRecord | null = null;
+
 	@Output() closeEditModeEvent = new EventEmitter<void>();
+	@Output() recordSaved = new EventEmitter<WorkoutRecord>();
 
 	formLoading: boolean = false;
 	workoutsLoading: boolean = false;
 	closeOnSave = true;
+	searchQuery = '';
 
 	workoutRecordForm!: FormGroup;
 
@@ -30,6 +36,12 @@ export class EditWorkoutRecordsComponent implements OnInit {
 		private workoutRecordService: WorkoutRecordService,
 	) {}
 
+	get filteredWorkouts(): Workout[] {
+		if (!this.searchQuery.trim()) return this.allWorkouts;
+		const q = this.searchQuery.toLowerCase();
+		return this.allWorkouts.filter(w => w.name.toLowerCase().includes(q));
+	}
+
 	ngOnInit(): void {
 		this.workoutsLoading = true;
 
@@ -38,6 +50,7 @@ export class EditWorkoutRecordsComponent implements OnInit {
 				this.loadFromExistingRecord(this.selectedWorkoutRecord);
 			} else {
 				const emptyRecord = new WorkoutRecord();
+				if (this.initialDate) emptyRecord.date = this.initialDate;
 				this.workoutRecordForm = WorkoutRecord.toFormGroup(emptyRecord, this.fb);
 			}
 
@@ -47,12 +60,9 @@ export class EditWorkoutRecordsComponent implements OnInit {
 
 	/** EDIT MODE: Populate from saved record */
 	private loadFromExistingRecord(recordData: WorkoutRecord) {
-		// Find workout in library
 		this.selectedWorkout = this.allWorkouts.find(w => w._id === recordData.workoutId) || null;
-
 		const record = new WorkoutRecord(recordData);
 		this.workoutRecordForm = WorkoutRecord.toFormGroup(record, this.fb);
-		// toFormGroup already maps all exercises and sets — no further population needed
 	}
 
 	selectWorkoutById(workoutId: string | null) {
@@ -61,8 +71,10 @@ export class EditWorkoutRecordsComponent implements OnInit {
 		if (!workout) return;
 
 		this.selectedWorkout = workout;
+		this.searchQuery = '';
 
 		const newRecord = WorkoutRecord.fromWorkoutTemplate(workout);
+		if (this.initialDate) newRecord.date = this.initialDate;
 
 		this.selectedWorkoutRecord = newRecord;
 		this.workoutRecordForm = WorkoutRecord.toFormGroup(newRecord, this.fb);
@@ -73,6 +85,21 @@ export class EditWorkoutRecordsComponent implements OnInit {
 			this.allWorkouts = workouts;
 			if (callback) callback();
 		});
+	}
+
+	getExerciseLastSummary(exerciseName: string): { setCount: number; reps: number; maxWeight: number; suggestedWeight: number } | null {
+		if (!this.lastRecord || !exerciseName) return null;
+		const ex = this.lastRecord.exercises.find(e => e.name.toLowerCase() === exerciseName.toLowerCase());
+		if (!ex || ex.sets.length === 0) return null;
+		const weights = ex.sets.map(s => s.weight).filter(w => w > 0);
+		if (weights.length === 0) return null;
+		const maxWeight = Math.max(...weights);
+		const repCounts = ex.sets.map(s => s.reps).filter(r => r > 0);
+		const avgReps = repCounts.length
+			? Math.round(repCounts.reduce((a, b) => a + b, 0) / repCounts.length)
+			: 0;
+		const suggestedWeight = Math.round(maxWeight * 1.025 * 2) / 2;
+		return { setCount: ex.sets.length, reps: avgReps, maxWeight, suggestedWeight };
 	}
 
 	/** Convenience getters */
@@ -97,20 +124,22 @@ export class EditWorkoutRecordsComponent implements OnInit {
 		const payload = this.workoutRecordForm.value as WorkoutRecord;
 
 		if (payload._id) {
-			this.workoutRecordService.updateWorkoutRecord(payload._id, payload).subscribe(() => {
+			this.workoutRecordService.updateWorkoutRecord(payload._id, payload).subscribe((record) => {
 				this.formLoading = false;
+				this.recordSaved.emit(record);
 				if (this.closeOnSave) this.closeEditMode();
 			});
 		} else {
 			this.workoutRecordService.createWorkoutRecord(payload).subscribe((record) => {
 				this.workoutRecordForm.patchValue({ _id: record._id }, { emitEvent: false });
 				this.formLoading = false;
+				this.recordSaved.emit(record);
 				if (this.closeOnSave) this.closeEditMode();
 			});
 		}
 	}
 
-    isInvalid(controlName: string): boolean {
+	isInvalid(controlName: string): boolean {
 		const control = this.workoutRecordForm.get(controlName);
 		return !!(control && control.invalid && control.touched);
 	}

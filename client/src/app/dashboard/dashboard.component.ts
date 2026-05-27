@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { addDays, endOfWeek, format, isWithinInterval, parseISO, startOfWeek, subDays } from 'date-fns';
 
 import { ConditioningLibraryService } from '../conditioning/conditioning-library/conditioning-library.service';
@@ -56,30 +55,18 @@ export class DashboardComponent implements OnInit {
 	viewDateLog: DailyLog | null = null;
 
 	// Extra (manual) burned calories
-	showExtraCalInput = false;
-	extraCalInput: number | null = null;
 	extraCaloriesSaving = false;
 
 	mealPickerFilter: MealFilterValue = { search: '', category: '', calorieMin: null, calorieMax: null };
 
 
 	// Workout logging state
-	logWorkoutStep: 1 | 2 = 1;
-	logWorkoutSelectedWorkout: Workout | null = null;
-	lastSessionRecord: WorkoutRecord | null = null;
-	workoutCloseOnSave = true;
-	workoutLogForm!: FormGroup;
-	workoutLogErrors: string[] = [];
-	workoutLogLoading = false;
-	workoutSearchQuery = '';
+	lastWorkoutRecord: WorkoutRecord | null = null;
 
 	// Cardio logging state
-	logCardioStep: 1 | 2 = 1;
-	showCardioSessionDetail = false;
-	logCardioSelectedSession: ConditioningSession | null = null;
-	cardioLogForm!: FormGroup;
-	cardioLogLoading = false;
-	cardioSearchQuery = '';
+	logCardioDrawerOpen = false;
+	logCardioInitialRecord: ConditioningRecord | null = null;
+	logCardioSessionToView: ConditioningSession | null = null;
 
 	private workoutRecords: WorkoutRecord[] = [];
 	private conditioningRecords: ConditioningRecord[] = [];
@@ -97,7 +84,6 @@ export class DashboardComponent implements OnInit {
 
 
 	constructor(
-		private fb: FormBuilder,
 		private userService: UserService,
 		private workoutRecordService: WorkoutRecordService,
 		private workoutService: WorkoutService,
@@ -241,21 +227,13 @@ export class DashboardComponent implements OnInit {
 		const userId = localStorage.getItem('id') ?? '';
 		this.dailyLogService.getLog(userId, this.viewDateStr).subscribe((log) => {
 			this.viewDateLog = log;
-			this.showExtraCalInput = false;
 		});
 	}
 
-	openExtraCalInput(): void {
-		const stored = this.viewDateLog?.extraCaloriesBurned ?? 0;
-		// Pre-fill with the gross watch number (stored net + already-logged cardio)
-		this.extraCalInput = stored > 0 ? stored + this.dayCardioCalories : null;
-		this.showExtraCalInput = true;
-	}
-
-	saveExtraCalories(): void {
+	saveExtraCalories(grossValue: number): void {
 		const userId = localStorage.getItem('id') ?? '';
 		// Subtract logged cardio so we don't double-count
-		const net = Math.max(0, (this.extraCalInput ?? 0) - this.dayCardioCalories);
+		const net = Math.max(0, grossValue - this.dayCardioCalories);
 		this.extraCaloriesSaving = true;
 
 		const update = { extraCaloriesBurned: net };
@@ -270,7 +248,6 @@ export class DashboardComponent implements OnInit {
 				this.weeklyDailyLogs = this.weeklyDailyLogs.map(l => l.date === log.date ? log : l);
 				if (!this.weeklyDailyLogs.some(l => l.date === log.date)) this.weeklyDailyLogs = [...this.weeklyDailyLogs, log];
 				this.computeDailyBreakdowns();
-				this.showExtraCalInput = false;
 				this.extraCaloriesSaving = false;
 			},
 			error: () => { this.extraCaloriesSaving = false; },
@@ -796,142 +773,48 @@ export class DashboardComponent implements OnInit {
 
 	// ── Workout logging ──────────────────────────────────────────────────────
 
-	get filteredWorkouts(): Workout[] {
-		if (!this.workoutSearchQuery.trim()) return this.workouts;
-		const q = this.workoutSearchQuery.toLowerCase();
-		return this.workouts.filter(w => w.name.toLowerCase().includes(q));
-	}
-
-	get filteredConditioningSessions(): ConditioningSession[] {
-		if (!this.cardioSearchQuery.trim()) return this.conditioningSessions;
-		const q = this.cardioSearchQuery.toLowerCase();
-		return this.conditioningSessions.filter(s => s.name.toLowerCase().includes(q));
-	}
+	logWorkoutDrawerOpen = false;
+	logWorkoutInitialRecord: WorkoutRecord | null = null;
 
 	openLogWorkout(): void {
-		this.logWorkoutStep = 1;
-		this.logWorkoutSelectedWorkout = null;
-		this.workoutLogErrors = [];
-		this.workoutSearchQuery = '';
+		this.logWorkoutInitialRecord = null;
+		this.lastWorkoutRecord = [...this.workoutRecords]
+			.filter(r => this.toDateStr(r.date) < this.viewDateStr)
+			.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0] ?? null;
+		this.logWorkoutDrawerOpen = true;
 		this.logWorkoutDrawer.open();
 	}
 
-	selectWorkoutToLog(workout: Workout): void {
-		this.logWorkoutSelectedWorkout = workout;
-		const record = WorkoutRecord.fromWorkoutTemplate(workout);
-		record.date = this.viewDateStr;
-		this.workoutLogForm = WorkoutRecord.toFormGroup(record, this.fb);
-		this.logWorkoutStep = 2;
-		// Find the most recent previous record for this workout (strictly before view date)
-		this.lastSessionRecord = [...this.workoutRecords]
-			.filter(r => r.workoutId === workout._id && this.toDateStr(r.date) < this.viewDateStr)
-			.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0] ?? null;
+	onWorkoutRecordSaved(record: WorkoutRecord): void {
+		const idx = this.workoutRecords.findIndex(r => r._id === record._id);
+		if (idx >= 0) this.workoutRecords = this.workoutRecords.map(r => r._id === record._id ? record : r);
+		else this.workoutRecords = [...this.workoutRecords, record];
 	}
 
-	/** Returns a summary of the last session's performance for a given exercise, or null if none. */
-	getExerciseLastSummary(exerciseName: string): { setCount: number; reps: number; maxWeight: number; suggestedWeight: number } | null {
-		if (!this.lastSessionRecord || !exerciseName) return null;
-		const ex = this.lastSessionRecord.exercises.find(
-			e => e.name.toLowerCase() === exerciseName.toLowerCase(),
-		);
-		if (!ex || ex.sets.length === 0) return null;
-		const weights = ex.sets.map(s => s.weight).filter(w => w > 0);
-		if (weights.length === 0) return null;
-		const maxWeight = Math.max(...weights);
-		const repCounts = ex.sets.map(s => s.reps).filter(r => r > 0);
-		const avgReps = repCounts.length
-			? Math.round(repCounts.reduce((a, b) => a + b, 0) / repCounts.length)
-			: 0;
-		// Suggest ~2.5% weight increase, rounded to nearest 0.5 kg
-		const suggestedWeight = Math.round(maxWeight * 1.025 * 2) / 2;
-		return { setCount: ex.sets.length, reps: avgReps, maxWeight, suggestedWeight };
-	}
-
-	get workoutLogExercises(): FormArray {
-		return WorkoutRecord.getExercises(this.workoutLogForm);
-	}
-
-	getWorkoutLogSets(i: number): FormArray {
-		return WorkoutRecord.getSets(this.workoutLogExercises, i);
-	}
-
-	addWorkoutLogSet(i: number): void {
-		WorkoutRecord.addSet(this.workoutLogExercises, i, this.fb);
-	}
-
-	removeWorkoutLogSet(i: number, j: number): void {
-		WorkoutRecord.removeSet(this.workoutLogExercises, i, j);
-	}
-
-	saveWorkoutRecord(): void {
-		this.workoutLogErrors = [];
-		this.workoutLogExercises.controls.forEach((ex, i) => {
-			const sets = ex.get('sets') as FormArray;
-			if (!sets || sets.length === 0) {
-				this.workoutLogErrors.push(`"${ex.get('name')?.value || `Exercise ${i + 1}`}" has no sets.`);
-				return;
-			}
-			sets.controls.forEach((set, j) => {
-				const reps = set.get('reps')?.value;
-				const weight = set.get('weight')?.value;
-				if (reps === null || reps === '' || weight === null || weight === '') {
-					this.workoutLogErrors.push(
-						`"${ex.get('name')?.value || `Exercise ${i + 1}`}", Set ${j + 1} is incomplete.`,
-					);
-				}
-			});
-		});
-
-		if (this.workoutLogErrors.length > 0) return;
-		if (!this.workoutLogForm.valid) return;
-
-		this.workoutLogLoading = true;
-		const payload = this.workoutLogForm.value as WorkoutRecord;
-
-		if (payload._id) {
-			this.workoutRecordService.updateWorkoutRecord(payload._id, payload).subscribe((record) => {
-				this.workoutRecords = this.workoutRecords.map(r => r._id === record._id ? record : r);
-				this.workoutLogLoading = false;
-				if (this.workoutCloseOnSave) this.logWorkoutDrawer.close();
-			});
-		} else {
-			this.workoutRecordService.createWorkoutRecord(payload).subscribe((record) => {
-				this.workoutLogForm.patchValue({ _id: record._id }, { emitEvent: false });
-				this.workoutRecords = [...this.workoutRecords, record];
-				this.workoutLogLoading = false;
-				if (this.workoutCloseOnSave) this.logWorkoutDrawer.close();
-			});
-		}
+	closeLogWorkoutDrawer(): void {
+		this.logWorkoutDrawerOpen = false;
+		this.logWorkoutDrawer.close();
 	}
 
 	// ── Cardio logging ───────────────────────────────────────────────────────
 
 	openLogCardio(): void {
-		this.logCardioStep = 1;
-		this.logCardioSelectedSession = null;
-		this.cardioSearchQuery = '';
+		this.logCardioInitialRecord = new ConditioningRecord({ date: this.viewDateStr });
+		this.logCardioSessionToView = null;
+		this.logCardioDrawerOpen = true;
 		this.logCardioDrawer.open();
 	}
 
-	selectSessionToLog(session: ConditioningSession): void {
-		this.logCardioSelectedSession = session;
-		const record = new ConditioningRecord({ date: this.viewDateStr });
-		this.cardioLogForm = ConditioningRecord.createFormGroup(this.fb, record, session);
-		this.logCardioStep = 2;
+	onCardioRecordSaved(record: ConditioningRecord): void {
+		const idx = this.conditioningRecords.findIndex(r => r._id === record._id);
+		if (idx >= 0) this.conditioningRecords = this.conditioningRecords.map(r => r._id === record._id ? record : r);
+		else this.conditioningRecords = [...this.conditioningRecords, record];
+		this.computeDailyBreakdowns();
 	}
 
-	saveCardioRecord(): void {
-		if (!this.cardioLogForm.valid) {
-			this.cardioLogForm.markAllAsTouched();
-			return;
-		}
-		this.cardioLogLoading = true;
-		this.conditioningRecordService.createConditioningRecord(this.cardioLogForm.value).subscribe((record) => {
-			this.conditioningRecords = [...this.conditioningRecords, record];
-			this.computeDailyBreakdowns();
-			this.cardioLogLoading = false;
-			this.logCardioDrawer.close();
-		});
+	closeLogCardioDrawer(): void {
+		this.logCardioDrawerOpen = false;
+		this.logCardioDrawer.close();
 	}
 
 	removeWorkoutRecord(record: WorkoutRecord): void {
@@ -945,13 +828,6 @@ export class DashboardComponent implements OnInit {
 			this.conditioningRecords = this.conditioningRecords.filter(r => r._id !== record._id);
 			this.computeDailyBreakdowns();
 		});
-	}
-
-	// ── Macro progress ───────────────────────────────────────────────────────
-
-	macroProgress(eaten: number, goal: number): number {
-		if (!goal) return 0;
-		return Math.min(100, Math.round((eaten / goal) * 100));
 	}
 
 	// ── Day's Plan ───────────────────────────────────────────────────────────
@@ -981,14 +857,21 @@ export class DashboardComponent implements OnInit {
 	}
 
 	openLogWorkoutForPlanned(workout: Workout): void {
-		this.openLogWorkout();
-		// Use setTimeout to allow drawer to open first
-		setTimeout(() => this.selectWorkoutToLog(workout), 50);
+		const record = WorkoutRecord.fromWorkoutTemplate(workout);
+		record.date = this.viewDateStr;
+		this.logWorkoutInitialRecord = record;
+		this.lastWorkoutRecord = [...this.workoutRecords]
+			.filter(r => r.workoutId === workout._id && this.toDateStr(r.date) < this.viewDateStr)
+			.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0] ?? null;
+		this.logWorkoutDrawerOpen = true;
+		this.logWorkoutDrawer.open();
 	}
 
 	openLogCardioForPlanned(session: ConditioningSession): void {
-		this.openLogCardio();
-		setTimeout(() => this.selectSessionToLog(session), 50);
+		this.logCardioInitialRecord = new ConditioningRecord({ date: this.viewDateStr, sessionId: session._id });
+		this.logCardioSessionToView = null;
+		this.logCardioDrawerOpen = true;
+		this.logCardioDrawer.open();
 	}
 
 	// ── Helpers ──────────────────────────────────────────────────────────────

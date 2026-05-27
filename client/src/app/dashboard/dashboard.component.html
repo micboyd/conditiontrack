@@ -7,40 +7,11 @@
 <!-- ─── Setup checklist banner ───────────────────────────────────────────── -->
 @if (showChecklistBanner) {
 <div class="max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-12 pt-6 lg:pt-8">
-	<div class="bg-zinc-900 rounded-2xl px-5 py-5">
-		<div class="flex items-start justify-between gap-4 mb-4">
-			<div>
-				<p class="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-1">Getting Started</p>
-				<h3 class="text-base font-semibold text-white">Build your health picture</h3>
-				<p class="text-sm text-zinc-400 mt-0.5">{{ checklistDoneCount }} of {{ checklistTotal }} steps complete</p>
-			</div>
-			<a routerLink="/setup-checklist"
-				class="flex-shrink-0 flex items-center gap-1.5 text-xs font-medium text-zinc-300 hover:text-white transition cursor-pointer mt-1">
-				View checklist
-				<i class="fa-sharp fa-solid fa-arrow-right text-[10px]"></i>
-			</a>
-		</div>
-
-		<!-- Progress bar -->
-		<div class="h-1.5 bg-white/10 rounded-full overflow-hidden mb-3">
-			<div class="h-full bg-white rounded-full transition-all duration-500"
-				[style.width.%]="(checklistDoneCount / checklistTotal) * 100"></div>
-		</div>
-
-		<!-- Remaining items preview -->
-		<div class="flex flex-wrap gap-2">
-			@for (item of checklistIncomplete; track item.title) {
-			<a [routerLink]="item.route"
-				class="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-200 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full px-3 py-1.5 transition cursor-pointer">
-				<i class="fa-sharp fa-solid fa-circle text-[5px]"></i>
-				{{ item.title }}
-			</a>
-			}
-			@if ((checklistTotal - checklistDoneCount) > 3) {
-			<span class="text-xs text-zinc-600 px-3 py-1.5">+{{ (checklistTotal - checklistDoneCount) - 3 }} more</span>
-			}
-		</div>
-	</div>
+	<app-setup-checklist
+		[items]="checklistItems"
+		[doneCount]="checklistDoneCount"
+		[total]="checklistTotal">
+	</app-setup-checklist>
 </div>
 }
 
@@ -109,153 +80,21 @@
 		</div>
 
 		<!-- Daily totals card -->
-		<div class="mx-4 sm:mx-8 lg:mx-12 mb-5 lg:mb-6 bg-zinc-900 rounded-2xl px-6 py-5 lg:px-8 lg:py-7">
-			<p class="text-xs font-medium uppercase tracking-widest text-zinc-500 mb-5">Daily Totals</p>
-			<div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 mb-5">
-				<div>
-					<p class="text-sm text-zinc-400 mb-1.5">Eaten</p>
-					<p class="text-3xl font-bold text-white leading-none tracking-tight">{{ totalCaloriesEaten | number:'1.0-0' }}</p>
-					<p class="text-xs text-zinc-500 mt-1.5">kcal</p>
-				</div>
-				<div>
-					<p class="text-sm text-zinc-400 mb-1.5">Burned</p>
-					@if (showExtraCalInput) {
-						<div class="flex items-center gap-2">
-							<input type="number" min="0"
-								[value]="extraCalInput ?? ''"
-								(input)="extraCalInput = +$any($event.target).value"
-								(keyup.enter)="saveExtraCalories()"
-								(keyup.escape)="showExtraCalInput = false"
-								placeholder="0"
-								class="w-20 px-2 py-1.5 bg-zinc-800 border border-zinc-600 rounded-lg text-white text-lg font-bold placeholder-zinc-500 focus:outline-none focus:border-zinc-400 transition" />
-							<span class="text-xs text-zinc-500">kcal</span>
-						</div>
-						@if (dayCardioCalories > 0 && (extraCalInput ?? 0) > 0) {
-							<p class="text-xs text-zinc-600 mt-1.5">
-								{{ extraCalInput | number:'1.0-0' }} − {{ dayCardioCalories | number:'1.0-0' }} cardio = <span class="text-zinc-400">{{ ((extraCalInput ?? 0) - dayCardioCalories < 0 ? 0 : (extraCalInput ?? 0) - dayCardioCalories) | number:'1.0-0' }} net</span>
-							</p>
-						}
-						<div class="flex items-center gap-3 mt-2.5">
-							<button (click)="saveExtraCalories()" [disabled]="extraCaloriesSaving"
-								class="flex items-center gap-1 text-xs font-medium text-emerald-400 hover:text-emerald-300 cursor-pointer transition disabled:opacity-50">
-								@if (extraCaloriesSaving) {
-									<i class="fa-sharp fa-solid fa-spinner fa-spin text-[10px]"></i>
-								} @else {
-									<i class="fa-sharp fa-solid fa-check text-[10px]"></i>
-								}
-								Save
-							</button>
-							<button (click)="showExtraCalInput = false" class="text-xs text-zinc-600 hover:text-zinc-400 cursor-pointer transition">
-								Cancel
-							</button>
-						</div>
-					} @else {
-						<p class="text-3xl font-bold text-white leading-none tracking-tight">{{ totalCaloriesBurned | number:'1.0-0' }}</p>
-						<p class="text-xs text-zinc-500 mt-1.5">kcal</p>
-						@if (viewDateLog?.extraCaloriesBurned) {
-							<p class="text-xs text-zinc-600 mt-1">incl. {{ viewDateLog!.extraCaloriesBurned | number:'1.0-0' }} active</p>
-						}
-						<button (click)="openExtraCalInput()"
-							class="mt-2 flex items-center gap-1 text-xs text-zinc-600 hover:text-zinc-400 cursor-pointer transition">
-							<i class="fa-sharp fa-solid fa-watch text-[9px]"></i>
-							{{ viewDateLog?.extraCaloriesBurned ? 'Edit watch active' : 'Add watch active' }}
-						</button>
-					}
-				</div>
-				<div>
-					<p class="text-sm text-zinc-400 mb-1.5">Goal</p>
-					@if (user?.macroGoals?.calories) {
-						<p class="text-3xl font-bold text-white leading-none tracking-tight">{{ user!.macroGoals!.calories | number:'1.0-0' }}</p>
-						<p class="text-xs text-zinc-500 mt-1.5">kcal / day</p>
-					} @else {
-						<p class="text-xl font-semibold text-zinc-600 leading-none">—</p>
-						<p class="text-xs text-zinc-600 mt-1.5">Not set</p>
-					}
-					@if (user?.bmr) {
-						<div class="mt-3 space-y-2">
-							<p class="text-xs text-zinc-500">Maint. {{ user!.bmr | number:'1.0-0' }} kcal</p>
-							@if (goalVsMaintenance; as gvm) {
-								<span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg"
-									[class]="gvm.type === 'deficit'  ? 'bg-emerald-950 text-emerald-400' :
-											 gvm.type === 'surplus'  ? 'bg-amber-950 text-amber-400' :
-																		 'bg-zinc-800 text-zinc-400'">
-									@if (gvm.type === 'deficit') { <i class="fa-sharp fa-solid fa-arrow-down text-[10px]"></i> }
-									@if (gvm.type === 'surplus') { <i class="fa-sharp fa-solid fa-arrow-up text-[10px]"></i> }
-									@if (gvm.type === 'on-track') { <i class="fa-sharp fa-solid fa-minus text-[10px]"></i> }
-									{{ gvm.type === 'on-track' ? 'On track' : (gvm.diff | number:'1.0-0') + ' kcal ' + gvm.type }}
-								</span>
-							}
-						</div>
-					}
-				</div>
-				<div>
-					<p class="text-sm text-zinc-400 mb-1.5">Balance</p>
-					<p class="text-3xl font-bold leading-none tracking-tight"
-						[class.text-emerald-400]="calorieBudgetStatus === 'deficit'"
-						[class.text-amber-400]="calorieBudgetStatus === 'maintenance'"
-						[class.text-rose-400]="calorieBudgetStatus === 'surplus'">
-						{{ dailyCalorieBalance > 0 ? '+' : '' }}{{ dailyCalorieBalance | number:'1.0-0' }}
-					</p>
-					<div class="flex items-center gap-2 mt-1.5 flex-wrap">
-						<span class="inline-block text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded"
-							[class.bg-emerald-900]="calorieBudgetStatus === 'deficit'"
-							[class.text-emerald-400]="calorieBudgetStatus === 'deficit'"
-							[class.bg-amber-900]="calorieBudgetStatus === 'maintenance'"
-							[class.text-amber-400]="calorieBudgetStatus === 'maintenance'"
-							[class.bg-rose-900]="calorieBudgetStatus === 'surplus'"
-							[class.text-rose-400]="calorieBudgetStatus === 'surplus'">
-							{{ calorieBudgetStatus }}
-						</span>
-						@if (user?.bmr) {
-							<span class="text-[10px] text-zinc-600">vs. {{ totalEnergyOut | number:'1.0-0' }} out</span>
-						}
-					</div>
-					@if (user?.bmr) {
-						<p class="text-[10px] text-zinc-700 mt-1.5">
-							{{ user!.bmr | number:'1.0-0' }} BMR
-							@if (totalCaloriesBurned > 0) {
-								· {{ totalCaloriesBurned | number:'1.0-0' }} burned
-							}
-						</p>
-					}
-				</div>
-			</div>
-			<div class="border-t border-zinc-800 pt-5 grid grid-cols-3 gap-4">
-				<div>
-					<p class="text-sm text-zinc-400 mb-1.5">Protein</p>
-					<p class="text-2xl font-bold text-white leading-none">{{ totalProtein | number:'1.0-1' }}<span class="text-sm text-zinc-500 font-normal ml-0.5">g</span></p>
-					@if (user?.macroGoals?.protein) {
-						<p class="text-[10px] text-zinc-400 mt-1">/ {{ user!.macroGoals!.protein | number:'1.0-1' }}g</p>
-						<div class="mt-1.5 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
-							<div class="h-full bg-blue-400 rounded-full transition-all"
-								[style.width.%]="macroProgress(totalProtein, user!.macroGoals!.protein)"></div>
-						</div>
-					}
-				</div>
-				<div>
-					<p class="text-sm text-zinc-400 mb-1.5">Carbs</p>
-					<p class="text-2xl font-bold text-white leading-none">{{ totalCarbs | number:'1.0-1' }}<span class="text-sm text-zinc-500 font-normal ml-0.5">g</span></p>
-					@if (user?.macroGoals?.carbs) {
-						<p class="text-[10px] text-zinc-400 mt-1">/ {{ user!.macroGoals!.carbs | number:'1.0-1' }}g</p>
-						<div class="mt-1.5 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
-							<div class="h-full bg-amber-400 rounded-full transition-all"
-								[style.width.%]="macroProgress(totalCarbs, user!.macroGoals!.carbs)"></div>
-						</div>
-					}
-				</div>
-				<div>
-					<p class="text-sm text-zinc-400 mb-1.5">Fat</p>
-					<p class="text-2xl font-bold text-white leading-none">{{ totalFat | number:'1.0-1' }}<span class="text-sm text-zinc-500 font-normal ml-0.5">g</span></p>
-					@if (user?.macroGoals?.fat) {
-						<p class="text-[10px] text-zinc-400 mt-1">/ {{ user!.macroGoals!.fat | number:'1.0-1' }}g</p>
-						<div class="mt-1.5 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
-							<div class="h-full bg-rose-400 rounded-full transition-all"
-								[style.width.%]="macroProgress(totalFat, user!.macroGoals!.fat)"></div>
-						</div>
-					}
-				</div>
-			</div>
-		</div>
+		<app-daily-totals-card
+			[user]="user"
+			[totalCaloriesEaten]="totalCaloriesEaten"
+			[totalCaloriesBurned]="totalCaloriesBurned"
+			[totalEnergyOut]="totalEnergyOut"
+			[dailyCalorieBalance]="dailyCalorieBalance"
+			[calorieBudgetStatus]="calorieBudgetStatus"
+			[goalVsMaintenance]="goalVsMaintenance"
+			[totalProtein]="totalProtein"
+			[totalCarbs]="totalCarbs"
+			[totalFat]="totalFat"
+			[dayCardioCalories]="dayCardioCalories"
+			[viewDateLog]="viewDateLog"
+			(saveExtraCalories)="saveExtraCalories($event)">
+		</app-daily-totals-card>
 
 		<!-- Activity sections -->
 		<div class="px-4 sm:px-8 lg:px-12 pb-6 lg:pb-10 space-y-5 flex-1">
@@ -784,297 +623,37 @@
 </app-side-drawer>
 
 <!-- ─── Log Workout Drawer ────────────────────────────────────────────────── -->
-<app-side-drawer #logWorkoutDrawer side="right">
-	<div class="p-6 flex flex-col h-full">
-
-		@if (logWorkoutStep === 1) {
-			<h3 class="text-xl font-semibold text-zinc-900 mb-1">Log Workout</h3>
-			<p class="text-sm text-zinc-400 mb-4">Select a workout from your library</p>
-
-			<!-- Search -->
-			<div class="relative mb-4">
-				<i class="fa-sharp fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-sm pointer-events-none"></i>
-				<input type="text" [(ngModel)]="workoutSearchQuery" placeholder="Search workouts..."
-					class="w-full pl-10 pr-10 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition" />
-				@if (workoutSearchQuery) {
-					<button (click)="workoutSearchQuery = ''" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition cursor-pointer p-1">
-						<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
-					</button>
-				}
-			</div>
-
-			<div class="flex-1 overflow-y-auto space-y-2">
-				@if (workouts.length === 0) {
-					<p class="text-sm text-zinc-300 italic text-center py-10">No workouts in your library yet.</p>
-				} @else if (filteredWorkouts.length === 0) {
-					<p class="text-sm text-zinc-400 text-center py-8">No workouts match "{{ workoutSearchQuery }}".</p>
-				} @else {
-					@for (workout of filteredWorkouts; track workout._id) {
-						<div (click)="selectWorkoutToLog(workout)"
-							class="flex items-center justify-between px-4 py-4 bg-zinc-50 rounded-xl hover:bg-zinc-100 cursor-pointer transition">
-							<div>
-								<p class="text-sm font-medium text-zinc-800">{{ workout.name }}</p>
-								<p class="text-xs text-zinc-400 mt-0.5">{{ workout.exercises.length }} exercises</p>
-							</div>
-							<i class="fa-sharp fa-solid fa-chevron-right text-zinc-400 text-xs"></i>
-						</div>
-					}
-				}
-			</div>
-		} @else {
-
-			<div class="flex items-center gap-3 mb-6">
-				<button type="button" (click)="logWorkoutStep = 1"
-					class="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 hover:bg-zinc-200 transition cursor-pointer">
-					<i class="fa-sharp fa-solid fa-chevron-left text-xs"></i>
-				</button>
-				<h3 class="text-xl font-semibold text-zinc-900">{{ logWorkoutSelectedWorkout?.name }}</h3>
-			</div>
-
-			@if (workoutLogForm) {
-			<form [formGroup]="workoutLogForm" (ngSubmit)="saveWorkoutRecord()" class="flex flex-col flex-1 overflow-hidden">
-				<div class="flex-1 overflow-y-auto space-y-5 pr-1">
-
-					<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-						<div>
-							<label class="block text-[11px] font-medium text-zinc-400 uppercase tracking-widest mb-2">Date <span class="text-red-400">*</span></label>
-							<app-date-picker
-								displayMode="field"
-								[value]="workoutLogForm.get('date')?.value"
-								[maxDate]="todayStr"
-								(valueChange)="workoutLogForm.get('date')?.setValue($event); workoutLogForm.get('date')?.markAsTouched()">
-							</app-date-picker>
-							@if (workoutLogForm.get('date')?.invalid && workoutLogForm.get('date')?.touched) {
-								<p class="flex items-center gap-1 text-xs text-red-500 mt-1.5">
-									<i class="fa-sharp fa-solid fa-circle-exclamation text-[10px]"></i>
-									Date is required
-								</p>
-							}
-						</div>
-						<div>
-							<label class="block text-[11px] font-medium text-zinc-400 uppercase tracking-widest mb-2">Duration (min) <span class="text-red-400">*</span></label>
-							<input type="number" formControlName="duration" placeholder="45"
-								class="w-full px-3 py-2.5 border rounded-xl text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
-								[ngClass]="workoutLogForm.get('duration')?.invalid && workoutLogForm.get('duration')?.touched ? 'border-red-400 focus:ring-red-300' : 'border-zinc-200 focus:ring-zinc-900'" />
-							@if (workoutLogForm.get('duration')?.invalid && workoutLogForm.get('duration')?.touched) {
-								<p class="flex items-center gap-1 text-xs text-red-500 mt-1.5">
-									<i class="fa-sharp fa-solid fa-circle-exclamation text-[10px]"></i>
-									Duration is required
-								</p>
-							}
-						</div>
-					</div>
-
-					<div>
-						<label class="block text-[11px] font-medium text-zinc-400 uppercase tracking-widest mb-2">Notes</label>
-						<textarea formControlName="notes" placeholder="How did the session feel?" rows="2"
-							class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent resize-none"></textarea>
-					</div>
-
-					<div formArrayName="exercises" class="space-y-4">
-						@for (ex of workoutLogExercises.controls; track $index; let i = $index) {
-						<div [formGroupName]="i" class="rounded-xl overflow-hidden border border-zinc-100">
-							<div class="px-4 py-2.5 bg-zinc-50">
-								<p class="text-[11px] font-medium text-zinc-600 uppercase tracking-wide">{{ ex.get('name')?.value }}</p>
-								@let hint = getExerciseLastSummary(ex.get('name')?.value ?? '');
-									@if (hint) {
-									<p class="text-[10px] text-zinc-400 mt-0.5">
-										Last: {{ hint.setCount }}×{{ hint.reps }} &#64; {{ hint.maxWeight }}kg
-										<span class="text-violet-500 font-semibold ml-2">→ Try {{ hint.suggestedWeight }}kg</span>
-									</p>
-								}
-							</div>
-							<div class="p-4 space-y-2">
-								<div formArrayName="sets">
-									@for (set of getWorkoutLogSets(i).controls; track $index; let j = $index) {
-									<div [formGroupName]="j" class="flex items-center gap-2">
-										<span class="text-xs text-zinc-400 w-5 flex-shrink-0 font-medium">{{ j + 1 }}</span>
-										<input formControlName="reps" placeholder="Reps" type="number"
-											class="flex-1 px-3 py-2 border border-zinc-200 rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-900" />
-										<input formControlName="weight" placeholder="kg" type="number"
-											class="flex-1 px-3 py-2 border border-zinc-200 rounded-lg text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-900" />
-										<button type="button" (click)="removeWorkoutLogSet(i, j)"
-											class="text-zinc-300 hover:text-red-400 transition cursor-pointer flex-shrink-0 p-2">
-											<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
-										</button>
-									</div>
-									}
-								</div>
-								<button type="button" (click)="addWorkoutLogSet(i)"
-									class="text-xs font-medium text-zinc-500 hover:text-zinc-800 cursor-pointer mt-1 min-h-[44px] flex items-center px-1">
-									<i class="fa-sharp fa-solid fa-plus mr-1"></i>Add Set
-								</button>
-							</div>
-						</div>
-						}
-					</div>
-
-					@if (workoutLogErrors.length > 0) {
-						<div class="bg-red-50 rounded-xl px-4 py-3">
-							@for (err of workoutLogErrors; track err) {
-								<p class="text-xs text-red-600">{{ err }}</p>
-							}
-						</div>
-					}
-
-				</div>
-
-				<div class="pt-4 mt-2 border-t border-zinc-100 pb-safe">
-					<label class="flex items-center gap-2.5 mb-3 cursor-pointer w-fit">
-						<input type="checkbox" [(ngModel)]="workoutCloseOnSave" [ngModelOptions]="{standalone: true}"
-							class="w-4 h-4 rounded border-zinc-300 accent-zinc-900 cursor-pointer" />
-						<span class="text-xs text-zinc-500">Close on save</span>
-					</label>
-					<div class="flex gap-3">
-						<button type="submit"
-							[disabled]="workoutLogForm.invalid"
-							class="flex-1 bg-zinc-900 hover:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-3.5 rounded-xl transition cursor-pointer">
-							@if (workoutLogLoading) {
-								<app-loading-indicator [spinner]="true" [loading]="true"></app-loading-indicator>
-							} @else {
-								Save Record
-							}
-						</button>
-						<button type="button" (click)="logWorkoutDrawer.close()"
-							class="px-4 py-3.5 text-sm font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-xl transition cursor-pointer">
-							Cancel
-						</button>
-					</div>
-				</div>
-			</form>
-			}
-		}
-
-	</div>
+<app-side-drawer #logWorkoutDrawer side="right" (closeEvent)="logWorkoutDrawerOpen = false">
+	@if (logWorkoutDrawerOpen) {
+		<app-edit-workout-record
+			[selectedWorkoutRecord]="logWorkoutInitialRecord"
+			[initialDate]="viewDateStr"
+			[maxDate]="todayStr"
+			[lastRecord]="lastWorkoutRecord"
+			(recordSaved)="onWorkoutRecordSaved($event)"
+			(closeEditModeEvent)="closeLogWorkoutDrawer()">
+		</app-edit-workout-record>
+	}
 </app-side-drawer>
 
 <!-- ─── Log Cardio Drawer ─────────────────────────────────────────────────── -->
-<app-side-drawer #logCardioDrawer side="right">
-	<div class="p-6 flex flex-col h-full">
-
-		@if (logCardioStep === 1) {
-			<h3 class="text-xl font-semibold text-zinc-900 mb-1">Log Cardio</h3>
-			<p class="text-sm text-zinc-400 mb-4">Select a session from your library</p>
-
-			<!-- Search -->
-			<div class="relative mb-4">
-				<i class="fa-sharp fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-sm pointer-events-none"></i>
-				<input type="text" [(ngModel)]="cardioSearchQuery" placeholder="Search sessions..."
-					class="w-full pl-10 pr-10 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition" />
-				@if (cardioSearchQuery) {
-					<button (click)="cardioSearchQuery = ''" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition cursor-pointer p-1">
-						<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
-					</button>
-				}
-			</div>
-
-			<div class="flex-1 overflow-y-auto space-y-2">
-				@if (conditioningSessions.length === 0) {
-					<p class="text-sm text-zinc-300 italic text-center py-10">No sessions in your library yet.</p>
-				} @else if (filteredConditioningSessions.length === 0) {
-					<p class="text-sm text-zinc-400 text-center py-8">No sessions match "{{ cardioSearchQuery }}".</p>
-				} @else {
-					@for (session of filteredConditioningSessions; track session._id) {
-						<div (click)="selectSessionToLog(session)"
-							class="flex items-center justify-between px-4 py-4 bg-zinc-50 rounded-xl hover:bg-zinc-100 cursor-pointer transition">
-							<div>
-								<p class="text-sm font-medium text-zinc-800">{{ session.name }}</p>
-								@if (session.category) {
-									<span class="inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full bg-zinc-200 text-zinc-500 font-medium">{{ session.category }}</span>
-								}
-							</div>
-							<i class="fa-sharp fa-solid fa-chevron-right text-zinc-400 text-xs"></i>
-						</div>
-					}
-				}
-			</div>
-		} @else {
-
-			<div class="flex items-center justify-between gap-3 mb-6">
-				<div class="flex items-center gap-3">
-					<button type="button" (click)="logCardioStep = 1"
-						class="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 hover:bg-zinc-200 transition cursor-pointer">
-						<i class="fa-sharp fa-solid fa-chevron-left text-xs"></i>
-					</button>
-					<h3 class="text-xl font-semibold text-zinc-900">{{ logCardioSelectedSession?.name }}</h3>
-				</div>
-				<button type="button" (click)="showCardioSessionDetail = true"
-					class="flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 px-3 py-1.5 rounded-lg transition cursor-pointer shrink-0">
-					<i class="fa-sharp fa-solid fa-eye text-[11px]"></i>
-					View session
-				</button>
-			</div>
-
-			@if (cardioLogForm) {
-			<form [formGroup]="cardioLogForm" (ngSubmit)="saveCardioRecord()" class="flex flex-col flex-1 overflow-hidden">
-				<div class="flex-1 overflow-y-auto space-y-5 pr-1">
-
-					<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-						<div>
-							<label class="block text-[11px] font-medium text-zinc-400 uppercase tracking-widest mb-2">Date <span class="text-red-400">*</span></label>
-							<app-date-picker
-								displayMode="field"
-								[value]="cardioLogForm.get('date')?.value"
-								[maxDate]="todayStr"
-								(valueChange)="cardioLogForm.get('date')?.setValue($event); cardioLogForm.get('date')?.markAsTouched()">
-							</app-date-picker>
-							@if (cardioLogForm.get('date')?.invalid && cardioLogForm.get('date')?.touched) {
-								<p class="flex items-center gap-1 text-xs text-red-500 mt-1.5">
-									<i class="fa-sharp fa-solid fa-circle-exclamation text-[10px]"></i>
-									Date is required
-								</p>
-							}
-						</div>
-						<div>
-							<label class="block text-[11px] font-medium text-zinc-400 uppercase tracking-widest mb-2">Duration (min)</label>
-							<input type="number" formControlName="duration" placeholder="30"
-								class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent transition-colors" />
-						</div>
-					</div>
-
-					<div>
-						<label class="block text-[11px] font-medium text-zinc-400 uppercase tracking-widest mb-2">Calories Burned</label>
-						<input type="number" formControlName="caloriesBurned" placeholder="0"
-							class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent" />
-					</div>
-
-					<div>
-						<label class="block text-[11px] font-medium text-zinc-400 uppercase tracking-widest mb-2">Notes</label>
-						<textarea formControlName="notes" placeholder="How did it go?" rows="2"
-							class="w-full px-3 py-2.5 border border-zinc-200 rounded-xl text-base sm:text-sm text-zinc-800 placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent resize-none"></textarea>
-					</div>
-
-				</div>
-
-				<div class="flex gap-3 pt-4 mt-2">
-					<button type="submit"
-						[disabled]="cardioLogForm.invalid"
-						class="flex-1 bg-zinc-900 hover:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-3.5 rounded-xl transition cursor-pointer">
-						@if (cardioLogLoading) {
-							<app-loading-indicator [spinner]="true" [loading]="true"></app-loading-indicator>
-						} @else {
-							Save Record
-						}
-					</button>
-					<button type="button" (click)="logCardioDrawer.close()"
-						class="px-4 py-3.5 text-sm font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-xl transition cursor-pointer">
-						Cancel
-					</button>
-				</div>
-			</form>
-			}
-		}
-
-
-	</div>
+<app-side-drawer #logCardioDrawer side="right" (closeEvent)="logCardioDrawerOpen = false">
+	@if (logCardioDrawerOpen) {
+		<app-edit-record
+			[selectedRecord]="logCardioInitialRecord"
+			(recordSaved)="onCardioRecordSaved($event)"
+			(closeEditModeEvent)="closeLogCardioDrawer()"
+			(viewSessionRequested)="logCardioSessionToView = $event">
+		</app-edit-record>
+	}
 </app-side-drawer>
 
 <!-- Session detail fullscreen overlay — outside drawer to escape transform stacking context -->
-@if (showCardioSessionDetail && logCardioSelectedSession) {
+@if (logCardioSessionToView) {
 <div class="fixed inset-0 bg-white z-[60] flex flex-col">
 
 	<div class="flex items-center gap-3 px-6 py-5 shrink-0 border-b border-zinc-100">
-		<button (click)="showCardioSessionDetail = false"
+		<button (click)="logCardioSessionToView = null"
 			class="flex items-center gap-2 text-sm font-medium text-zinc-500 hover:text-zinc-900 transition cursor-pointer">
 			<i class="fa-sharp fa-solid fa-arrow-left text-xs"></i>
 			Back to form
@@ -1084,33 +663,33 @@
 	<div class="flex-1 overflow-y-auto px-6 pb-6 space-y-6 pt-6">
 
 		<div>
-			<p class="text-[11px] font-semibold text-zinc-400 uppercase tracking-widest mb-1">{{ logCardioSelectedSession.category }}</p>
-			<h2 class="text-xl font-bold text-zinc-900">{{ logCardioSelectedSession.name }}</h2>
+			<p class="text-[11px] font-semibold text-zinc-400 uppercase tracking-widest mb-1">{{ logCardioSessionToView.category }}</p>
+			<h2 class="text-xl font-bold text-zinc-900">{{ logCardioSessionToView.name }}</h2>
 		</div>
 
 		<div class="grid grid-cols-2 gap-3">
 			<div class="bg-zinc-50 rounded-xl px-4 py-3">
 				<p class="text-[11px] text-zinc-400 uppercase tracking-wide font-medium">Duration</p>
-				<p class="text-xl font-bold text-zinc-900 mt-1">{{ logCardioSelectedSession.duration }} <span class="text-sm font-normal text-zinc-400">min</span></p>
+				<p class="text-xl font-bold text-zinc-900 mt-1">{{ logCardioSessionToView.duration }} <span class="text-sm font-normal text-zinc-400">min</span></p>
 			</div>
 			<div class="bg-zinc-50 rounded-xl px-4 py-3">
 				<p class="text-[11px] text-zinc-400 uppercase tracking-wide font-medium">Category</p>
-				<p class="text-xl font-bold text-zinc-900 mt-1">{{ logCardioSelectedSession.category }}</p>
+				<p class="text-xl font-bold text-zinc-900 mt-1">{{ logCardioSessionToView.category }}</p>
 			</div>
 		</div>
 
-		@if (logCardioSelectedSession.purpose) {
+		@if (logCardioSessionToView.purpose) {
 		<div>
 			<h3 class="text-[11px] font-semibold text-zinc-400 uppercase tracking-widest mb-2">Purpose</h3>
-			<p class="text-sm text-zinc-700 leading-relaxed">{{ logCardioSelectedSession.purpose }}</p>
+			<p class="text-sm text-zinc-700 leading-relaxed">{{ logCardioSessionToView.purpose }}</p>
 		</div>
 		}
 
-		@if (logCardioSelectedSession.parts?.length) {
+		@if (logCardioSessionToView.parts?.length) {
 		<div>
 			<h3 class="text-[11px] font-semibold text-zinc-400 uppercase tracking-widest mb-3">Session Parts</h3>
 			<div class="space-y-2">
-				@for (part of logCardioSelectedSession.parts; track $index) {
+				@for (part of logCardioSessionToView.parts; track $index) {
 				<div class="flex gap-4 px-4 py-3 bg-zinc-50 rounded-xl">
 					<p class="text-sm font-semibold text-zinc-900 w-24 shrink-0">{{ part.part }}</p>
 					<p class="text-sm text-zinc-500">{{ part.work }}</p>
@@ -1120,10 +699,10 @@
 		</div>
 		}
 
-		@if (logCardioSelectedSession.howToUse) {
+		@if (logCardioSessionToView.howToUse) {
 		<div>
 			<h3 class="text-[11px] font-semibold text-zinc-400 uppercase tracking-widest mb-2">How to Use</h3>
-			<p class="text-sm text-zinc-700 leading-relaxed">{{ logCardioSelectedSession.howToUse }}</p>
+			<p class="text-sm text-zinc-700 leading-relaxed">{{ logCardioSessionToView.howToUse }}</p>
 		</div>
 		}
 

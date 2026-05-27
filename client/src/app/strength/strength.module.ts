@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { EditExerciseComponent } from './exercise-library/edit-exercise/edit-exercise.component';
 import { EditWorkoutComponent } from './workout-library/edit-workout/edit-workout.component';
-import { EditWorkoutRecordsComponent } from './workout-records/edit-workout-records/edit-workout-record.component';
 import { ExerciseLibraryComponent } from './exercise-library/exercise-library.component';
 import { ExerciseService } from './exercise-library/exercise.service';
 import { NgModule } from '@angular/core';
@@ -23,7 +22,6 @@ import { WorkoutService } from './workout-library/workout.service';
 		ExerciseLibraryComponent,
 		EditExerciseComponent,
 		EditWorkoutComponent,
-		EditWorkoutRecordsComponent,
 	],
 	imports: [CommonModule, AppRoutingModule, FormsModule, ReactiveFormsModule, SharedModule, DragDropModule],
 	exports: [StrengthComponent],

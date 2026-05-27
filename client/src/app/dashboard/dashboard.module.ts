@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ConditioningLibraryService } from '../conditioning/conditioning-library/conditioning-library.service';
 import { ConditioningRecordService } from '../conditioning/conditioning-records/conditioning-records.service';
 import { DailyLogService } from '../shared/services/daily-log.service';
+import { DailyTotalsCardComponent } from './daily-totals-card/daily-totals-card.component';
 import { DashboardComponent } from './dashboard.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MealLibraryService } from '../nutrition/meal-library/meal-library.service';
 import { NgModule } from '@angular/core';
+import { SetupChecklistComponent } from './setup-checklist/setup-checklist.component';
 import { SharedModule } from '../shared/shared.module';
 import { WeekPlannerService } from '../week-planner/week-planner.service';
 import { GoalsService } from '../goals/goals.service';
@@ -15,7 +17,7 @@ import { WorkoutRecordService } from '../strength/workout-records/workout-record
 import { WorkoutService } from '../strength/workout-library/workout.service';
 
 @NgModule({
-	declarations: [DashboardComponent],
+	declarations: [DashboardComponent, SetupChecklistComponent, DailyTotalsCardComponent],
 	imports: [CommonModule, FormsModule, ReactiveFormsModule, AppRoutingModule, SharedModule],
 	providers: [
 		WorkoutService,

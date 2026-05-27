@@ -1,0 +1,153 @@
+<div class="mx-4 sm:mx-8 lg:mx-12 mb-5 lg:mb-6 bg-zinc-900 rounded-2xl px-6 py-5 lg:px-8 lg:py-7">
+	<p class="text-xs font-medium uppercase tracking-widest text-zinc-500 mb-5">Daily Totals</p>
+	<div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 mb-5">
+
+		<!-- Eaten -->
+		<div>
+			<p class="text-sm text-zinc-400 mb-1.5">Eaten</p>
+			<p class="text-3xl font-bold text-white leading-none tracking-tight">{{ totalCaloriesEaten | number:'1.0-0' }}</p>
+			<p class="text-xs text-zinc-500 mt-1.5">kcal</p>
+		</div>
+
+		<!-- Burned -->
+		<div>
+			<p class="text-sm text-zinc-400 mb-1.5">Burned</p>
+			@if (showExtraCalInput) {
+				<div class="flex items-center gap-2">
+					<input type="number" min="0"
+						[value]="extraCalInput ?? ''"
+						(input)="extraCalInput = +$any($event.target).value"
+						(keyup.enter)="onSaveExtraCalories()"
+						(keyup.escape)="showExtraCalInput = false"
+						placeholder="0"
+						class="w-20 px-2 py-1.5 bg-zinc-800 border border-zinc-600 rounded-lg text-white text-lg font-bold placeholder-zinc-500 focus:outline-none focus:border-zinc-400 transition" />
+					<span class="text-xs text-zinc-500">kcal</span>
+				</div>
+				@if (dayCardioCalories > 0 && (extraCalInput ?? 0) > 0) {
+					<p class="text-xs text-zinc-600 mt-1.5">
+						{{ extraCalInput | number:'1.0-0' }} − {{ dayCardioCalories | number:'1.0-0' }} cardio = <span class="text-zinc-400">{{ ((extraCalInput ?? 0) - dayCardioCalories < 0 ? 0 : (extraCalInput ?? 0) - dayCardioCalories) | number:'1.0-0' }} net</span>
+					</p>
+				}
+				<div class="flex items-center gap-3 mt-2.5">
+					<button (click)="onSaveExtraCalories()"
+						class="flex items-center gap-1 text-xs font-medium text-emerald-400 hover:text-emerald-300 cursor-pointer transition">
+						<i class="fa-sharp fa-solid fa-check text-[10px]"></i>
+						Save
+					</button>
+					<button (click)="showExtraCalInput = false" class="text-xs text-zinc-600 hover:text-zinc-400 cursor-pointer transition">
+						Cancel
+					</button>
+				</div>
+			} @else {
+				<p class="text-3xl font-bold text-white leading-none tracking-tight">{{ totalCaloriesBurned | number:'1.0-0' }}</p>
+				<p class="text-xs text-zinc-500 mt-1.5">kcal</p>
+				@if (viewDateLog?.extraCaloriesBurned) {
+					<p class="text-xs text-zinc-600 mt-1">incl. {{ viewDateLog!.extraCaloriesBurned | number:'1.0-0' }} active</p>
+				}
+				<button (click)="openExtraCalInput()"
+					class="mt-2 flex items-center gap-1 text-xs text-zinc-600 hover:text-zinc-400 cursor-pointer transition">
+					<i class="fa-sharp fa-solid fa-watch text-[9px]"></i>
+					{{ viewDateLog?.extraCaloriesBurned ? 'Edit watch active' : 'Add watch active' }}
+				</button>
+			}
+		</div>
+
+		<!-- Goal -->
+		<div>
+			<p class="text-sm text-zinc-400 mb-1.5">Goal</p>
+			@if (user?.macroGoals?.calories) {
+				<p class="text-3xl font-bold text-white leading-none tracking-tight">{{ user!.macroGoals!.calories | number:'1.0-0' }}</p>
+				<p class="text-xs text-zinc-500 mt-1.5">kcal / day</p>
+			} @else {
+				<p class="text-xl font-semibold text-zinc-600 leading-none">—</p>
+				<p class="text-xs text-zinc-600 mt-1.5">Not set</p>
+			}
+			@if (user?.bmr) {
+				<div class="mt-3 space-y-2">
+					<p class="text-xs text-zinc-500">Maint. {{ user!.bmr | number:'1.0-0' }} kcal</p>
+					@if (goalVsMaintenance; as gvm) {
+						<span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg"
+							[class]="gvm.type === 'deficit'  ? 'bg-emerald-950 text-emerald-400' :
+									 gvm.type === 'surplus'  ? 'bg-amber-950 text-amber-400' :
+																 'bg-zinc-800 text-zinc-400'">
+							@if (gvm.type === 'deficit') { <i class="fa-sharp fa-solid fa-arrow-down text-[10px]"></i> }
+							@if (gvm.type === 'surplus') { <i class="fa-sharp fa-solid fa-arrow-up text-[10px]"></i> }
+							@if (gvm.type === 'on-track') { <i class="fa-sharp fa-solid fa-minus text-[10px]"></i> }
+							{{ gvm.type === 'on-track' ? 'On track' : (gvm.diff | number:'1.0-0') + ' kcal ' + gvm.type }}
+						</span>
+					}
+				</div>
+			}
+		</div>
+
+		<!-- Balance -->
+		<div>
+			<p class="text-sm text-zinc-400 mb-1.5">Balance</p>
+			<p class="text-3xl font-bold leading-none tracking-tight"
+				[class.text-emerald-400]="calorieBudgetStatus === 'deficit'"
+				[class.text-amber-400]="calorieBudgetStatus === 'maintenance'"
+				[class.text-rose-400]="calorieBudgetStatus === 'surplus'">
+				{{ dailyCalorieBalance > 0 ? '+' : '' }}{{ dailyCalorieBalance | number:'1.0-0' }}
+			</p>
+			<div class="flex items-center gap-2 mt-1.5 flex-wrap">
+				<span class="inline-block text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded"
+					[class.bg-emerald-900]="calorieBudgetStatus === 'deficit'"
+					[class.text-emerald-400]="calorieBudgetStatus === 'deficit'"
+					[class.bg-amber-900]="calorieBudgetStatus === 'maintenance'"
+					[class.text-amber-400]="calorieBudgetStatus === 'maintenance'"
+					[class.bg-rose-900]="calorieBudgetStatus === 'surplus'"
+					[class.text-rose-400]="calorieBudgetStatus === 'surplus'">
+					{{ calorieBudgetStatus }}
+				</span>
+				@if (user?.bmr) {
+					<span class="text-[10px] text-zinc-600">vs. {{ totalEnergyOut | number:'1.0-0' }} out</span>
+				}
+			</div>
+			@if (user?.bmr) {
+				<p class="text-[10px] text-zinc-700 mt-1.5">
+					{{ user!.bmr | number:'1.0-0' }} BMR
+					@if (totalCaloriesBurned > 0) {
+						· {{ totalCaloriesBurned | number:'1.0-0' }} burned
+					}
+				</p>
+			}
+		</div>
+	</div>
+
+	<!-- Macros -->
+	<div class="border-t border-zinc-800 pt-5 grid grid-cols-3 gap-4">
+		<div>
+			<p class="text-sm text-zinc-400 mb-1.5">Protein</p>
+			<p class="text-2xl font-bold text-white leading-none">{{ totalProtein | number:'1.0-1' }}<span class="text-sm text-zinc-500 font-normal ml-0.5">g</span></p>
+			@if (user?.macroGoals?.protein) {
+				<p class="text-[10px] text-zinc-400 mt-1">/ {{ user!.macroGoals!.protein | number:'1.0-1' }}g</p>
+				<div class="mt-1.5 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+					<div class="h-full bg-blue-400 rounded-full transition-all"
+						[style.width.%]="macroProgress(totalProtein, user!.macroGoals!.protein)"></div>
+				</div>
+			}
+		</div>
+		<div>
+			<p class="text-sm text-zinc-400 mb-1.5">Carbs</p>
+			<p class="text-2xl font-bold text-white leading-none">{{ totalCarbs | number:'1.0-1' }}<span class="text-sm text-zinc-500 font-normal ml-0.5">g</span></p>
+			@if (user?.macroGoals?.carbs) {
+				<p class="text-[10px] text-zinc-400 mt-1">/ {{ user!.macroGoals!.carbs | number:'1.0-1' }}g</p>
+				<div class="mt-1.5 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+					<div class="h-full bg-amber-400 rounded-full transition-all"
+						[style.width.%]="macroProgress(totalCarbs, user!.macroGoals!.carbs)"></div>
+				</div>
+			}
+		</div>
+		<div>
+			<p class="text-sm text-zinc-400 mb-1.5">Fat</p>
+			<p class="text-2xl font-bold text-white leading-none">{{ totalFat | number:'1.0-1' }}<span class="text-sm text-zinc-500 font-normal ml-0.5">g</span></p>
+			@if (user?.macroGoals?.fat) {
+				<p class="text-[10px] text-zinc-400 mt-1">/ {{ user!.macroGoals!.fat | number:'1.0-1' }}g</p>
+				<div class="mt-1.5 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+					<div class="h-full bg-rose-400 rounded-full transition-all"
+						[style.width.%]="macroProgress(totalFat, user!.macroGoals!.fat)"></div>
+				</div>
+			}
+		</div>
+	</div>
+</div>

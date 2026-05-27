@@ -5,14 +5,13 @@ import { ConditioningLibraryComponent } from './conditioning-library/conditionin
 import { ConditioningLibraryService } from './conditioning-library/conditioning-library.service';
 import { ConditioningRecordService } from './conditioning-records/conditioning-records.service';
 import { ConditioningRecordsComponent } from './conditioning-records/conditioning-records.component';
-import { EditRecordComponent } from './conditioning-records/edit-record/edit-record.component';
 import { EditSessionComponent } from './conditioning-library/edit-session/edit-session.component';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
-	declarations: [ConditioningComponent, ConditioningRecordsComponent, ConditioningLibraryComponent, EditSessionComponent, EditRecordComponent],
+	declarations: [ConditioningComponent, ConditioningRecordsComponent, ConditioningLibraryComponent, EditSessionComponent],
 	imports: [CommonModule, SharedModule, AppRoutingModule, ReactiveFormsModule],
     providers: [ConditioningLibraryService, ConditioningRecordService],
 	exports: [ConditioningComponent],
