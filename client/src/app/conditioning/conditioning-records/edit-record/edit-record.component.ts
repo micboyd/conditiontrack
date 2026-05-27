@@ -14,6 +14,7 @@ import { format } from 'date-fns';
 })
 export class EditRecordComponent implements OnInit {
 	@Input() selectedRecord?: ConditioningRecord = null;
+	@Input() initialDate?: string;
 	@Output() closeEditModeEvent = new EventEmitter<void>();
 	@Output() recordSaved = new EventEmitter<ConditioningRecord>();
 	@Output() viewSessionRequested = new EventEmitter<ConditioningSession>();
@@ -49,7 +50,7 @@ export class EditRecordComponent implements OnInit {
 	}
 
 	private buildForm(session: ConditioningSession): void {
-		const recordToEdit = this.selectedRecord ?? new ConditioningRecord(null);
+		const recordToEdit = this.selectedRecord ?? new ConditioningRecord(this.initialDate ? { date: this.initialDate } : null);
 		this.selectedSessionTemplate = session;
 		this.recordForm = ConditioningRecord.createFormGroup(this.fb, recordToEdit, session);
 	}

@@ -799,7 +799,7 @@ export class DashboardComponent implements OnInit {
 	// ── Cardio logging ───────────────────────────────────────────────────────
 
 	openLogCardio(): void {
-		this.logCardioInitialRecord = new ConditioningRecord({ date: this.viewDateStr });
+		this.logCardioInitialRecord = null;
 		this.logCardioSessionToView = null;
 		this.logCardioDrawerOpen = true;
 		this.logCardioDrawer.open();

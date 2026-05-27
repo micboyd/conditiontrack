@@ -641,6 +641,7 @@
 	@if (logCardioDrawerOpen) {
 		<app-edit-record
 			[selectedRecord]="logCardioInitialRecord"
+			[initialDate]="viewDateStr"
 			(recordSaved)="onCardioRecordSaved($event)"
 			(closeEditModeEvent)="closeLogCardioDrawer()"
 			(viewSessionRequested)="logCardioSessionToView = $event">
