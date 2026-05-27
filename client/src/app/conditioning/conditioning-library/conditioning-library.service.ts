@@ -16,9 +16,10 @@ export class ConditioningLibraryService {
         return this.http.put<ConditioningSession>(`${environment.baseApiUrl}/conditioning/conditioning-session/${conditioningSessionId}`, conditioningSession);
     }
 
-    getAllConditioningSessions(): Observable<Array<ConditioningSession>> {
+    getAllConditioningSessions(q?: string): Observable<Array<ConditioningSession>> {
         const userId = localStorage.getItem('id');
-        return this.http.get<Array<ConditioningSession>>(`${environment.baseApiUrl}/conditioning/conditioning-session/${userId}`);
+        const params = q ? { params: { q } } : {};
+        return this.http.get<Array<ConditioningSession>>(`${environment.baseApiUrl}/conditioning/conditioning-session/${userId}`, params);
     }
 
     getConditioningSessionById(conditioningSessionId: string): Observable<ConditioningSession> {

@@ -25,10 +25,14 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Get all conditioning sessions for a specific user
+// Get all conditioning sessions for a specific user, with optional name search (?q=)
 router.get('/:userId', async (req, res) => {
     try {
-        const sessions = await ConditioningSession.find({ userId: req.params.userId });
+        const filter = { userId: req.params.userId };
+        if (req.query.q) {
+            filter.name = { $regex: req.query.q, $options: 'i' };
+        }
+        const sessions = await ConditioningSession.find(filter).sort({ name: 1 });
         res.json(sessions);
     } catch (err) {
         res.status(500).json({ error: err.message });

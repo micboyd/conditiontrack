@@ -7,7 +7,7 @@
 	}
 </app-side-drawer>
 
-<div class="flex items-center justify-between mb-7">
+<div class="flex items-center justify-between mb-5">
 	<h2 class="text-xl font-semibold text-zinc-900">Session Library</h2>
 	<button (click)="openDrawer(null)"
 		class="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium px-5 py-3 rounded-full transition cursor-pointer min-h-[44px]">
@@ -16,13 +16,30 @@
 	</button>
 </div>
 
+<!-- Search -->
+<div class="relative mb-5">
+	<i class="fa-sharp fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-sm pointer-events-none"></i>
+	<input type="text" [value]="searchQuery" (input)="onSearchChange($any($event.target).value)"
+		placeholder="Search sessions..."
+		class="w-full pl-10 pr-10 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition" />
+	@if (searchQuery) {
+		<button (click)="clearSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition cursor-pointer p-1">
+			<i class="fa-sharp fa-solid fa-xmark text-sm"></i>
+		</button>
+	}
+</div>
+
 @if (loading) {
 	<div class="py-8">
 		<app-loading-indicator [loading]="true"></app-loading-indicator>
 	</div>
 } @else if (conditioningSessions.length === 0) {
 	<div class="bg-white rounded-2xl px-6 py-16 text-center text-sm text-zinc-400">
-		No sessions yet. Add a session template to get started.
+		@if (searchQuery) {
+			No sessions found for "{{ searchQuery }}".
+		} @else {
+			No sessions yet. Add a session template to get started.
+		}
 	</div>
 } @else {
 	<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
