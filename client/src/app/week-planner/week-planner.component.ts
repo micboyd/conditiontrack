@@ -1,7 +1,7 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DayPlan, TimeBlockKey, WeekPlan } from './models/WeekPlan';
-import { addDays, addWeeks, format, isToday, parseISO, startOfWeek, subWeeks } from 'date-fns';
+import { addDays, addMonths, addWeeks, format, isToday, isSameMonth, parseISO, startOfMonth, startOfWeek, subWeeks } from 'date-fns';
 
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConditioningLibraryService } from '../conditioning/conditioning-library/conditioning-library.service';
@@ -13,9 +13,21 @@ import { WeekPlannerService } from './week-planner.service';
 import { WeekTemplateService } from './week-template.service';
 import { Workout } from '../strength/models/Workout';
 import { WorkoutService } from '../strength/workout-library/workout.service';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 export type BlockSelection = 'overarching' | TimeBlockKey;
+
+interface PlannerWeekRow {
+	weekStart: string;
+	label: string;
+	plan: WeekPlan | null;
+}
+
+interface PlannerMonthBlock {
+	label: string;
+	weeks: PlannerWeekRow[];
+}
 
 @Component({
 	selector: 'app-week-planner',
@@ -24,6 +36,14 @@ export type BlockSelection = 'overarching' | TimeBlockKey;
 })
 export class WeekPlannerComponent implements OnInit, OnDestroy {
 	@ViewChild(SideDrawerComponent) drawer: SideDrawerComponent;
+
+	viewMode: 'week' | 'month' | '6month' = 'week';
+	multiViewOffset = 0;
+	multiViewLoading = false;
+	multiViewMonths: PlannerMonthBlock[] = [];
+
+	readonly todayWeekStart = format(startOfWeek(new Date(), { weekStartsOn: 1 }), 'yyyy-MM-dd');
+	private readonly _currentMonthStart = startOfMonth(new Date());
 
 	resourcesLoading = false;
 	saving = false;
@@ -341,6 +361,125 @@ export class WeekPlannerComponent implements OnInit, OnDestroy {
 			day.evening.workouts.length > 0 ||
 			day.evening.conditioning.length > 0
 		);
+	}
+
+	// ── Multi-view (month / 6-month) ─────────────────────────────────────────
+
+	setViewMode(mode: 'week' | 'month' | '6month') {
+		if (this.viewMode === mode) return;
+		this.viewMode = mode;
+		this.multiViewOffset = 0;
+		if (mode !== 'week') this.loadMultiView();
+	}
+
+	get multiViewCanGoBack(): boolean {
+		return this.multiViewOffset > 0;
+	}
+
+	get multiViewRangeLabel(): string {
+		const periodMonths = this.viewMode === '6month' ? 6 : 1;
+		const start = addMonths(this._currentMonthStart, this.multiViewOffset * periodMonths);
+		const end = addMonths(start, periodMonths - 1);
+		if (periodMonths === 1) return format(start, 'MMMM yyyy');
+		return format(start, 'yyyy') === format(end, 'yyyy')
+			? `${format(start, 'MMM')} – ${format(end, 'MMM yyyy')}`
+			: `${format(start, 'MMM yyyy')} – ${format(end, 'MMM yyyy')}`;
+	}
+
+	prevPeriod() {
+		if (!this.multiViewCanGoBack) return;
+		this.multiViewOffset--;
+		this.loadMultiView();
+	}
+
+	nextPeriod() {
+		this.multiViewOffset++;
+		this.loadMultiView();
+	}
+
+	goToCurrentPeriod() {
+		this.multiViewOffset = 0;
+		this.loadMultiView();
+	}
+
+	blockForWeekStart(weekStart: string): TrainingBlock | null {
+		return this._trainingBlocks.find(b =>
+			weekStart >= b.startDate && (b.endDate === null || weekStart <= b.endDate),
+		) ?? null;
+	}
+
+	workoutCountForPlan(plan: WeekPlan | null): number {
+		if (!plan) return 0;
+		return plan.days.reduce((acc, d) =>
+			acc + d.workouts.length + d.morning.workouts.length + d.afternoon.workouts.length + d.evening.workouts.length, 0);
+	}
+
+	cardioCountForPlan(plan: WeekPlan | null): number {
+		if (!plan) return 0;
+		return plan.days.reduce((acc, d) =>
+			acc + d.conditioning.length + d.morning.conditioning.length + d.afternoon.conditioning.length + d.evening.conditioning.length, 0);
+	}
+
+	hasContentForPlan(plan: WeekPlan | null): boolean {
+		return this.workoutCountForPlan(plan) > 0 || this.cardioCountForPlan(plan) > 0;
+	}
+
+	private loadMultiView() {
+		this.multiViewLoading = true;
+		const periodMonths = this.viewMode === '6month' ? 6 : 1;
+		const startMonth = addMonths(this._currentMonthStart, this.multiViewOffset * periodMonths);
+		const userId = localStorage.getItem('id') ?? '';
+
+		const labels: string[] = [];
+		const allWeekStarts: string[] = [];
+		const monthWeekMap: string[][] = [];
+
+		for (let m = 0; m < periodMonths; m++) {
+			const month = addMonths(startMonth, m);
+			labels.push(format(month, 'MMMM yyyy'));
+			const weekStarts: string[] = [];
+			let current = startOfWeek(month, { weekStartsOn: 1 });
+			if (!isSameMonth(current, month)) current = addWeeks(current, 1);
+			while (isSameMonth(current, month)) {
+				const ws = format(current, 'yyyy-MM-dd');
+				weekStarts.push(ws);
+				allWeekStarts.push(ws);
+				current = addWeeks(current, 1);
+			}
+			monthWeekMap.push(weekStarts);
+		}
+
+		if (allWeekStarts.length === 0) {
+			this.multiViewMonths = labels.map(label => ({ label, weeks: [] as PlannerWeekRow[] }));
+			this.multiViewLoading = false;
+			return;
+		}
+
+		forkJoin(
+			allWeekStarts.map(ws =>
+				this.weekPlannerService.getWeekPlanByWeek(userId, ws).pipe(catchError(() => of(null))),
+			),
+		).subscribe({
+			next: plans => {
+				const planMap = new Map<string, WeekPlan | null>();
+				allWeekStarts.forEach((ws, i) => planMap.set(ws, plans[i]));
+				this.multiViewMonths = labels.map((label, m) => ({
+					label,
+					weeks: monthWeekMap[m].map(ws => ({
+						weekStart: ws,
+						label: this.buildWeekLabel(ws),
+						plan: planMap.get(ws) ?? null,
+					})),
+				}));
+				this.multiViewLoading = false;
+			},
+			error: () => { this.multiViewLoading = false; },
+		});
+	}
+
+	private buildWeekLabel(weekStart: string): string {
+		const start = new Date(weekStart + 'T00:00:00');
+		return `${format(start, 'd MMM')} – ${format(addDays(start, 6), 'd MMM')}`;
 	}
 
 	openSaveAsTemplate() {

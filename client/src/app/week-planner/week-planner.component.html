@@ -142,9 +142,10 @@
 <div class="bg-white border-b border-zinc-100">
 <app-container [noPadding]="true"><div class="pt-6 sm:pt-8 pb-0 flex flex-col gap-4">
 
-	<!-- Top row: title + edit toggle -->
+	<!-- Top row: title + edit toggle (week mode only) -->
 	<div class="flex items-center justify-between gap-3">
 		<h1 class="text-2xl sm:text-3xl font-bold text-zinc-900">Week Planner</h1>
+		@if (viewMode === 'week') {
 		<div class="flex items-center gap-3 flex-shrink-0">
 			<div class="h-6 flex items-center">
 				@if (isEditMode) {
@@ -180,6 +181,7 @@
 				}
 			</button>
 		</div>
+		}
 	</div>
 
 	<!-- Sub-nav -->
@@ -209,27 +211,71 @@
 <div class="bg-zinc-50 min-h-screen">
 <app-container [noPadding]="true"><div class="py-5 sm:py-8">
 
-	<!-- Week navigation row -->
+	<!-- View mode toggle + navigation row -->
 	<div class="flex items-center justify-between gap-3 flex-wrap mb-6">
-		<div class="flex items-center gap-2">
-			<button (click)="prevWeek()"
-				class="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-zinc-200 text-zinc-500 hover:bg-zinc-100 transition cursor-pointer">
-				<i class="fa-sharp fa-solid fa-chevron-left text-xs"></i>
-			</button>
-			<span class="text-sm font-semibold text-zinc-900 min-w-[160px] text-center">{{ weekLabel }}</span>
-			<button (click)="nextWeek()"
-				class="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-zinc-200 text-zinc-500 hover:bg-zinc-100 transition cursor-pointer">
-				<i class="fa-sharp fa-solid fa-chevron-right text-xs"></i>
-			</button>
-			<app-date-picker displayMode="icon" [value]="weekStartStr" (valueChange)="goToWeek($event)"></app-date-picker>
-			@if (!isCurrentWeek) {
-				<button (click)="goToCurrentWeek()"
-					class="px-3 h-8 rounded-full text-xs font-medium border border-zinc-200 bg-white text-zinc-500 hover:bg-zinc-100 transition cursor-pointer">
-					This week
+		<div class="flex items-center gap-3 flex-wrap">
+			<!-- View mode toggle -->
+			<div class="flex items-center bg-white border border-zinc-200 rounded-full p-1 gap-0.5">
+				<button (click)="setViewMode('week')"
+					class="px-3 py-1 rounded-full text-xs font-medium transition cursor-pointer"
+					[ngClass]="viewMode === 'week' ? 'bg-zinc-900 text-white' : 'text-zinc-500 hover:text-zinc-700'">
+					Week
 				</button>
+				<button (click)="setViewMode('month')"
+					class="px-3 py-1 rounded-full text-xs font-medium transition cursor-pointer"
+					[ngClass]="viewMode === 'month' ? 'bg-zinc-900 text-white' : 'text-zinc-500 hover:text-zinc-700'">
+					Month
+				</button>
+				<button (click)="setViewMode('6month')"
+					class="px-3 py-1 rounded-full text-xs font-medium transition cursor-pointer"
+					[ngClass]="viewMode === '6month' ? 'bg-zinc-900 text-white' : 'text-zinc-500 hover:text-zinc-700'">
+					6 Months
+				</button>
+			</div>
+
+			@if (viewMode === 'week') {
+				<!-- Week navigation -->
+				<div class="flex items-center gap-2">
+					<button (click)="prevWeek()"
+						class="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-zinc-200 text-zinc-500 hover:bg-zinc-100 transition cursor-pointer">
+						<i class="fa-sharp fa-solid fa-chevron-left text-xs"></i>
+					</button>
+					<span class="text-sm font-semibold text-zinc-900 min-w-[160px] text-center">{{ weekLabel }}</span>
+					<button (click)="nextWeek()"
+						class="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-zinc-200 text-zinc-500 hover:bg-zinc-100 transition cursor-pointer">
+						<i class="fa-sharp fa-solid fa-chevron-right text-xs"></i>
+					</button>
+					<app-date-picker displayMode="icon" [value]="weekStartStr" (valueChange)="goToWeek($event)"></app-date-picker>
+					@if (!isCurrentWeek) {
+						<button (click)="goToCurrentWeek()"
+							class="px-3 h-8 rounded-full text-xs font-medium border border-zinc-200 bg-white text-zinc-500 hover:bg-zinc-100 transition cursor-pointer">
+							This week
+						</button>
+					}
+				</div>
+			} @else {
+				<!-- Month / 6-month navigation -->
+				<div class="flex items-center gap-2">
+					<button (click)="prevPeriod()" [disabled]="!multiViewCanGoBack"
+						class="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-zinc-200 text-zinc-500 hover:bg-zinc-100 transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed">
+						<i class="fa-sharp fa-solid fa-chevron-left text-xs"></i>
+					</button>
+					@if (multiViewOffset > 0) {
+						<button (click)="goToCurrentPeriod()"
+							class="px-3 h-8 rounded-full text-xs font-medium border border-zinc-200 bg-white text-zinc-500 hover:bg-zinc-100 transition cursor-pointer">
+							{{ viewMode === 'month' ? 'This month' : 'This period' }}
+						</button>
+					}
+					<span class="text-sm font-semibold text-zinc-900">{{ multiViewRangeLabel }}</span>
+					<button (click)="nextPeriod()"
+						class="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-zinc-200 text-zinc-500 hover:bg-zinc-100 transition cursor-pointer">
+						<i class="fa-sharp fa-solid fa-chevron-right text-xs"></i>
+					</button>
+				</div>
 			}
 		</div>
-		@if (isEditMode) {
+
+		@if (viewMode === 'week' && isEditMode) {
 			<div class="flex items-center gap-2">
 				<button (click)="copyCurrentWeek()"
 					class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full transition cursor-pointer"
@@ -258,6 +304,8 @@
 			</div>
 		}
 	</div>
+
+	@if (viewMode === 'week') {
 
 	@if (resourcesLoading) {
 		<app-loading-indicator [loading]="true"></app-loading-indicator>
@@ -755,6 +803,75 @@
 		</div>
 	</app-side-drawer>
 
+	} <!-- end week view @else -->
+
+	} @else {
+
+	<!-- Month / 6-month view -->
+	@if (multiViewLoading) {
+		<app-loading-indicator [loading]="true"></app-loading-indicator>
+	} @else {
+		@for (month of multiViewMonths; track month.label) {
+		<div class="mb-6">
+			<h3 class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3 px-1">{{ month.label }}</h3>
+			<div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+				@for (week of month.weeks; track week.weekStart; let i = $index) {
+				<div class="flex items-center gap-4 px-5 py-4 flex-wrap"
+					[ngClass]="{
+						'border-b border-zinc-100': i < month.weeks.length - 1,
+						'border-l-2 border-l-emerald-400': hasContentForPlan(week.plan),
+						'border-l-2 border-l-transparent': !hasContentForPlan(week.plan)
+					}">
+
+					<!-- Week label -->
+					<div class="min-w-[160px] flex-shrink-0">
+						<p class="text-sm font-semibold text-zinc-900">{{ week.label }}</p>
+						@if (week.weekStart === todayWeekStart) {
+							<span class="text-xs text-violet-600 font-medium">This week</span>
+						}
+					</div>
+
+					<!-- Badges -->
+					<div class="flex-1 min-w-[100px]">
+						<div class="flex items-center gap-2 flex-wrap">
+							@if (blockForWeekStart(week.weekStart); as block) {
+								<span class="flex items-center gap-1.5 text-xs font-medium text-violet-700 bg-violet-50 px-2.5 py-1 rounded-full">
+									<i class="fa-sharp fa-solid fa-layer-group text-[10px]"></i>
+									{{ block.name }}
+								</span>
+							}
+							@if (workoutCountForPlan(week.plan) > 0) {
+								<span class="flex items-center gap-1.5 text-xs font-medium text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full">
+									<i class="fa-sharp fa-solid fa-dumbbell text-[10px]"></i>
+									{{ workoutCountForPlan(week.plan) }} workout{{ workoutCountForPlan(week.plan) !== 1 ? 's' : '' }}
+								</span>
+							}
+							@if (cardioCountForPlan(week.plan) > 0) {
+								<span class="flex items-center gap-1.5 text-xs font-medium text-green-700 bg-green-50 px-2.5 py-1 rounded-full">
+									<i class="fa-sharp fa-solid fa-person-running text-[10px]"></i>
+									{{ cardioCountForPlan(week.plan) }} cardio
+								</span>
+							}
+							@if (!blockForWeekStart(week.weekStart) && !hasContentForPlan(week.plan)) {
+								<span class="text-xs text-zinc-300 italic">Empty</span>
+							}
+						</div>
+					</div>
+
+					<!-- View link -->
+					<button (click)="goToWeek(week.weekStart); setViewMode('week')"
+						class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-zinc-100 text-zinc-600 hover:bg-zinc-200 rounded-full transition flex-shrink-0 cursor-pointer">
+						<i class="fa-sharp fa-solid fa-arrow-right text-[10px]"></i>
+						View week
+					</button>
+				</div>
+				}
+			</div>
+		</div>
+		}
 	}
+
+	} <!-- end multi-view @else -->
+
 </div></app-container>
 </div>
