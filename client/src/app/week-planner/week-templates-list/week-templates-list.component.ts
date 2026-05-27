@@ -16,6 +16,11 @@ export class WeekTemplatesListComponent implements OnInit {
 	confirmDeleteId: string | null = null;
 	deleting = false;
 
+	showNewModal = false;
+	newTemplateName = '';
+	creating = false;
+	createError = false;
+
 	constructor(
 		private weekTemplateService: WeekTemplateService,
 		private router: Router,
@@ -43,7 +48,36 @@ export class WeekTemplatesListComponent implements OnInit {
 	}
 
 	newTemplate() {
-		this.router.navigate(['/week-planner/templates/new']);
+		this.newTemplateName = '';
+		this.createError = false;
+		this.showNewModal = true;
+	}
+
+	cancelCreate() {
+		this.showNewModal = false;
+		this.newTemplateName = '';
+		this.createError = false;
+	}
+
+	confirmCreate() {
+		const name = this.newTemplateName.trim();
+		if (!name) return;
+
+		this.creating = true;
+		this.createError = false;
+
+		const template = new WeekTemplate({ name });
+		this.weekTemplateService.createTemplate(template.payload()).subscribe({
+			next: created => {
+				this.creating = false;
+				this.showNewModal = false;
+				this.router.navigate(['/week-planner/templates', created._id]);
+			},
+			error: () => {
+				this.creating = false;
+				this.createError = true;
+			},
+		});
 	}
 
 	editTemplate(id: string) {

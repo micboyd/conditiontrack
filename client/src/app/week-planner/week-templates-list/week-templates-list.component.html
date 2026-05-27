@@ -1,6 +1,44 @@
+<!-- New template modal -->
+@if (showNewModal) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" (click)="cancelCreate()">
+	<div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 flex flex-col gap-5" (click)="$event.stopPropagation()">
+		<div>
+			<h2 class="text-lg font-semibold text-zinc-900">New template</h2>
+			<p class="text-sm text-zinc-400 mt-0.5">Give your template a name to get started.</p>
+		</div>
+		<input
+			type="text"
+			[(ngModel)]="newTemplateName"
+			placeholder="e.g. Base training week"
+			(keydown.enter)="confirmCreate()"
+			(keydown.escape)="cancelCreate()"
+			autofocus
+			class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 text-sm text-zinc-900 placeholder-zinc-300 outline-none focus:border-zinc-400 transition" />
+		@if (createError) {
+			<p class="text-xs text-red-500 -mt-2">Something went wrong. Please try again.</p>
+		}
+		<div class="flex items-center gap-2 justify-end">
+			<button (click)="cancelCreate()" [disabled]="creating"
+				class="px-4 py-2 rounded-full text-sm font-medium text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 transition cursor-pointer disabled:opacity-50">
+				Cancel
+			</button>
+			<button (click)="confirmCreate()" [disabled]="!newTemplateName.trim() || creating"
+				class="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium bg-zinc-900 text-white hover:bg-zinc-700 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+				@if (creating) {
+					<i class="fa-sharp fa-solid fa-spinner fa-spin text-xs"></i>
+					Creating...
+				} @else {
+					Create
+				}
+			</button>
+		</div>
+	</div>
+</div>
+}
+
 <!-- Page header -->
 <div class="bg-white border-b border-zinc-100">
-<app-container [noPadding]="true"><div class="py-6 sm:py-8 flex flex-col gap-4">
+<app-container [noPadding]="true"><div class="pt-6 sm:pt-8 pb-0 flex flex-col gap-4">
 
 	<div class="flex items-center justify-between gap-3">
 		<h1 class="text-2xl sm:text-3xl font-bold text-zinc-900">Week Planner</h1>
@@ -13,19 +51,19 @@
 
 	<!-- Sub-nav -->
 	<div class="flex items-center gap-1">
-		<a routerLink="/week-planner"
-			class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100">
-			<i class="fa-sharp fa-solid fa-calendar-days text-xs"></i>
+		<a routerLink="/week-planner" routerLinkActive #plannerLink="routerLinkActive" [routerLinkActiveOptions]="{ exact: true }"
+			class="px-4 py-3 text-sm transition -mb-px whitespace-nowrap"
+			[ngClass]="plannerLink.isActive ? 'border-b-2 border-zinc-900 text-zinc-900 font-semibold' : 'text-zinc-400 hover:text-zinc-700 font-medium'">
 			Planner
 		</a>
-		<a routerLink="/week-planner/templates" routerLinkActive="bg-zinc-900 text-white" [routerLinkActiveOptions]="{ exact: true }"
-			class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100">
-			<i class="fa-sharp fa-solid fa-layer-group text-xs"></i>
+		<a routerLink="/week-planner/templates" routerLinkActive #templatesLink="routerLinkActive"
+			class="px-4 py-3 text-sm transition -mb-px whitespace-nowrap"
+			[ngClass]="templatesLink.isActive ? 'border-b-2 border-zinc-900 text-zinc-900 font-semibold' : 'text-zinc-400 hover:text-zinc-700 font-medium'">
 			Templates
 		</a>
-		<a routerLink="/week-planner/schedule" routerLinkActive="bg-zinc-900 text-white"
-			class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100">
-			<i class="fa-sharp fa-solid fa-calendar-check text-xs"></i>
+		<a routerLink="/week-planner/schedule" routerLinkActive #scheduleLink="routerLinkActive" [routerLinkActiveOptions]="{ exact: true }"
+			class="px-4 py-3 text-sm transition -mb-px whitespace-nowrap"
+			[ngClass]="scheduleLink.isActive ? 'border-b-2 border-zinc-900 text-zinc-900 font-semibold' : 'text-zinc-400 hover:text-zinc-700 font-medium'">
 			Schedule
 		</a>
 	</div>

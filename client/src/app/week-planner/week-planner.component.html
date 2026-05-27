@@ -153,7 +153,7 @@
 
 <!-- Page header -->
 <div class="bg-white border-b border-zinc-100">
-<app-container [noPadding]="true"><div class="py-6 sm:py-8 flex flex-col gap-4">
+<app-container [noPadding]="true"><div class="pt-6 sm:pt-8 pb-0 flex flex-col gap-4">
 
 	<!-- Top row: title + edit toggle -->
 	<div class="flex items-center justify-between gap-3">
@@ -196,34 +196,42 @@
 	</div>
 
 	<!-- Sub-nav -->
-	<div class="flex items-center gap-1">
-		<a routerLink="/week-planner" routerLinkActive="bg-zinc-900 text-white" [routerLinkActiveOptions]="{ exact: true }"
-			class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100">
-			<i class="fa-sharp fa-solid fa-calendar-days text-xs"></i>
+	<div class="flex gap-0 overflow-x-auto pb-px">
+		<a routerLink="/week-planner" routerLinkActive #plannerLink="routerLinkActive" [routerLinkActiveOptions]="{ exact: true }"
+			class="px-4 py-3 text-sm transition -mb-px whitespace-nowrap"
+			[ngClass]="plannerLink.isActive ? 'border-b-2 border-zinc-900 text-zinc-900 font-semibold' : 'text-zinc-400 hover:text-zinc-700 font-medium'">
 			Planner
 		</a>
-		<a routerLink="/week-planner/templates"
-			class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100">
-			<i class="fa-sharp fa-solid fa-layer-group text-xs"></i>
+		<a routerLink="/week-planner/templates" routerLinkActive #templatesLink="routerLinkActive"
+			class="px-4 py-3 text-sm transition -mb-px whitespace-nowrap"
+			[ngClass]="templatesLink.isActive ? 'border-b-2 border-zinc-900 text-zinc-900 font-semibold' : 'text-zinc-400 hover:text-zinc-700 font-medium'">
 			Templates
 		</a>
-		<a routerLink="/week-planner/schedule"
-			class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100">
-			<i class="fa-sharp fa-solid fa-calendar-check text-xs"></i>
+		<a routerLink="/week-planner/schedule" routerLinkActive #scheduleLink="routerLinkActive" [routerLinkActiveOptions]="{ exact: true }"
+			class="px-4 py-3 text-sm transition -mb-px whitespace-nowrap"
+			[ngClass]="scheduleLink.isActive ? 'border-b-2 border-zinc-900 text-zinc-900 font-semibold' : 'text-zinc-400 hover:text-zinc-700 font-medium'">
 			Schedule
 		</a>
 	</div>
 
+
+</div></app-container>
+</div>
+
+<!-- Content -->
+<div class="bg-zinc-50 min-h-screen">
+<app-container [noPadding]="true"><div class="py-5 sm:py-8">
+
 	<!-- Week navigation row -->
-	<div class="flex items-center justify-between gap-3 flex-wrap">
+	<div class="flex items-center justify-between gap-3 flex-wrap mb-6">
 		<div class="flex items-center gap-2">
 			<button (click)="prevWeek()"
-				class="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-100 text-zinc-500 hover:bg-zinc-200 transition cursor-pointer">
+				class="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-zinc-200 text-zinc-500 hover:bg-zinc-100 transition cursor-pointer">
 				<i class="fa-sharp fa-solid fa-chevron-left text-xs"></i>
 			</button>
 			<span class="text-sm font-semibold text-zinc-900 min-w-[160px] text-center">{{ weekLabel }}</span>
 			<button (click)="nextWeek()"
-				class="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-100 text-zinc-500 hover:bg-zinc-200 transition cursor-pointer">
+				class="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-zinc-200 text-zinc-500 hover:bg-zinc-100 transition cursor-pointer">
 				<i class="fa-sharp fa-solid fa-chevron-right text-xs"></i>
 			</button>
 			<app-date-picker displayMode="icon" [value]="weekStartStr" (valueChange)="goToWeek($event)"></app-date-picker>
@@ -263,13 +271,6 @@
 			</div>
 		}
 	</div>
-
-</div></app-container>
-</div>
-
-<!-- Content -->
-<div class="bg-zinc-50 min-h-screen">
-<app-container [noPadding]="true"><div class="py-5 sm:py-8">
 
 	@if (resourcesLoading) {
 		<app-loading-indicator [loading]="true"></app-loading-indicator>

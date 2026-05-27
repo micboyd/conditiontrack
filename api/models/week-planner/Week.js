@@ -31,6 +31,10 @@ const weekPlanSchema = new mongoose.Schema(
 	{
 		userId:    { type: String, required: true },
 		weekStart: { type: String },
+		appliedTemplate: {
+			id:   { type: String, default: '' },
+			name: { type: String, default: '' },
+		},
 		days: {
 			type: [dayPlanSchema],
 			default: () => [

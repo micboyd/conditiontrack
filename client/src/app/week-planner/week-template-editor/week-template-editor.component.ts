@@ -112,7 +112,6 @@ export class WeekTemplateEditorComponent implements OnInit {
 		this.weekTemplateService.getTemplate(id).subscribe({
 			next: template => {
 				this._template = new WeekTemplate(template);
-				this.isEditMode = false;
 				this.resourcesLoading = false;
 			},
 			error: () => {
@@ -120,10 +119,6 @@ export class WeekTemplateEditorComponent implements OnInit {
 				this.loadError = true;
 			},
 		});
-	}
-
-	toggleMode() {
-		this.isEditMode = !this.isEditMode;
 	}
 
 	goBack() {

@@ -1,26 +1,26 @@
 <!-- Page header -->
 <div class="bg-white border-b border-zinc-100">
-<app-container [noPadding]="true"><div class="py-6 sm:py-8 flex flex-col gap-4">
+<app-container [noPadding]="true"><div class="pt-6 sm:pt-8 pb-0 flex flex-col gap-4">
 
 	<div class="flex items-center justify-between gap-3">
 		<h1 class="text-2xl sm:text-3xl font-bold text-zinc-900">Week Planner</h1>
 	</div>
 
 	<!-- Sub-nav -->
-	<div class="flex items-center gap-1">
-		<a routerLink="/week-planner"
-			class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100">
-			<i class="fa-sharp fa-solid fa-calendar-days text-xs"></i>
+	<div class="flex gap-0 overflow-x-auto pb-px">
+		<a routerLink="/week-planner" routerLinkActive #plannerLink="routerLinkActive" [routerLinkActiveOptions]="{ exact: true }"
+			class="px-4 py-3 text-sm transition -mb-px whitespace-nowrap"
+			[ngClass]="plannerLink.isActive ? 'border-b-2 border-zinc-900 text-zinc-900 font-semibold' : 'text-zinc-400 hover:text-zinc-700 font-medium'">
 			Planner
 		</a>
-		<a routerLink="/week-planner/templates" routerLinkActive="bg-zinc-900 text-white"
-			class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100">
-			<i class="fa-sharp fa-solid fa-layer-group text-xs"></i>
+		<a routerLink="/week-planner/templates" routerLinkActive #templatesLink="routerLinkActive"
+			class="px-4 py-3 text-sm transition -mb-px whitespace-nowrap"
+			[ngClass]="templatesLink.isActive ? 'border-b-2 border-zinc-900 text-zinc-900 font-semibold' : 'text-zinc-400 hover:text-zinc-700 font-medium'">
 			Templates
 		</a>
-		<a routerLink="/week-planner/schedule" routerLinkActive="bg-zinc-900 text-white" [routerLinkActiveOptions]="{ exact: true }"
-			class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100">
-			<i class="fa-sharp fa-solid fa-calendar-check text-xs"></i>
+		<a routerLink="/week-planner/schedule" routerLinkActive #scheduleLink="routerLinkActive" [routerLinkActiveOptions]="{ exact: true }"
+			class="px-4 py-3 text-sm transition -mb-px whitespace-nowrap"
+			[ngClass]="scheduleLink.isActive ? 'border-b-2 border-zinc-900 text-zinc-900 font-semibold' : 'text-zinc-400 hover:text-zinc-700 font-medium'">
 			Schedule
 		</a>
 	</div>
@@ -42,10 +42,8 @@
 			<p class="text-sm font-medium text-zinc-700 mb-1">Couldn't load schedule</p>
 			<p class="text-xs text-zinc-400 mb-5">Check your connection and try again.</p>
 		</div>
-	} @else {
-
-	@if (templates.length === 0) {
-		<div class="bg-white rounded-2xl px-6 py-16 text-center mb-6">
+	} @else if (templates.length === 0) {
+		<div class="bg-white rounded-2xl px-6 py-16 text-center">
 			<div class="w-12 h-12 rounded-xl bg-zinc-100 flex items-center justify-center mx-auto mb-4">
 				<i class="fa-sharp fa-solid fa-layer-group text-zinc-400"></i>
 			</div>
@@ -59,42 +57,84 @@
 	} @else {
 
 	<!-- Template selector -->
-	<div class="bg-white rounded-2xl border border-zinc-100 shadow-sm px-5 py-4 mb-5 flex items-center gap-4 flex-wrap">
-		<div class="flex items-center gap-2 flex-shrink-0">
-			<i class="fa-sharp fa-solid fa-layer-group text-zinc-400 text-sm"></i>
-			<span class="text-sm font-medium text-zinc-700">Template to apply:</span>
+	<div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-6">
+		<div class="px-5 py-4 border-b border-zinc-100">
+			<p class="text-sm font-semibold text-zinc-900">Template</p>
+			@if (!selectedTemplateId) {
+				<p class="text-xs text-zinc-400 mt-0.5">Choose a template to apply to weeks</p>
+			} @else {
+				<p class="text-xs text-emerald-600 font-medium mt-0.5">
+					<i class="fa-sharp fa-solid fa-check text-[10px] mr-1"></i>{{ selectedTemplateName }}
+				</p>
+			}
 		</div>
-		<div class="flex items-center gap-2 flex-wrap flex-1">
+		<div class="px-5 py-4 flex items-center gap-2 flex-wrap">
 			@for (template of templates; track template._id) {
-			<button (click)="selectedTemplateId = template._id"
-				class="px-3 py-1.5 rounded-full text-sm font-medium border transition cursor-pointer"
+			<button (click)="selectedTemplateId = selectedTemplateId === template._id ? '' : template._id"
+				class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border transition cursor-pointer"
 				[ngClass]="selectedTemplateId === template._id
 					? 'bg-zinc-900 text-white border-zinc-900'
-					: 'bg-white text-zinc-600 border-zinc-200 hover:bg-zinc-50'">
+					: 'bg-white text-zinc-500 border-zinc-200 hover:border-zinc-300 hover:text-zinc-700'">
+				@if (selectedTemplateId === template._id) {
+					<i class="fa-sharp fa-solid fa-check text-[10px]"></i>
+				}
 				{{ template.name }}
 			</button>
 			}
 		</div>
 	</div>
 
-	<!-- Week rows -->
-	<div class="bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden">
-		@for (week of weeks; track week.weekStart; let i = $index) {
-		<div class="flex items-center gap-4 px-5 py-4 flex-wrap"
-			[ngClass]="i < weeks.length - 1 ? 'border-b border-zinc-100' : ''">
+	<!-- Month navigation -->
+	<div class="flex items-center justify-between mb-6">
+		<div class="flex items-center gap-2">
+			<button (click)="prevMonths()" [disabled]="!canGoBack"
+				class="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-zinc-200 text-zinc-500 hover:bg-zinc-100 transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed">
+				<i class="fa-sharp fa-solid fa-chevron-left text-xs"></i>
+			</button>
+			@if (monthOffset > 0) {
+				<button (click)="goToCurrentMonths()"
+					class="px-3 h-8 rounded-full text-xs font-medium border border-zinc-200 bg-white text-zinc-500 hover:bg-zinc-100 transition cursor-pointer">
+					This month
+				</button>
+			}
+		</div>
+		<span class="text-sm font-semibold text-zinc-900">{{ rangeLabel }}</span>
+		<button (click)="nextMonths()"
+			class="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-zinc-200 text-zinc-500 hover:bg-zinc-100 transition cursor-pointer">
+			<i class="fa-sharp fa-solid fa-chevron-right text-xs"></i>
+		</button>
+	</div>
 
-			<!-- Week label -->
-			<div class="min-w-[160px] flex-shrink-0">
-				<p class="text-sm font-semibold text-zinc-900">{{ week.label }}</p>
-				@if (i === 0) {
-					<span class="text-xs text-violet-600 font-medium">This week</span>
-				}
-			</div>
+	<!-- Month blocks -->
+	@for (month of months; track month.label) {
+	<div class="mb-6">
+		<h3 class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3 px-1">{{ month.label }}</h3>
+		<div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+			@for (week of month.weeks; track week.weekStart; let i = $index) {
+			<div class="flex items-center gap-4 px-5 py-4 flex-wrap"
+				[ngClass]="{
+					'border-b border-zinc-100': i < month.weeks.length - 1,
+					'border-l-2 border-l-emerald-400': hasContent(week),
+					'border-l-2 border-l-transparent': !hasContent(week)
+				}">
 
-			<!-- Content badge -->
-			<div class="flex-1 min-w-[120px]">
-				@if (hasContent(week)) {
-					<div class="flex items-center gap-3">
+				<!-- Week label -->
+				<div class="min-w-[160px] flex-shrink-0">
+					<p class="text-sm font-semibold text-zinc-900">{{ week.label }}</p>
+					@if (week.weekStart === currentWeekStart) {
+						<span class="text-xs text-violet-600 font-medium">This week</span>
+					}
+				</div>
+
+				<!-- Content badges -->
+				<div class="flex-1 min-w-[100px]">
+					<div class="flex items-center gap-2 flex-wrap">
+						@if (blockForWeek(week.weekStart); as block) {
+							<span class="flex items-center gap-1.5 text-xs font-medium text-violet-700 bg-violet-50 px-2.5 py-1 rounded-full">
+								<i class="fa-sharp fa-solid fa-layer-group text-[10px]"></i>
+								{{ block.name }}
+							</span>
+						}
 						@if (workoutCount(week) > 0) {
 							<span class="flex items-center gap-1.5 text-xs font-medium text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full">
 								<i class="fa-sharp fa-solid fa-dumbbell text-[10px]"></i>
@@ -107,49 +147,50 @@
 								{{ cardioCount(week) }} cardio
 							</span>
 						}
-					</div>
-				} @else {
-					<span class="text-xs text-zinc-300 italic">Empty</span>
-				}
-			</div>
-
-			<!-- Actions -->
-			<div class="flex items-center gap-2 flex-shrink-0">
-				@if (week.applied) {
-					<span class="flex items-center gap-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full">
-						<i class="fa-sharp fa-solid fa-check text-[10px]"></i>
-						Applied
-					</span>
-				} @else if (week.applyError) {
-					<span class="flex items-center gap-1.5 text-xs font-medium text-red-500 bg-red-50 px-3 py-1.5 rounded-full">
-						<i class="fa-sharp fa-solid fa-triangle-exclamation text-[10px]"></i>
-						Failed
-					</span>
-				} @else {
-					<button (click)="applyTemplate(week)"
-						[disabled]="!selectedTemplateId || week.applying"
-						class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-zinc-900 text-white hover:bg-zinc-700 rounded-full transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
-						@if (week.applying) {
-							<i class="fa-sharp fa-solid fa-spinner fa-spin text-[10px]"></i>
-							Applying...
-						} @else {
-							<i class="fa-sharp fa-solid fa-calendar-check text-[10px]"></i>
-							Apply template
+						@if (!blockForWeek(week.weekStart) && !hasContent(week)) {
+							<span class="text-xs text-zinc-300 italic">Empty</span>
 						}
-					</button>
-				}
-				<a [routerLink]="['/week-planner']" [queryParams]="{ week: week.weekStart }"
-					class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-zinc-100 text-zinc-600 hover:bg-zinc-200 rounded-full transition">
-					<i class="fa-sharp fa-solid fa-arrow-right text-[10px]"></i>
-					View
-				</a>
+					</div>
+				</div>
+
+				<!-- Actions -->
+				<div class="flex items-center gap-2 flex-shrink-0">
+					@if (week.plan?.appliedTemplate?.id === selectedTemplateId && selectedTemplateId) {
+						<span class="flex items-center gap-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full">
+							<i class="fa-sharp fa-solid fa-check text-[10px]"></i>
+							{{ selectedTemplateName }} applied
+						</span>
+					} @else if (week.applyError) {
+						<span class="flex items-center gap-1.5 text-xs font-medium text-red-500 bg-red-50 px-3 py-1.5 rounded-full">
+							<i class="fa-sharp fa-solid fa-triangle-exclamation text-[10px]"></i>
+							Failed
+						</span>
+					} @else {
+						<button (click)="applyTemplate(week)"
+							[disabled]="!selectedTemplateId || week.applying"
+							class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-zinc-900 text-white hover:bg-zinc-700 rounded-full transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
+							@if (week.applying) {
+								<i class="fa-sharp fa-solid fa-spinner fa-spin text-[10px]"></i>
+								Applying...
+							} @else {
+								<i class="fa-sharp fa-solid fa-calendar-check text-[10px]"></i>
+								Apply
+							}
+						</button>
+					}
+					<a [routerLink]="['/week-planner']" [queryParams]="{ week: week.weekStart }"
+						class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-zinc-100 text-zinc-600 hover:bg-zinc-200 rounded-full transition">
+						<i class="fa-sharp fa-solid fa-arrow-right text-[10px]"></i>
+						View
+					</a>
+				</div>
+
 			</div>
-
+			}
 		</div>
-		}
 	</div>
-
 	}
+
 	}
 
 </div></app-container>

@@ -43,12 +43,14 @@ export class WeekPlan {
 	userId: string;
 	_id: string;
 	weekStart: string;
+	appliedTemplate?: { id: string; name: string };
 	days: DayPlan[];
 
 	constructor(weekPlan?: Partial<WeekPlan>) {
 		this._id = weekPlan?._id ?? '';
 		this.userId = weekPlan?.userId ?? localStorage.getItem('id') ?? '';
 		this.weekStart = weekPlan?.weekStart ?? '';
+		this.appliedTemplate = weekPlan?.appliedTemplate;
 
 		const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 

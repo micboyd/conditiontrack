@@ -35,7 +35,7 @@ router.post('/apply', async (req, res) => {
 
 		const plan = await WeekPlan.findOneAndUpdate(
 			{ userId, weekStart },
-			{ userId, weekStart, days: template.days },
+			{ userId, weekStart, days: template.days, appliedTemplate: { id: templateId, name: template.name } },
 			{ new: true, upsert: true, setDefaultsOnInsert: true },
 		).populate(WEEK_POPULATE_PATHS);
 		res.json(plan);
