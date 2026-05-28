@@ -33,10 +33,15 @@ export class GlobalSettingsComponent implements OnInit, OnDestroy {
 	dailyDeficitSaving = false;
 	dailyDeficitSaved = false;
 
+	nutritionEnabled = true;
+	nutritionToggleSaving = false;
+	nutritionToggleSaved = false;
+
 	private valueChangesSub!: Subscription;
 	private savedTimer?: ReturnType<typeof setTimeout>;
 	private bmrSavedTimer?: ReturnType<typeof setTimeout>;
 	private dailyDeficitSavedTimer?: ReturnType<typeof setTimeout>;
+	private nutritionSavedTimer?: ReturnType<typeof setTimeout>;
 
 	constructor(
 		private fb: FormBuilder,
@@ -79,6 +84,7 @@ export class GlobalSettingsComponent implements OnInit, OnDestroy {
 					this.savedDailyDeficit = user.dailyDeficitTarget;
 					this.dailyDeficitForm.get('dailyDeficitTarget')?.setValue(user.dailyDeficitTarget);
 				}
+				this.nutritionEnabled = user.nutritionEnabled !== false;
 				this.loading = false;
 			},
 			error: () => { this.loading = false; },
@@ -107,11 +113,33 @@ export class GlobalSettingsComponent implements OnInit, OnDestroy {
 		this.bmrMode = selected[0] === 'Calculator' ? 'calculator' : 'manual';
 	}
 
+	toggleNutrition(): void {
+		const next = !this.nutritionEnabled;
+		this.nutritionEnabled = next;
+		this.nutritionToggleSaving = true;
+		this.nutritionToggleSaved = false;
+		const id = localStorage.getItem('id') ?? '';
+		this.userService.updateNutritionEnabled(id, next).subscribe({
+			next: () => {
+				this.nutritionToggleSaving = false;
+				this.nutritionToggleSaved = true;
+				clearTimeout(this.nutritionSavedTimer);
+				this.nutritionSavedTimer = setTimeout(() => this.nutritionToggleSaved = false, 2500);
+			},
+			error: () => {
+				// revert on failure
+				this.nutritionEnabled = !next;
+				this.nutritionToggleSaving = false;
+			},
+		});
+	}
+
 	ngOnDestroy(): void {
 		this.valueChangesSub?.unsubscribe();
 		clearTimeout(this.savedTimer);
 		clearTimeout(this.bmrSavedTimer);
 		clearTimeout(this.dailyDeficitSavedTimer);
+		clearTimeout(this.nutritionSavedTimer);
 	}
 
 	onSubmit(): void {

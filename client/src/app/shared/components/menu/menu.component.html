@@ -80,12 +80,14 @@
 				Cardio
 			</a>
 
+			@if (user?.nutritionEnabled !== false) {
 			<a routerLink="/nutrition/meal-library" routerLinkActive="bg-white text-zinc-900"
 				(click)="toggleMenu()"
 				class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-white/10 font-medium transition">
 				<i class="fa-sharp fa-solid fa-utensils text-[13px] w-4 text-center flex-shrink-0"></i>
 				Nutrition
 			</a>
+			}
 
 			<a routerLink="/week-planner" routerLinkActive="bg-white text-zinc-900"
 				(click)="toggleMenu()"

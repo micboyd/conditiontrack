@@ -17,6 +17,8 @@ const userSchema = new mongoose.Schema({
 		fat:      { type: Number, default: 0 },
 	},
 	bmr: { type: Number, default: null },
+	dailyDeficitTarget: { type: Number, default: null },
+	nutritionEnabled: { type: Boolean, default: true },
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

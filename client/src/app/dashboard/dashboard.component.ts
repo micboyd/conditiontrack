@@ -43,6 +43,7 @@ export class DashboardComponent implements OnInit {
 	@ViewChild('logCardioDrawer') logCardioDrawer!: SideDrawerComponent;
 
 	user: UserProfile | null = null;
+	nutritionEnabled = true;
 	loading = true;
 	readonly todayStr = format(new Date(), 'yyyy-MM-dd');
 
@@ -120,6 +121,7 @@ export class DashboardComponent implements OnInit {
 		}).subscribe({
 			next: (data) => {
 				this.user = data.user;
+				this.nutritionEnabled = data.user.nutritionEnabled !== false;
 				this.workoutRecords = data.workoutRecords;
 				this.conditioningRecords = data.conditioningRecords;
 				this.workouts = data.workouts;
@@ -147,7 +149,7 @@ export class DashboardComponent implements OnInit {
 	// ── Setup checklist ──────────────────────────────────────────────────────
 
 	get checklistItems(): { title: string; completed: boolean; route: string }[] {
-		return [
+		const items = [
 			{ title: 'Add a workout to your library',	completed: this.workouts.length > 0,			route: '/strength/workout-library' },
 			{ title: 'Log your first strength session',	completed: this.workoutRecords.length > 0,		route: '/strength/workout-records' },
 			{ title: 'Add a cardio session template',	completed: this.conditioningSessions.length > 0,route: '/conditioning/conditioning-library' },
@@ -157,6 +159,9 @@ export class DashboardComponent implements OnInit {
 			{ title: 'Set a goal',						completed: this.activeGoals.length > 0,			route: '/goals' },
 			{ title: 'Complete your profile',			completed: !!(this.user?.profileImage || this.user?.bio), route: '/profile' },
 		];
+		return this.nutritionEnabled
+			? items
+			: items.filter(i => i.route !== '/nutrition/meal-library');
 	}
 
 	get checklistDoneCount(): number { return this.checklistItems.filter(i => i.completed).length; }
@@ -740,7 +745,7 @@ export class DashboardComponent implements OnInit {
 	}
 
 	openMealPicker(): void {
-		this.mealPickerDrawer.open();
+		this.mealPickerDrawer?.open();
 	}
 
 	addMealToDay(meal: Meal): void {

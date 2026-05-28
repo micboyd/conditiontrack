@@ -1,6 +1,7 @@
 import { RouterModule, Routes } from '@angular/router';
 
 import { AuthGuard } from './shared/guards/authentication.guard';
+import { NutritionEnabledGuard } from './shared/guards/nutrition-enabled.guard';
 import { AuthenticationComponent } from './authentication/authentication.component';
 import { BodyCompositionComponent } from './body-composition/body-composition.component';
 import { ConditioningComponent } from './conditioning/conditioning.component';
@@ -108,7 +109,7 @@ const routes: Routes = [
 			{
 				path: 'nutrition',
 				component: NutritionComponent,
-				canActivate: [AuthGuard],
+				canActivate: [AuthGuard, NutritionEnabledGuard],
 				children: [
 					{ path: '', redirectTo: 'meal-library', pathMatch: 'full' },
 					{

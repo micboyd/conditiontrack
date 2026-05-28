@@ -14,7 +14,49 @@
 	<app-loading-indicator [loading]="true"></app-loading-indicator>
 } @else {
 
+<!-- App Features card -->
+<div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-5 max-w-6xl">
+	<div class="px-6 py-5 border-b border-zinc-100 flex items-center gap-3">
+		<div class="w-10 h-10 rounded-xl bg-zinc-100 flex items-center justify-center flex-shrink-0">
+			<i class="fa-sharp fa-solid fa-sliders text-zinc-600 text-sm"></i>
+		</div>
+		<div>
+			<h2 class="text-base font-semibold text-zinc-900">App Features</h2>
+			<p class="text-xs text-zinc-400">Enable or disable sections of the app</p>
+		</div>
+	</div>
+	<div class="px-6 py-5">
+		<div class="flex items-center justify-between">
+			<div class="flex items-center gap-3">
+				<div class="w-9 h-9 rounded-xl bg-violet-100 flex items-center justify-center flex-shrink-0">
+					<i class="fa-sharp fa-solid fa-utensils text-violet-600 text-sm"></i>
+				</div>
+				<div>
+					<p class="text-sm font-medium text-zinc-900">Nutrition Tracking</p>
+					<p class="text-xs text-zinc-400">Log meals, track calories and macros</p>
+				</div>
+			</div>
+			<div class="flex items-center gap-3">
+				@if (nutritionToggleSaved) {
+					<span class="flex items-center gap-1.5 text-xs text-emerald-500">
+						<i class="fa-sharp fa-solid fa-check text-[10px]"></i>
+						Saved
+					</span>
+				}
+				<button type="button" (click)="toggleNutrition()" [disabled]="nutritionToggleSaving"
+					role="switch" [attr.aria-checked]="nutritionEnabled"
+					class="relative w-11 h-6 rounded-full transition-colors cursor-pointer disabled:opacity-50 flex-shrink-0"
+					[ngClass]="nutritionEnabled ? 'bg-zinc-900' : 'bg-zinc-300'">
+					<span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform"
+						[ngClass]="nutritionEnabled ? 'translate-x-5' : 'translate-x-0'"></span>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 <div class="flex flex-col lg:flex-row lg:items-start gap-5 max-w-6xl">
+@if (nutritionEnabled) {
 	<div class="bg-white rounded-2xl shadow-sm overflow-hidden lg:flex-1">
 
 		<!-- Card header -->
@@ -338,6 +380,8 @@
 			</form>
 		</div>
 	</div>
+</div>
+} <!-- end @if (nutritionEnabled) -->
 </div>
 
 }

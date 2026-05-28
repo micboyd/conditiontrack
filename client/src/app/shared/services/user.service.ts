@@ -21,6 +21,7 @@ export interface UserProfile {
 	macroGoals?: MacroGoals;
 	bmr?: number;
 	dailyDeficitTarget?: number;
+	nutritionEnabled?: boolean;
 }
 
 @Injectable({
@@ -49,5 +50,9 @@ export class UserService {
 
 	updateDailyDeficitTarget(id: string, dailyDeficitTarget: number): Observable<UserProfile> {
 		return this.http.put<UserProfile>(`${this._apiUrl}/${id}`, { dailyDeficitTarget });
+	}
+
+	updateNutritionEnabled(id: string, enabled: boolean): Observable<UserProfile> {
+		return this.http.put<UserProfile>(`${this._apiUrl}/${id}`, { nutritionEnabled: enabled });
 	}
 }
