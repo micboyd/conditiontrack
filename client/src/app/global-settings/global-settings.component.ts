@@ -116,6 +116,7 @@ export class GlobalSettingsComponent implements OnInit, OnDestroy {
 	toggleNutrition(): void {
 		const next = !this.nutritionEnabled;
 		this.nutritionEnabled = next;
+		this.userService.setNutritionEnabled(next); // push to all subscribers immediately
 		this.nutritionToggleSaving = true;
 		this.nutritionToggleSaved = false;
 		const id = localStorage.getItem('id') ?? '';
@@ -127,8 +128,9 @@ export class GlobalSettingsComponent implements OnInit, OnDestroy {
 				this.nutritionSavedTimer = setTimeout(() => this.nutritionToggleSaved = false, 2500);
 			},
 			error: () => {
-				// revert on failure
+				// revert local state and all subscribers on failure
 				this.nutritionEnabled = !next;
+				this.userService.setNutritionEnabled(!next);
 				this.nutritionToggleSaving = false;
 			},
 		});

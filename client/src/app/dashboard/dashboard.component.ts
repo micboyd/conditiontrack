@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { addDays, endOfWeek, format, isWithinInterval, parseISO, startOfWeek, subDays } from 'date-fns';
 
 import { ConditioningLibraryService } from '../conditioning/conditioning-library/conditioning-library.service';
@@ -19,7 +19,7 @@ import { Workout } from '../strength/models/Workout';
 import { WorkoutRecord } from '../strength/models/WorkoutRecord';
 import { WorkoutRecordService } from '../strength/workout-records/workout-records.service';
 import { WorkoutService } from '../strength/workout-library/workout.service';
-import { forkJoin, of } from 'rxjs';
+import { Subscription, forkJoin, of } from 'rxjs';
 import { Goal } from '../goals/models/Goal';
 import { GoalsService } from '../goals/goals.service';
 import { Measurement } from '../progress/models/Measurement';
@@ -37,7 +37,7 @@ export interface ActivityEntry {
 	templateUrl: './dashboard.component.html',
 	standalone: false,
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
 	@ViewChild('mealPickerDrawer') mealPickerDrawer!: SideDrawerComponent;
 	@ViewChild('logWorkoutDrawer') logWorkoutDrawer!: SideDrawerComponent;
 	@ViewChild('logCardioDrawer') logCardioDrawer!: SideDrawerComponent;
@@ -70,6 +70,7 @@ export class DashboardComponent implements OnInit {
 	logCardioInitialRecord: ConditioningRecord | null = null;
 	logCardioSessionToView: ConditioningSession | null = null;
 
+	private nutritionSub?: Subscription;
 	private workoutRecords: WorkoutRecord[] = [];
 	private conditioningRecords: ConditioningRecord[] = [];
 	workouts: Workout[] = [];
@@ -99,6 +100,11 @@ export class DashboardComponent implements OnInit {
 	) {}
 
 	ngOnInit(): void {
+		// React to nutrition toggle changes from any component (e.g. Settings page)
+		this.nutritionSub = this.userService.nutritionEnabled$.subscribe(
+			enabled => (this.nutritionEnabled = enabled)
+		);
+
 		const id = localStorage.getItem('id') ?? '';
 		const now = new Date();
 		const weekStart = startOfWeek(now, { weekStartsOn: 1 });
@@ -122,7 +128,6 @@ export class DashboardComponent implements OnInit {
 		}).subscribe({
 			next: (data) => {
 				this.user = data.user;
-				this.nutritionEnabled = data.user.nutritionEnabled !== false;
 				this.workoutRecords = data.workoutRecords;
 				this.conditioningRecords = data.conditioningRecords;
 				this.workouts = data.workouts;
@@ -145,6 +150,10 @@ export class DashboardComponent implements OnInit {
 				this.loading = false;
 			},
 		});
+	}
+
+	ngOnDestroy(): void {
+		this.nutritionSub?.unsubscribe();
 	}
 
 	// ── Setup checklist ──────────────────────────────────────────────────────

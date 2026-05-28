@@ -29,6 +29,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 	kcalEaten = 0;
 
 	private routerSub?: Subscription;
+	private nutritionSub?: Subscription;
 
 	constructor(
 		private userService: UserService,
@@ -53,14 +54,16 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 		const id = localStorage.getItem('id');
 		if (id) {
 			this.userService.getUser(id).subscribe({
-				next: (user) => {
-					this.user = user;
-					this.nutritionEnabled = user.nutritionEnabled !== false;
-				},
+				next: (user) => (this.user = user),
 			});
 			this.loadMonthlyStats(id, now);
 			this.loadActiveBlock();
 		}
+
+		// React to nutrition toggle changes from any component
+		this.nutritionSub = this.userService.nutritionEnabled$.subscribe(
+			enabled => (this.nutritionEnabled = enabled)
+		);
 
 		this.routerSub = this.router.events
 			.pipe(filter((e) => e instanceof NavigationEnd))
@@ -72,6 +75,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 
 	ngOnDestroy(): void {
 		this.routerSub?.unsubscribe();
+		this.nutritionSub?.unsubscribe();
 	}
 
 	get initials(): string {

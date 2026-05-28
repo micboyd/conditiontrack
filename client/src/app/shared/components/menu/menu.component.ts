@@ -1,5 +1,6 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { UserProfile, UserService } from '../../services/user.service';
 
@@ -8,11 +9,14 @@ import { UserProfile, UserService } from '../../services/user.service';
 	templateUrl: './menu.component.html',
 	standalone: false,
 })
-export class MenuComponent implements OnInit {
+export class MenuComponent implements OnInit, OnDestroy {
 	user: UserProfile | null = null;
 	initials = '';
 	menuOpen = false;
 	isReady = false;
+	nutritionEnabled = true;
+
+	private nutritionSub?: Subscription;
 
 	constructor(private userService: UserService, private router: Router) {}
 
@@ -27,11 +31,19 @@ export class MenuComponent implements OnInit {
 			});
 		}
 
+		this.nutritionSub = this.userService.nutritionEnabled$.subscribe(
+			enabled => (this.nutritionEnabled = enabled)
+		);
+
 		this.router.events
 			.pipe(filter(event => event instanceof NavigationEnd))
 			.subscribe(() => {
 				this.menuOpen = false;
 			});
+	}
+
+	ngOnDestroy(): void {
+		this.nutritionSub?.unsubscribe();
 	}
 
 	toggleMenu(): void {
