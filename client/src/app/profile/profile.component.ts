@@ -1,10 +1,12 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, subDays } from 'date-fns';
 import { forkJoin } from 'rxjs';
 
+import { ConditioningRecord } from '../conditioning/models/ConditioningRecord';
 import { ConditioningRecordService } from '../conditioning/conditioning-records/conditioning-records.service';
 import { UserProfile, UserService } from '../shared/services/user.service';
+import { WorkoutRecord } from '../strength/models/WorkoutRecord';
 import { WorkoutRecordService } from '../strength/workout-records/workout-records.service';
 
 @Component({
@@ -22,9 +24,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
 	saving = false;
 	saved = false;
 	loading = false;
+	isEditing = false;
 
 	workoutCount = 0;
 	cardioCount = 0;
+	totalTrainingHours = 0;
+	currentStreak = 0;
 
 	private savedTimer?: ReturnType<typeof setTimeout>;
 
@@ -56,6 +61,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
 				this.user = user;
 				this.workoutCount = workouts.length;
 				this.cardioCount  = cardio.length;
+				this.totalTrainingHours = this.computeTrainingHours(workouts, cardio);
+				this.currentStreak      = this.computeStreak(workouts, cardio);
 				this.profileForm.patchValue({
 					firstname: user.firstname,
 					lastname:  user.lastname,
@@ -71,6 +78,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
 		clearTimeout(this.savedTimer);
 	}
 
+	// ── Computed getters ─────────────────────────────────────────────────────
+
 	get initials(): string {
 		if (!this.user) return '';
 		return `${this.user.firstname?.[0] ?? ''}${this.user.lastname?.[0] ?? ''}`.toUpperCase();
@@ -85,6 +94,30 @@ export class ProfileComponent implements OnInit, OnDestroy {
 		return this.avatarPreview ?? this.user?.profileImage ?? null;
 	}
 
+	// ── Edit mode ────────────────────────────────────────────────────────────
+
+	startEdit(): void {
+		this.isEditing = true;
+	}
+
+	cancelEdit(): void {
+		this.isEditing = false;
+		this.avatarPreview = null;
+		this.selectedFile = null;
+		if (this.user) {
+			this.profileForm.patchValue({
+				firstname: this.user.firstname,
+				lastname:  this.user.lastname,
+				username:  this.user.username,
+				bio:       this.user.bio ?? '',
+			});
+		}
+		this.profileForm.markAsPristine();
+		this.profileForm.markAsUntouched();
+	}
+
+	// ── Avatar upload ────────────────────────────────────────────────────────
+
 	triggerFileInput(): void {
 		this.fileInput.nativeElement.click();
 	}
@@ -97,6 +130,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
 		reader.onload = (e) => { this.avatarPreview = e.target?.result as string; };
 		reader.readAsDataURL(file);
 	}
+
+	// ── Save ─────────────────────────────────────────────────────────────────
 
 	onSubmit(): void {
 		if (this.profileForm.invalid || this.saving) return;
@@ -116,12 +151,44 @@ export class ProfileComponent implements OnInit, OnDestroy {
 			next: (updated) => {
 				this.user = { ...this.user!, ...updated };
 				this.selectedFile = null;
+				this.avatarPreview = null;
 				this.saving = false;
 				this.saved = true;
+				this.isEditing = false;
 				clearTimeout(this.savedTimer);
-				this.savedTimer = setTimeout(() => this.saved = false, 2000);
+				this.savedTimer = setTimeout(() => this.saved = false, 2500);
 			},
 			error: () => { this.saving = false; },
 		});
+	}
+
+	// ── Stats helpers ─────────────────────────────────────────────────────────
+
+	private computeTrainingHours(workouts: WorkoutRecord[], cardio: ConditioningRecord[]): number {
+		const totalMins = [...workouts, ...cardio].reduce((s, r) => s + (r.duration || 0), 0);
+		return Math.round((totalMins / 60) * 10) / 10;
+	}
+
+	private computeStreak(workouts: WorkoutRecord[], cardio: ConditioningRecord[]): number {
+		const activeDates = new Set(
+			[
+				...workouts.map(w => w.date?.slice(0, 10)),
+				...cardio.map(c => c.date?.slice(0, 10)),
+			].filter((d): d is string => !!d)
+		);
+
+		let streak = 0;
+		let cursor = new Date();
+
+		// If nothing logged today, try counting back from yesterday
+		if (!activeDates.has(format(cursor, 'yyyy-MM-dd'))) {
+			cursor = subDays(cursor, 1);
+		}
+
+		while (activeDates.has(format(cursor, 'yyyy-MM-dd'))) {
+			streak++;
+			cursor = subDays(cursor, 1);
+		}
+		return streak;
 	}
 }
