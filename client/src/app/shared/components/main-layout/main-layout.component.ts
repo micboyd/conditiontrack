@@ -18,6 +18,7 @@ import { WorkoutRecordService } from '../../../strength/workout-records/workout-
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
 	user: UserProfile | null = null;
+	nutritionEnabled = true;
 	activeBlock: TrainingBlock | null = null;
 
 	currentMonth = '';
@@ -52,7 +53,10 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 		const id = localStorage.getItem('id');
 		if (id) {
 			this.userService.getUser(id).subscribe({
-				next: (user) => (this.user = user),
+				next: (user) => {
+					this.user = user;
+					this.nutritionEnabled = user.nutritionEnabled !== false;
+				},
 			});
 			this.loadMonthlyStats(id, now);
 			this.loadActiveBlock();

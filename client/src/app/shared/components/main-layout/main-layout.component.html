@@ -53,6 +53,7 @@
 					<i class="fa-sharp fa-solid fa-person-running text-zinc-400 text-[10px]"></i>
 					<span class="text-xs text-zinc-400 font-medium">{{ cardioCount }} cardio sessions</span>
 				</div>
+				@if (nutritionEnabled) {
 				<div class="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-3.5 py-1.5">
 					<i class="fa-sharp fa-solid fa-fire text-zinc-400 text-[10px]"></i>
 					<span class="text-xs text-zinc-400 font-medium">{{ kcalBurned | number }} kcal burned</span>
@@ -61,6 +62,7 @@
 					<i class="fa-sharp fa-solid fa-utensils text-zinc-400 text-[10px]"></i>
 					<span class="text-xs text-zinc-400 font-medium">{{ kcalEaten | number }} kcal eaten</span>
 				</div>
+				}
 			</div>
 
 		</div></app-container>

@@ -125,7 +125,7 @@ export class SetupChecklistService {
 					icon: 'fa-user',
 					completed: !!(data.user?.profileImage || data.user?.bio),
 				},
-			])
+			].filter(item => !(item.category === 'nutrition' && data.user?.nutritionEnabled === false)))
 		);
 	}
 }
