@@ -29,6 +29,8 @@ router.get('/:id', async (req, res) => {
 			createdAt: user.createdAt,
 			macroGoals: user.macroGoals,
 			bmr: user.bmr,
+			dailyDeficitTarget: user.dailyDeficitTarget,
+			nutritionEnabled: user.nutritionEnabled,
 		});
 	} catch (err) {
 		res.status(500).json({ error: err.message });
