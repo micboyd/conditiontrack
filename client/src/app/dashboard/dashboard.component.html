@@ -55,16 +55,16 @@
 			</div>
 			<div class="flex items-center gap-1.5 pb-1">
 				<button (click)="prevDay()"
-					class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-zinc-200 text-zinc-500 hover:bg-zinc-100 transition cursor-pointer">
+					class="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-zinc-200 text-zinc-500 hover:bg-zinc-100 transition cursor-pointer">
 					<i class="fa-sharp fa-solid fa-chevron-left text-xs"></i>
 				</button>
 				<button (click)="goToToday()" [disabled]="isToday"
-					class="px-3 h-10 rounded-full text-xs font-medium border transition"
+					class="px-3 h-8 rounded-full text-xs font-medium border transition"
 					[class]="isToday ? 'border-zinc-100 bg-zinc-50 text-zinc-300 cursor-not-allowed' : 'border-zinc-200 bg-white text-zinc-500 hover:bg-zinc-100 cursor-pointer'">
 					Today
 				</button>
 				<button (click)="nextDay()" [disabled]="isToday"
-					class="w-10 h-10 flex items-center justify-center rounded-full border transition"
+					class="w-8 h-8 flex items-center justify-center rounded-full border transition"
 					[class]="isToday ? 'bg-zinc-50 border-zinc-100 text-zinc-300 cursor-not-allowed' : 'bg-white border-zinc-200 text-zinc-500 hover:bg-zinc-100 cursor-pointer'">
 					<i class="fa-sharp fa-solid fa-chevron-right text-xs"></i>
 				</button>
