@@ -1,4 +1,4 @@
-<div class="flex flex-col min-h-full">
+<div class="flex flex-col h-full">
 
 	@if (workoutsLoading) {
 		<div class="p-6">
@@ -47,7 +47,7 @@
 	} @else {
 
 		<!-- Step 2: Fill in the record -->
-		<div class="p-6 flex-1">
+		<div class="p-6 flex-1 overflow-y-auto">
 			<h2 class="text-base font-semibold text-zinc-900 mb-6">
 				{{ selectedWorkout?.name || getWorkoutName(selectedWorkoutRecord) }}
 			</h2>
@@ -149,8 +149,8 @@
 			}
 		</div>
 
-		<!-- Sticky save footer -->
-		<div class="sticky bottom-0 bg-white px-6 pt-3 pb-4 pb-safe">
+		<!-- Save footer -->
+		<div class="flex-shrink-0 bg-white px-6 pt-3 pb-4 pb-safe">
 			<label class="flex items-center gap-2.5 mb-3 cursor-pointer w-fit">
 				<input type="checkbox" [(ngModel)]="closeOnSave" [ngModelOptions]="{standalone: true}"
 					class="w-4 h-4 rounded border-zinc-300 accent-zinc-900 cursor-pointer" />
