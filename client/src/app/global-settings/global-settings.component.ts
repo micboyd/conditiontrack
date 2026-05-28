@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { FeatureFlagsService } from '../shared/services/feature-flags.service';
 import { MacroGoals, UserService } from '../shared/services/user.service';
 import { SelectOption } from '../shared/components/select/select.component';
 
@@ -46,6 +47,7 @@ export class GlobalSettingsComponent implements OnInit, OnDestroy {
 	constructor(
 		private fb: FormBuilder,
 		private userService: UserService,
+		private featureFlags: FeatureFlagsService,
 	) {}
 
 	ngOnInit(): void {
@@ -84,7 +86,7 @@ export class GlobalSettingsComponent implements OnInit, OnDestroy {
 					this.savedDailyDeficit = user.dailyDeficitTarget;
 					this.dailyDeficitForm.get('dailyDeficitTarget')?.setValue(user.dailyDeficitTarget);
 				}
-				this.nutritionEnabled = user.nutritionEnabled !== false;
+				this.nutritionEnabled = this.featureFlags.snapshot('nutrition');
 				this.loading = false;
 			},
 			error: () => { this.loading = false; },
@@ -116,7 +118,7 @@ export class GlobalSettingsComponent implements OnInit, OnDestroy {
 	toggleNutrition(): void {
 		const next = !this.nutritionEnabled;
 		this.nutritionEnabled = next;
-		this.userService.setNutritionEnabled(next); // push to all subscribers immediately
+		this.featureFlags.setFlag('nutrition', next); // push to all subscribers immediately
 		this.nutritionToggleSaving = true;
 		this.nutritionToggleSaved = false;
 		const id = localStorage.getItem('id') ?? '';
@@ -130,7 +132,7 @@ export class GlobalSettingsComponent implements OnInit, OnDestroy {
 			error: () => {
 				// revert local state and all subscribers on failure
 				this.nutritionEnabled = !next;
-				this.userService.setNutritionEnabled(!next);
+				this.featureFlags.setFlag('nutrition', !next);
 				this.nutritionToggleSaving = false;
 			},
 		});

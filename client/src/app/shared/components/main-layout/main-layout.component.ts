@@ -5,6 +5,7 @@ import { filter } from 'rxjs/operators';
 
 import { ConditioningRecordService } from '../../../conditioning/conditioning-records/conditioning-records.service';
 import { DailyLogService } from '../../services/daily-log.service';
+import { FeatureFlagsService } from '../../services/feature-flags.service';
 import { MealLibraryService } from '../../../nutrition/meal-library/meal-library.service';
 import { TrainingBlock } from '../../../training-blocks/models/TrainingBlock';
 import { TrainingBlocksService } from '../../../training-blocks/training-blocks.service';
@@ -33,6 +34,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 
 	constructor(
 		private userService: UserService,
+		private featureFlags: FeatureFlagsService,
 		private workoutRecordService: WorkoutRecordService,
 		private conditioningRecordService: ConditioningRecordService,
 		private dailyLogService: DailyLogService,
@@ -61,7 +63,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 		}
 
 		// React to nutrition toggle changes from any component
-		this.nutritionSub = this.userService.nutritionEnabled$.subscribe(
+		this.nutritionSub = this.featureFlags.flag$('nutrition').subscribe(
 			enabled => (this.nutritionEnabled = enabled)
 		);
 

@@ -12,6 +12,7 @@ import { Meal } from '../nutrition/models/Meal';
 import { MealFilterValue } from '../shared/components/meal-filter/meal-filter.component';
 import { MealLibraryService } from '../nutrition/meal-library/meal-library.service';
 import { SideDrawerComponent } from '../shared/components/side-drawer/side-drawer.component';
+import { FeatureFlagsService } from '../shared/services/feature-flags.service';
 import { UserProfile, UserService } from '../shared/services/user.service';
 import { WeekPlan } from '../week-planner/models/WeekPlan';
 import { WeekPlannerService } from '../week-planner/week-planner.service';
@@ -88,6 +89,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
 	constructor(
 		private userService: UserService,
+		private featureFlags: FeatureFlagsService,
 		private workoutRecordService: WorkoutRecordService,
 		private workoutService: WorkoutService,
 		private conditioningRecordService: ConditioningRecordService,
@@ -101,7 +103,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
 	ngOnInit(): void {
 		// React to nutrition toggle changes from any component (e.g. Settings page)
-		this.nutritionSub = this.userService.nutritionEnabled$.subscribe(
+		this.nutritionSub = this.featureFlags.flag$('nutrition').subscribe(
 			enabled => (this.nutritionEnabled = enabled)
 		);
 

@@ -2,6 +2,7 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { FeatureFlagsService } from '../../services/feature-flags.service';
 import { UserProfile, UserService } from '../../services/user.service';
 
 @Component({
@@ -18,7 +19,11 @@ export class MenuComponent implements OnInit, OnDestroy {
 
 	private nutritionSub?: Subscription;
 
-	constructor(private userService: UserService, private router: Router) {}
+	constructor(
+		private userService: UserService,
+		private featureFlags: FeatureFlagsService,
+		private router: Router,
+	) {}
 
 	ngOnInit(): void {
 		const id = localStorage.getItem('id');
@@ -31,7 +36,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 			});
 		}
 
-		this.nutritionSub = this.userService.nutritionEnabled$.subscribe(
+		this.nutritionSub = this.featureFlags.flag$('nutrition').subscribe(
 			enabled => (this.nutritionEnabled = enabled)
 		);
 

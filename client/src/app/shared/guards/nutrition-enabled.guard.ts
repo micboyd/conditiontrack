@@ -1,23 +1,17 @@
-import { CanActivate, Router, UrlTree } from '@angular/router';
-import { Observable, map } from 'rxjs';
-
 import { Injectable } from '@angular/core';
-import { UserService } from '../services/user.service';
+import { CanActivate, Router, UrlTree } from '@angular/router';
+import { Observable } from 'rxjs';
+import { map, take } from 'rxjs/operators';
+import { FeatureFlagsService } from '../services/feature-flags.service';
 
-@Injectable({
-	providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class NutritionEnabledGuard implements CanActivate {
-	constructor(private userService: UserService, private router: Router) {}
+	constructor(private featureFlags: FeatureFlagsService, private router: Router) {}
 
 	canActivate(): Observable<boolean | UrlTree> {
-		const id = localStorage.getItem('id') ?? '';
-		return this.userService.getUser(id).pipe(
-			map(user =>
-				user.nutritionEnabled !== false
-					? true
-					: this.router.createUrlTree(['/dashboard'])
-			)
+		return this.featureFlags.flag$('nutrition').pipe(
+			take(1),
+			map(enabled => enabled ? true : this.router.createUrlTree(['/dashboard']))
 		);
 	}
 }
