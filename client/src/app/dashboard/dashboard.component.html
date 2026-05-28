@@ -10,7 +10,8 @@
 	<app-setup-checklist
 		[items]="checklistItems"
 		[doneCount]="checklistDoneCount"
-		[total]="checklistTotal">
+		[total]="checklistTotal"
+		(dismiss)="checklistDismissed = true">
 	</app-setup-checklist>
 </div>
 }

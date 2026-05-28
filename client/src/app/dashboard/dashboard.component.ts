@@ -45,6 +45,7 @@ export class DashboardComponent implements OnInit {
 	user: UserProfile | null = null;
 	nutritionEnabled = true;
 	loading = true;
+	checklistDismissed = false;
 	readonly todayStr = format(new Date(), 'yyyy-MM-dd');
 
 	// Dashboard tab
@@ -166,7 +167,7 @@ export class DashboardComponent implements OnInit {
 
 	get checklistDoneCount(): number { return this.checklistItems.filter(i => i.completed).length; }
 	get checklistTotal(): number { return this.checklistItems.length; }
-	get showChecklistBanner(): boolean { return !this.loading && this.checklistDoneCount < this.checklistTotal; }
+	get showChecklistBanner(): boolean { return !this.loading && !this.checklistDismissed && this.checklistDoneCount < this.checklistTotal; }
 	get checklistIncomplete(): { title: string; route: string }[] {
 		return this.checklistItems.filter(i => !i.completed).slice(0, 3);
 	}
