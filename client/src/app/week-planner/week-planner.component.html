@@ -276,7 +276,7 @@
 		</div>
 
 		@if (viewMode === 'week' && isEditMode) {
-			<div class="flex items-center gap-2">
+			<div class="flex items-center gap-2 flex-wrap">
 				<button (click)="copyCurrentWeek()"
 					class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full transition cursor-pointer"
 					[ngClass]="copiedFromWeekStart === weekStartStr
@@ -299,6 +299,53 @@
 							<i class="fa-sharp fa-solid fa-clipboard text-[10px]"></i>
 						}
 						Paste week
+					</button>
+				}
+				@if (weekHasContent && !clearWeekConfirming) {
+					<button (click)="clearWeek()"
+						class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-full transition cursor-pointer">
+						<i class="fa-sharp fa-solid fa-trash-can text-[10px]"></i>
+						Clear week
+					</button>
+				}
+				@if (clearWeekConfirming) {
+					<span class="text-xs text-zinc-500 font-medium">Clear all content?</span>
+					<button (click)="confirmClearWeek()"
+						class="px-3 py-1.5 text-xs font-medium bg-rose-500 text-white hover:bg-rose-600 rounded-full transition cursor-pointer">
+						Yes, clear
+					</button>
+					<button (click)="cancelClearWeek()"
+						class="px-3 py-1.5 text-xs font-medium bg-zinc-100 text-zinc-500 hover:bg-zinc-200 rounded-full transition cursor-pointer">
+						Cancel
+					</button>
+				}
+			</div>
+		}
+
+		@if (viewMode === 'month') {
+			<div class="flex items-center gap-2">
+				@if (monthHasContent && !clearMonthConfirming && !clearingMonth) {
+					<button (click)="clearMonth()"
+						class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-full transition cursor-pointer">
+						<i class="fa-sharp fa-solid fa-trash-can text-[10px]"></i>
+						Clear month
+					</button>
+				}
+				@if (clearingMonth) {
+					<span class="flex items-center gap-1.5 text-xs text-zinc-400">
+						<i class="fa-sharp fa-solid fa-spinner fa-spin text-[10px]"></i>
+						Clearing...
+					</span>
+				}
+				@if (clearMonthConfirming) {
+					<span class="text-xs text-zinc-500 font-medium">Clear all weeks?</span>
+					<button (click)="confirmClearMonth()"
+						class="px-3 py-1.5 text-xs font-medium bg-rose-500 text-white hover:bg-rose-600 rounded-full transition cursor-pointer">
+						Yes, clear
+					</button>
+					<button (click)="cancelClearMonth()"
+						class="px-3 py-1.5 text-xs font-medium bg-zinc-100 text-zinc-500 hover:bg-zinc-200 rounded-full transition cursor-pointer">
+						Cancel
 					</button>
 				}
 			</div>

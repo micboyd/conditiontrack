@@ -66,6 +66,11 @@ export class WeekPlannerComponent implements OnInit, OnDestroy {
 	copiedWeekPlan: WeekPlan | null = null;
 	copiedFromWeekStart: string | null = null;
 
+	clearWeekConfirming = false;
+	clearMonthConfirming = false;
+	clearingMonth = false;
+	private clearMonthErrorTimer?: ReturnType<typeof setTimeout>;
+
 	editingNoteDay: string | null = null;
 	noteInputValue = '';
 
@@ -157,6 +162,7 @@ export class WeekPlannerComponent implements OnInit, OnDestroy {
 	ngOnDestroy(): void {
 		clearTimeout(this.savedTimer);
 		clearTimeout(this.saveErrorTimer);
+		clearTimeout(this.clearMonthErrorTimer);
 	}
 
 	prevWeek(): void {
@@ -327,6 +333,75 @@ export class WeekPlannerComponent implements OnInit, OnDestroy {
 		this.autoSave();
 	}
 
+	// ── Clear week ───────────────────────────────────────────────────────────
+
+	get weekHasContent(): boolean {
+		return this._weekPlan?.days.some(d => this.hasAnyContent(d)) ?? false;
+	}
+
+	clearWeek(): void {
+		this.clearWeekConfirming = true;
+	}
+
+	cancelClearWeek(): void {
+		this.clearWeekConfirming = false;
+	}
+
+	confirmClearWeek(): void {
+		this.clearWeekConfirming = false;
+		const oldId = this._weekPlan._id;
+		this._weekPlan = new WeekPlan({ weekStart: this.weekStartStr });
+		if (oldId) {
+			this.saving = true;
+			this.weekPlannerService.deleteWeekPlan(oldId).subscribe({
+				next: () => {
+					this.saving = false;
+					this.saved = true;
+					clearTimeout(this.savedTimer);
+					this.savedTimer = setTimeout(() => this.saved = false, 2000);
+				},
+				error: () => { this.saving = false; },
+			});
+		}
+	}
+
+	// ── Clear month ──────────────────────────────────────────────────────────
+
+	get monthHasContent(): boolean {
+		return this.multiViewMonths[0]?.weeks.some(w => this.hasContentForPlan(w.plan)) ?? false;
+	}
+
+	clearMonth(): void {
+		this.clearMonthConfirming = true;
+	}
+
+	cancelClearMonth(): void {
+		this.clearMonthConfirming = false;
+	}
+
+	confirmClearMonth(): void {
+		this.clearMonthConfirming = false;
+		const ids = (this.multiViewMonths[0]?.weeks ?? [])
+			.filter(w => w.plan?._id && this.hasContentForPlan(w.plan))
+			.map(w => w.plan!._id);
+
+		if (ids.length === 0) return;
+
+		this.clearingMonth = true;
+		forkJoin(ids.map(id =>
+			this.weekPlannerService.deleteWeekPlan(id).pipe(catchError(() => of(null as void | null)))
+		)).subscribe({
+			next: () => {
+				this.clearingMonth = false;
+				this.loadMultiView();
+			},
+			error: () => {
+				this.clearingMonth = false;
+				this.loadMultiView();
+			},
+		});
+	}
+
 	dayDate(index: number): string {
 		return format(addDays(this.currentWeekStart, index), 'do MMM');
 	}
@@ -424,7 +499,7 @@ export class WeekPlannerComponent implements OnInit, OnDestroy {
 		return this.workoutCountForPlan(plan) > 0 || this.cardioCountForPlan(plan) > 0;
 	}
 
-	private loadMultiView() {
+	loadMultiView() {
 		this.multiViewLoading = true;
 		const periodMonths = this.viewMode === '6month' ? 6 : 1;
 		const startMonth = addMonths(this._currentMonthStart, this.multiViewOffset * periodMonths);
