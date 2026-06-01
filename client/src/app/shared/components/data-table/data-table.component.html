@@ -1,0 +1,14 @@
+<div class="hidden sm:block bg-white rounded-2xl overflow-hidden shadow-sm">
+	<table class="w-full">
+		<thead>
+			<tr class="bg-zinc-900">
+				@for (col of cols; track $index) {
+					<th class="px-6 py-4 text-{{ col.align }} text-[11px] font-semibold text-zinc-400 uppercase tracking-widest {{ col.class }}">{{ col.label }}</th>
+				}
+			</tr>
+		</thead>
+		<tbody class="divide-y divide-zinc-100">
+			<ng-content></ng-content>
+		</tbody>
+	</table>
+</div>

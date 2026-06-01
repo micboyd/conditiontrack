@@ -1,0 +1,272 @@
+<!-- ══ My Week panel ════════════════════════════════════════════════════ -->
+<div class="flex flex-col bg-zinc-50">
+
+	<!-- Panel header + weekly summary -->
+	<div class="px-4 sm:px-8 lg:px-12 pt-6 pb-5 lg:pt-10 lg:pb-8">
+		<p class="text-base font-medium uppercase tracking-widest text-zinc-400 mb-2">My Week</p>
+		<h2 class="text-xl lg:text-3xl font-bold text-zinc-900 tracking-tight mb-6">{{ currentWeekDays[0].label }} {{ currentWeekDays[0].dayNum }} – {{ currentWeekDays[6].label }} {{ currentWeekDays[6].dayNum }} {{ currentWeekDays[6].month }}</h2>
+
+		<!-- Weekly stat chips -->
+		<div class="grid grid-cols-3 gap-3 mb-8">
+			<app-stat-tile icon="fa-calendar-check" label="Active Days" [value]="activeDaysThisWeek" suffix="/ 7"></app-stat-tile>
+			<app-stat-tile icon="fa-dumbbell" label="Workouts" [value]="workoutsThisWeek" color="blue"></app-stat-tile>
+			<app-stat-tile icon="fa-person-running" label="Cardio" [value]="cardioThisWeek" color="green"></app-stat-tile>
+			<app-stat-tile icon="fa-clock" label="Training Time" [value]="totalTrainingTimeThisWeek | number:'1.0-0'" unit="min"></app-stat-tile>
+			<app-stat-tile icon="fa-layer-group" label="Total Sets" [value]="totalSetsThisWeek"></app-stat-tile>
+			<app-stat-tile icon="fa-fire" label="Kcal Burned" [value]="caloriesThisWeek | number:'1.0-0'" color="orange"></app-stat-tile>
+		</div>
+
+		<!-- Weekly calorie tile -->
+		@if (nutritionEnabled && (weeklyCalorieTarget > 0 || weeklyMaintenance > 0)) {
+		<div class="bg-zinc-900 rounded-2xl px-5 py-5 mb-8">
+
+			<!-- Header with toggle -->
+			<div class="flex items-center justify-between mb-4">
+				<p class="text-xs font-semibold uppercase tracking-widest text-zinc-500">Weekly Calories</p>
+				<app-segmented-control
+					theme="dark"
+					[options]="[{ label: 'Summary', value: 'summary' }, { label: 'Daily Breakdown', value: 'breakdown' }]"
+					[selected]="weeklyCaloriesView"
+					(selectedChange)="weeklyCaloriesView = $any($event)">
+				</app-segmented-control>
+			</div>
+
+			@if (weeklyCaloriesView === 'summary') {
+			<!-- Calories In -->
+			<div class="mb-5">
+				<div class="flex items-baseline justify-between mb-2">
+					<span class="text-sm font-medium text-zinc-400">Calories In</span>
+					<span class="text-sm text-zinc-500">
+						<span class="text-white font-semibold text-base">{{ weeklyCaloriesEaten | number:'1.0-0' }}</span>
+						@if (weeklyCalorieTarget > 0) {
+							<span class="ml-1">/ {{ weeklyCalorieTarget | number:'1.0-0' }} target</span>
+						}
+					</span>
+				</div>
+				@if (weeklyCalorieTarget > 0) {
+				<div class="h-2 bg-white/10 rounded-full overflow-hidden">
+					<div class="h-full rounded-full transition-all duration-500"
+						[ngClass]="weeklyCaloriesEaten > weeklyCalorieTarget ? 'bg-amber-400' : 'bg-white'"
+						[style.width.%]="weeklyCaloriesInPct">
+					</div>
+				</div>
+				}
+				@if (daysLoggedThisWeek > 0) {
+				<p class="text-[10px] text-zinc-600 mt-1.5">~{{ dailyAverageCaloriesEaten | number:'1.0-0' }} kcal/day avg · {{ daysLoggedThisWeek }} day{{ daysLoggedThisWeek === 1 ? '' : 's' }} logged</p>
+				}
+			</div>
+
+			<!-- Calories Out -->
+			<div class="mb-5">
+				<div class="flex items-baseline justify-between">
+					<span class="text-sm font-medium text-zinc-400">Calories Out</span>
+					<span class="text-sm text-zinc-500">
+						<span class="text-white font-semibold text-base">{{ weeklyTotalCaloriesBurned | number:'1.0-0' }}</span>
+						<span class="ml-1">kcal</span>
+					</span>
+				</div>
+				@if (user?.bmr && completedPastDaysThisWeek > 0) {
+					<p class="text-xs text-zinc-600 mt-1">incl. {{ (user!.bmr! * completedPastDaysThisWeek) | number:'1.0-0' }} kcal BMR ({{ completedPastDaysThisWeek }} days)</p>
+				}
+				@if (weeklyTotalCaloriesBurned > 0) {
+				<p class="text-[10px] text-zinc-600 mt-1.5">~{{ dailyAverageCaloriesBurned | number:'1.0-0' }} kcal/day avg</p>
+				}
+			</div>
+
+			<!-- Net balance -->
+			<div class="pt-4 border-t border-white/10 flex items-center justify-between">
+				<span class="text-sm font-medium text-zinc-400">Net Balance</span>
+				<span class="text-base font-bold"
+					[ngClass]="weeklyCalorieBalance > 100 ? 'text-amber-400' : weeklyCalorieBalance < -100 ? 'text-green-400' : 'text-white'">
+					{{ weeklyCalorieBalance > 0 ? '+' : '' }}{{ weeklyCalorieBalance | number:'1.0-0' }} kcal
+					<span class="text-xs font-normal text-zinc-500 ml-1">
+						{{ weeklyCalorieBalance > 100 ? 'surplus' : weeklyCalorieBalance < -100 ? 'deficit' : 'on track' }}
+					</span>
+				</span>
+			</div>
+
+			<!-- Projected vs Target -->
+			<div class="pt-4 border-t border-white/10">
+				<div class="flex items-center justify-between mb-3">
+					<span class="text-sm font-medium text-zinc-400">Projected Deficit</span>
+					<span class="text-base font-bold"
+						[ngClass]="weeklyOnTrackStatus.status === 'ahead' ? 'text-green-400' : weeklyOnTrackStatus.status === 'behind' ? 'text-amber-400' : 'text-white'">
+						{{ projectedWeeklyDeficit < 0 ? '' : '+' }}{{ projectedWeeklyDeficit | number:'1.0-0' }} kcal
+					</span>
+				</div>
+				<p class="text-xs text-zinc-400">
+					<span class="inline-flex items-center gap-1">
+						@if (weeklyOnTrackStatus.status === 'ahead') {
+							<i class="fa-sharp fa-solid fa-arrow-up text-green-400 text-[10px]"></i>
+							<span class="text-green-400">{{ weeklyOnTrackStatus.message }}</span>
+						}
+						@if (weeklyOnTrackStatus.status === 'behind') {
+							<i class="fa-sharp fa-solid fa-arrow-down text-amber-400 text-[10px]"></i>
+							<span class="text-amber-400">{{ weeklyOnTrackStatus.message }}</span>
+						}
+						@if (weeklyOnTrackStatus.status === 'on-track') {
+							<i class="fa-sharp fa-solid fa-check text-white text-[10px]"></i>
+							<span class="text-white">{{ weeklyOnTrackStatus.message }}</span>
+						}
+					</span>
+				</p>
+				@if (completedDaysThisWeek >= 2) {
+					<p class="text-xs text-zinc-500 mt-1">Based on {{ completedDaysThisWeek }} days · {{ daysRemainingThisWeek }} days left</p>
+				}
+			</div>
+		}
+
+		@if (weeklyCaloriesView === 'breakdown') {
+		<!-- Daily breakdown rows -->
+		<div class="space-y-2">
+			@for (day of currentWeekDays; track day.dateStr) {
+				<div class="flex items-center gap-4 px-4 py-4 rounded-xl border"
+					[ngClass]="day.isToday ? 'border-white/20 bg-white/5' : 'border-white/10'">
+
+					<!-- Day label -->
+					<div class="w-14 flex-shrink-0">
+						<p class="text-xs font-semibold uppercase tracking-wide"
+							[class]="day.isToday ? 'text-white' : 'text-zinc-500'">{{ day.label }}</p>
+						<p class="text-2xl font-bold leading-tight"
+							[class]="day.isToday ? 'text-white' : 'text-zinc-400'">{{ day.dayNum }}</p>
+					</div>
+
+					<!-- Calories In -->
+					<div class="flex-1">
+						<p class="text-xs text-zinc-500 mb-1">In</p>
+						<p class="text-xl font-bold leading-none"
+							[class]="dailyBreakdowns[day.dateStr]?.calsIn > 0 ? 'text-white' : 'text-zinc-600'">
+							{{ dailyBreakdowns[day.dateStr]?.calsIn > 0 ? (dailyBreakdowns[day.dateStr].calsIn | number:'1.0-0') : '–' }}
+						</p>
+					</div>
+
+					<!-- Calories Out -->
+					<div class="flex-1">
+						<p class="text-xs text-zinc-500 mb-1">Out</p>
+						<p class="text-xl font-bold leading-none"
+							[class]="dailyBreakdowns[day.dateStr]?.calsOut > 0 ? 'text-orange-300' : 'text-zinc-600'">
+							{{ dailyBreakdowns[day.dateStr]?.calsOut > 0 ? (dailyBreakdowns[day.dateStr].calsOut | number:'1.0-0') : '–' }}
+						</p>
+						@if (dailyBreakdowns[day.dateStr]?.activityCals > 0) {
+							<p class="text-xs text-zinc-500 mt-1">+{{ dailyBreakdowns[day.dateStr].activityCals | number:'1.0-0' }} act</p>
+						}
+					</div>
+
+					<!-- Net -->
+					<div class="text-right flex-shrink-0 min-w-[70px]">
+						<p class="text-xs text-zinc-500 mb-1">Net</p>
+						@if (!dailyBreakdowns[day.dateStr] || (dailyBreakdowns[day.dateStr].calsIn === 0 && dailyBreakdowns[day.dateStr].calsOut === 0)) {
+							<p class="text-xl font-bold text-zinc-600">–</p>
+						} @else {
+							<p class="text-xl font-bold leading-none"
+								[class]="dailyBreakdowns[day.dateStr].diff < -50 ? 'text-emerald-400' : dailyBreakdowns[day.dateStr].diff > 50 ? 'text-amber-400' : 'text-white'">
+								{{ dailyBreakdowns[day.dateStr].diff > 0 ? '+' : '' }}{{ dailyBreakdowns[day.dateStr].diff | number:'1.0-0' }}
+							</p>
+						}
+					</div>
+
+				</div>
+			}
+
+			<!-- Average daily deficit row -->
+			@if (averageDailyDeficit !== null) {
+			<div class="flex items-center gap-4 px-4 py-4 rounded-xl border border-white/10 border-dashed mt-1">
+				<div class="w-14 flex-shrink-0">
+					<p class="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">Avg</p>
+					<p class="text-[10px] text-zinc-600 mt-0.5">{{ averageDailyDeficitDayCount }} day{{ averageDailyDeficitDayCount === 1 ? '' : 's' }}</p>
+				</div>
+				<div class="flex-1"></div>
+				<div class="flex-1"></div>
+				<div class="text-right flex-shrink-0 min-w-[70px]">
+					<p class="text-xs text-zinc-500 mb-1">Daily Avg</p>
+					<p class="text-xl font-bold leading-none"
+						[class]="averageDailyDeficit! < -50 ? 'text-emerald-400' : averageDailyDeficit! > 50 ? 'text-amber-400' : 'text-white'">
+						{{ averageDailyDeficit! > 0 ? '+' : '' }}{{ averageDailyDeficit! | number:'1.0-0' }}
+					</p>
+				</div>
+			</div>
+			}
+
+		</div>
+		}
+
+		</div>
+		}
+
+	</div>
+
+	<!-- Mon–Sun rows -->
+	<div class="flex-1 border-t border-zinc-100">
+		@for (day of currentWeekDays; track day.dateStr) {
+		<div class="flex items-start gap-3 lg:gap-5 transition-colors"
+			[ngClass]="day.isToday
+				? 'pl-3.5 sm:pl-7.5 lg:pl-11.5 pr-4 sm:pr-8 lg:pr-12 py-3 lg:py-4 border-b border-zinc-100 border-l-2 border-l-zinc-900 bg-white'
+				: 'px-4 sm:px-8 lg:px-12 py-3 lg:py-4 border-b border-zinc-100 hover:bg-zinc-100'">
+
+			<!-- Day label -->
+			<div class="w-14 flex-shrink-0 pt-0.5">
+				<p class="text-[10px] font-medium uppercase tracking-wider text-zinc-400">{{ day.label }}</p>
+				<p class="text-xl lg:text-2xl font-bold leading-tight mt-0.5" [class]="day.isToday ? 'text-zinc-900' : (day.isPast ? 'text-zinc-300' : 'text-zinc-800')">{{ day.dayNum }}</p>
+				@if (day.isToday) {
+					<span class="inline-block mt-1 text-[9px] font-medium uppercase tracking-wider text-zinc-400">Today</span>
+				}
+			</div>
+
+			<!-- Activities -->
+			<div class="flex-1 pt-0.5 space-y-2">
+				@if (day.workouts.length === 0 && day.cardio.length === 0 && allPlannedWorkouts(day.planned).length === 0 && allPlannedConditioning(day.planned).length === 0) {
+					<p class="text-xs" [class]="day.isToday ? 'text-zinc-400' : 'text-zinc-300'">Rest day</p>
+				}
+
+				@for (record of day.workouts; track record._id) {
+					<div class="flex items-center gap-2">
+						<a routerLink="/strength/workout-records" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors cursor-pointer">
+							<i class="fa-sharp fa-solid fa-dumbbell text-[9px]"></i>
+							{{ getWorkoutName(record.workoutId) }}
+						</a>
+						<span class="text-[10px] text-zinc-400">{{ record.duration }} min</span>
+					</div>
+				}
+
+				@for (record of day.cardio; track record._id) {
+					<div class="flex items-center gap-2">
+						<a routerLink="/conditioning/conditioning-records" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-green-50 text-green-700 hover:bg-green-100 transition-colors cursor-pointer">
+							<i class="fa-sharp fa-solid fa-person-running text-[9px]"></i>
+							{{ getCardioName(record.sessionId) }}
+						</a>
+						<span class="text-[10px] text-zinc-400">{{ record.duration }} min</span>
+					</div>
+				}
+
+				<!-- Planned (future days only, nothing logged yet) -->
+				@if (day.workouts.length === 0 && day.cardio.length === 0 && day.planned) {
+					<div class="flex flex-wrap gap-1.5">
+						@for (workout of allPlannedWorkouts(day.planned); track workout._id) {
+							<a routerLink="/week-planner" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-zinc-100 text-zinc-400 border border-dashed border-zinc-200 hover:bg-zinc-200 hover:text-zinc-600 hover:border-zinc-300 transition-colors cursor-pointer">
+								<i class="fa-sharp fa-solid fa-dumbbell text-[9px]"></i>
+								{{ workout.name }}
+							</a>
+						}
+						@for (session of allPlannedConditioning(day.planned); track session._id) {
+							<a routerLink="/week-planner" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-zinc-100 text-zinc-400 border border-dashed border-zinc-200 hover:bg-zinc-200 hover:text-zinc-600 hover:border-zinc-300 transition-colors cursor-pointer">
+								<i class="fa-sharp fa-solid fa-person-running text-[9px]"></i>
+								{{ session.name }}
+							</a>
+						}
+					</div>
+				}
+			</div>
+
+		</div>
+		}
+	</div>
+
+	<!-- Week planner link -->
+	<div class="px-4 sm:px-8 lg:px-12 py-4 lg:py-5 border-t border-zinc-100">
+		<a routerLink="/week-planner" class="flex items-center gap-2 text-xs font-medium text-zinc-400 hover:text-zinc-700 transition">
+			<i class="fa-sharp fa-solid fa-calendar-week text-[11px]"></i>
+			Edit week plan
+		</a>
+	</div>
+
+</div>

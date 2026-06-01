@@ -1,0 +1,23 @@
+@if (theme === 'light') {
+	<div class="flex gap-1 bg-zinc-100 rounded-xl p-1 w-fit">
+		@for (opt of options; track opt.value) {
+			<button (click)="select(opt.value)"
+				class="px-5 py-2 text-sm font-medium rounded-lg transition-all cursor-pointer"
+				[class]="selected === opt.value
+					? 'bg-white text-zinc-900 shadow-sm'
+					: 'text-zinc-500 hover:text-zinc-700'">
+				{{ opt.label }}
+			</button>
+		}
+	</div>
+} @else {
+	<div class="flex gap-2">
+		@for (opt of options; track opt.value) {
+			<button (click)="select(opt.value)"
+				class="px-3 py-1 rounded-md text-xs font-medium transition cursor-pointer"
+				[class]="selected === opt.value ? 'text-white bg-white/10' : 'text-zinc-400 hover:text-zinc-300'">
+				{{ opt.label }}
+			</button>
+		}
+	</div>
+}

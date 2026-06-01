@@ -7,14 +7,7 @@
 	}
 </app-side-drawer>
 
-<div class="flex items-center justify-between mb-5">
-	<h2 class="text-xl font-semibold text-zinc-900">Session Library</h2>
-	<button (click)="openDrawer(null)"
-		class="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium px-5 py-3 rounded-full transition cursor-pointer min-h-[44px]">
-		<i class="fa-sharp fa-solid fa-plus text-xs"></i>
-		Add Session
-	</button>
-</div>
+<app-page-header title="Session Library" actionLabel="Add Session" spacing="mb-5" (action)="openDrawer(null)"></app-page-header>
 
 <!-- Search -->
 <div class="relative mb-5">

@@ -14,10 +14,7 @@
 
 <!-- Empty -->
 @if (!loading && measurements.length === 0) {
-    <div class="bg-white rounded-2xl px-6 py-16 text-center text-sm text-zinc-400">
-        <i class="fa-sharp fa-solid fa-timeline text-3xl mb-4 block text-zinc-200"></i>
-        No entries yet. Add a measurement to start your timeline.
-    </div>
+    <app-empty-state icon="fa-timeline" message="No entries yet. Add a measurement to start your timeline."></app-empty-state>
 }
 
 <!-- Timeline -->

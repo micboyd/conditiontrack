@@ -7,13 +7,8 @@
 
 <!-- No photos state -->
 @if (measurements.length === 0) {
-<div class="bg-white rounded-2xl px-6 py-16 text-center">
-	<div class="w-14 h-14 rounded-2xl bg-zinc-100 flex items-center justify-center mx-auto mb-4">
-		<i class="fa-sharp fa-solid fa-images text-zinc-400 text-xl"></i>
-	</div>
-	<h3 class="text-base font-semibold text-zinc-800 mb-1">No photos yet</h3>
-	<p class="text-sm text-zinc-400">Add photos to your measurements to use the comparison tool.</p>
-</div>
+<app-empty-state variant="rich" size="lg" icon="fa-images"
+	title="No photos yet" description="Add photos to your measurements to use the comparison tool."></app-empty-state>
 }
 
 @if (measurements.length > 0) {

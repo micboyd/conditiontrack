@@ -1,12 +1,5 @@
 <!-- Header row -->
-<div class="flex items-center justify-between mb-7">
-	<h2 class="text-xl font-semibold text-zinc-900">Measurements</h2>
-	<button (click)="openDrawer(null)"
-		class="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium px-5 py-3 rounded-full transition cursor-pointer min-h-[44px]">
-		<i class="fa-sharp fa-solid fa-plus text-xs"></i>
-		Add Entry
-	</button>
-</div>
+<app-page-header title="Measurements" actionLabel="Add Entry" (action)="openDrawer(null)"></app-page-header>
 
 <!-- Latest stats strip -->
 @if (measurements.length > 0) {
@@ -36,9 +29,7 @@
 	<app-loading-indicator [loading]="true"></app-loading-indicator>
 } @else if (measurements.length === 0) {
 	<!-- Empty state -->
-	<div class="bg-white rounded-2xl px-6 py-16 text-center text-sm text-zinc-400">
-		No measurements yet. Add your first entry to start tracking.
-	</div>
+	<app-empty-state message="No measurements yet. Add your first entry to start tracking."></app-empty-state>
 } @else {
 	<!-- Grouped list -->
 	<div class="space-y-8">

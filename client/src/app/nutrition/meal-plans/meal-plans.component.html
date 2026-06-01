@@ -1,6 +1,5 @@
 <!-- Header row -->
-<div class="flex items-center justify-between mb-5 flex-wrap gap-3">
-	<h2 class="text-xl font-semibold text-zinc-900">Meal Plans</h2>
+<app-page-header title="Meal Plans" spacing="mb-5 flex-wrap gap-3">
 	<div class="flex items-center gap-2 flex-wrap">
 		@if (saving) {
 		<span class="text-sm text-zinc-400 flex items-center gap-1.5">
@@ -36,7 +35,7 @@
 		</button>
 		}
 	</div>
-</div>
+</app-page-header>
 
 <!-- Week navigator -->
 <div class="bg-white rounded-2xl shadow-sm px-5 py-4 flex items-center gap-3 mb-5">

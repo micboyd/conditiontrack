@@ -62,23 +62,18 @@
 					<app-loading-indicator [loading]="true"></app-loading-indicator>
 				</div>
 			} @else if (goals.length === 0) {
-				<div class="bg-white rounded-2xl px-6 py-16 text-center">
-					@if (activeTab === 'active') {
-						<i class="fa-sharp fa-solid fa-bullseye text-zinc-200 text-4xl mb-4 block"></i>
-						<p class="text-sm font-medium text-zinc-500 mb-1">No active goals</p>
-						<p class="text-xs text-zinc-400">Add a goal to start tracking your progress</p>
-					}
-					@if (activeTab === 'completed') {
-						<i class="fa-sharp fa-solid fa-circle-check text-zinc-200 text-4xl mb-4 block"></i>
-						<p class="text-sm font-medium text-zinc-500 mb-1">No completed goals yet</p>
-						<p class="text-xs text-zinc-400">Goals you complete will appear here</p>
-					}
-					@if (activeTab === 'archived') {
-						<i class="fa-sharp fa-solid fa-box-archive text-zinc-200 text-4xl mb-4 block"></i>
-						<p class="text-sm font-medium text-zinc-500 mb-1">No archived goals</p>
-						<p class="text-xs text-zinc-400">Goals you archive will appear here</p>
-					}
-				</div>
+				@if (activeTab === 'active') {
+					<app-empty-state variant="rich" icon="fa-bullseye"
+						title="No active goals" description="Add a goal to start tracking your progress"></app-empty-state>
+				}
+				@if (activeTab === 'completed') {
+					<app-empty-state variant="rich" icon="fa-circle-check"
+						title="No completed goals yet" description="Goals you complete will appear here"></app-empty-state>
+				}
+				@if (activeTab === 'archived') {
+					<app-empty-state variant="rich" icon="fa-box-archive"
+						title="No archived goals" description="Goals you archive will appear here"></app-empty-state>
+				}
 			} @else {
 				<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
 					@for (goal of goals; track goal._id) {

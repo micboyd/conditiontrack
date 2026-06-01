@@ -1,3 +1,4 @@
+import { ActivitySectionComponent } from './activity-section/activity-section.component';
 import { AppRoutingModule } from '../app-routing.module';
 import { CommonModule } from '@angular/common';
 import { ConditioningLibraryService } from '../conditioning/conditioning-library/conditioning-library.service';
@@ -10,6 +11,7 @@ import { MealLibraryService } from '../nutrition/meal-library/meal-library.servi
 import { NgModule } from '@angular/core';
 import { SetupChecklistComponent } from './setup-checklist/setup-checklist.component';
 import { SharedModule } from '../shared/shared.module';
+import { WeekPanelComponent } from './week-panel/week-panel.component';
 import { WeekPlannerService } from '../week-planner/week-planner.service';
 import { GoalsService } from '../goals/goals.service';
 import { MeasurementsService } from '../progress/measurements/measurements.service';
@@ -17,7 +19,7 @@ import { WorkoutRecordService } from '../strength/workout-records/workout-record
 import { WorkoutService } from '../strength/workout-library/workout.service';
 
 @NgModule({
-	declarations: [DashboardComponent, SetupChecklistComponent, DailyTotalsCardComponent],
+	declarations: [DashboardComponent, SetupChecklistComponent, DailyTotalsCardComponent, ActivitySectionComponent, WeekPanelComponent],
 	imports: [CommonModule, FormsModule, ReactiveFormsModule, AppRoutingModule, SharedModule],
 	providers: [
 		WorkoutService,

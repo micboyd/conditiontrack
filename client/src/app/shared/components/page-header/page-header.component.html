@@ -1,0 +1,11 @@
+<div class="flex items-center justify-between {{ spacing }}">
+	<h2 class="text-xl font-semibold text-zinc-900">{{ title }}</h2>
+	@if (actionLabel) {
+		<button (click)="action.emit()"
+			class="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium px-5 py-3 rounded-full transition cursor-pointer min-h-[44px]">
+			<i class="fa-sharp fa-solid {{ actionIcon }} text-xs"></i>
+			{{ actionLabel }}
+		</button>
+	}
+	<ng-content></ng-content>
+</div>

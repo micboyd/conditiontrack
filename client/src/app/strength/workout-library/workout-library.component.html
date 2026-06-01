@@ -7,23 +7,14 @@
 	}
 </app-side-drawer>
 
-<div class="flex items-center justify-between mb-7">
-	<h2 class="text-xl font-semibold text-zinc-900">Workout Library</h2>
-	<button (click)="openDrawer()"
-		class="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-medium px-5 py-3 rounded-full transition cursor-pointer min-h-[44px]">
-		<i class="fa-sharp fa-solid fa-plus text-xs"></i>
-		Add Workout
-	</button>
-</div>
+<app-page-header title="Workout Library" actionLabel="Add Workout" (action)="openDrawer()"></app-page-header>
 
 @if (workoutsLoading) {
 	<div class="py-8">
 		<app-loading-indicator [loading]="true"></app-loading-indicator>
 	</div>
 } @else if (allWorkouts.length === 0) {
-	<div class="bg-white rounded-2xl px-6 py-16 text-center text-sm text-zinc-400">
-		No workouts yet. Create your first workout template.
-	</div>
+	<app-empty-state message="No workouts yet. Create your first workout template."></app-empty-state>
 } @else {
 
 	<!-- Mobile cards -->
@@ -36,45 +27,23 @@
 						<p class="text-sm text-zinc-500 mt-0.5">{{ workout.exercises.length }} exercises</p>
 						@if(workout.description){<p class="text-sm text-zinc-400 mt-1 truncate">{{ workout.description }}</p>}
 					</div>
-					<div class="flex items-center gap-1 text-zinc-400 flex-shrink-0">
-						<button (click)="openDrawer(workout)" class="min-h-[44px] min-w-[44px] flex items-center justify-center hover:text-zinc-700 transition cursor-pointer"><i class="fa-sharp fa-solid fa-pen-to-square"></i></button>
-						<button (click)="deleteWorkout(workout)" class="min-h-[44px] min-w-[44px] flex items-center justify-center hover:text-red-500 transition cursor-pointer"><i class="fa-sharp fa-solid fa-trash"></i></button>
-					</div>
+					<app-row-actions variant="card" (edit)="openDrawer(workout)" (remove)="deleteWorkout(workout)"></app-row-actions>
 				</div>
 			</div>
 		}
 	</div>
 
 	<!-- Desktop table -->
-	<div class="hidden sm:block bg-white rounded-2xl overflow-hidden shadow-sm">
-		<table class="w-full">
-			<thead>
-				<tr class="bg-zinc-900">
-					<th class="px-6 py-4 text-left text-[11px] font-semibold text-zinc-400 uppercase tracking-widest">Name</th>
-					<th class="px-6 py-4 text-left text-[11px] font-semibold text-zinc-400 uppercase tracking-widest">Description</th>
-					<th class="px-6 py-4 text-left text-[11px] font-semibold text-zinc-400 uppercase tracking-widest">Exercises</th>
-					<th class="px-6 py-4 text-right text-[11px] font-semibold text-zinc-400 uppercase tracking-widest"></th>
-				</tr>
-			</thead>
-			<tbody class="divide-y divide-zinc-100">
-				@for (workout of allWorkouts; track workout._id) {
-				<tr class="hover:bg-zinc-50 transition-colors">
-					<td class="px-6 py-5 text-sm text-zinc-900 font-semibold whitespace-nowrap">{{ workout.name }}</td>
-					<td class="px-6 py-5 text-sm text-zinc-400 max-w-xs truncate">{{ workout.description || '—' }}</td>
-					<td class="px-6 py-5 text-sm text-zinc-700 font-medium">{{ workout.exercises.length }}</td>
-					<td class="px-6 py-5">
-						<div class="flex items-center justify-end gap-1 text-zinc-400">
-							<button (click)="openDrawer(workout)" class="min-h-[44px] min-w-[44px] flex items-center justify-center hover:text-zinc-700 transition cursor-pointer">
-								<i class="fa-sharp fa-solid fa-pen-to-square text-sm"></i>
-							</button>
-							<button (click)="deleteWorkout(workout)" class="min-h-[44px] min-w-[44px] flex items-center justify-center hover:text-red-500 transition cursor-pointer">
-								<i class="fa-sharp fa-solid fa-trash text-sm"></i>
-							</button>
-						</div>
-					</td>
-				</tr>
-				}
-			</tbody>
-		</table>
-	</div>
+	<app-data-table [columns]="['Name', 'Description', 'Exercises', { align: 'right' }]">
+		@for (workout of allWorkouts; track workout._id) {
+		<tr class="hover:bg-zinc-50 transition-colors">
+			<td class="px-6 py-5 text-sm text-zinc-900 font-semibold whitespace-nowrap">{{ workout.name }}</td>
+			<td class="px-6 py-5 text-sm text-zinc-400 max-w-xs truncate">{{ workout.description || '—' }}</td>
+			<td class="px-6 py-5 text-sm text-zinc-700 font-medium">{{ workout.exercises.length }}</td>
+			<td class="px-6 py-5">
+				<app-row-actions (edit)="openDrawer(workout)" (remove)="deleteWorkout(workout)"></app-row-actions>
+			</td>
+		</tr>
+		}
+	</app-data-table>
 }
