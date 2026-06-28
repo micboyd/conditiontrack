@@ -1,4 +1,4 @@
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DayPlan, TimeBlockKey, WeekPlan } from './models/WeekPlan';
 import { addDays, addMonths, addWeeks, format, isToday, isSameMonth, parseISO, startOfMonth, startOfWeek, subWeeks } from 'date-fns';
@@ -293,21 +293,40 @@ export class WeekPlannerComponent implements OnInit, OnDestroy {
 		this.autoSave();
 	}
 
-	dropWorkout(event: CdkDragDrop<any[]>, dayName: string, block: 'overarching' | TimeBlockKey) {
-		if (event.previousIndex === event.currentIndex) return;
-		const day = this._weekPlan.days.find(d => d.dayName === dayName);
-		if (!day) return;
-		const arr = block === 'overarching' ? day.workouts : day[block].workouts;
-		moveItemInArray(arr, event.previousIndex, event.currentIndex);
+	private readonly _dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+	private readonly _blockKeys = ['overarching', 'morning', 'afternoon', 'evening'];
+
+	workoutListId(dayName: string, block: string): string {
+		return `wp-w-${dayName.toLowerCase()}-${block}`;
+	}
+
+	conditioningListId(dayName: string, block: string): string {
+		return `wp-c-${dayName.toLowerCase()}-${block}`;
+	}
+
+	get allWorkoutListIds(): string[] {
+		return this._dayNames.flatMap(d => this._blockKeys.map(b => this.workoutListId(d, b)));
+	}
+
+	get allConditioningListIds(): string[] {
+		return this._dayNames.flatMap(d => this._blockKeys.map(b => this.conditioningListId(d, b)));
+	}
+
+	dropWorkout(event: CdkDragDrop<Workout[]>) {
+		if (event.previousContainer === event.container) {
+			moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+		} else {
+			transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
+		}
 		this.autoSave();
 	}
 
-	dropConditioning(event: CdkDragDrop<any[]>, dayName: string, block: 'overarching' | TimeBlockKey) {
-		if (event.previousIndex === event.currentIndex) return;
-		const day = this._weekPlan.days.find(d => d.dayName === dayName);
-		if (!day) return;
-		const arr = block === 'overarching' ? day.conditioning : day[block].conditioning;
-		moveItemInArray(arr, event.previousIndex, event.currentIndex);
+	dropConditioning(event: CdkDragDrop<ConditioningSession[]>) {
+		if (event.previousContainer === event.container) {
+			moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+		} else {
+			transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
+		}
 		this.autoSave();
 	}
 

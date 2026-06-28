@@ -469,8 +469,12 @@
 					}
 				</div>
 				<div class="space-y-1.5">
-					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
-						(cdkDropListDropped)="dropWorkout($event, day.dayName, 'overarching')"
+					<div cdkDropList
+						[id]="workoutListId(day.dayName, 'overarching')"
+						[cdkDropListData]="day.workouts"
+						[cdkDropListConnectedTo]="allWorkoutListIds"
+						[cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropWorkout($event)"
 						class="space-y-1.5">
 						@for (workout of day.workouts; track workout._id) {
 						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
@@ -494,8 +498,12 @@
 						</div>
 						}
 					</div>
-					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
-						(cdkDropListDropped)="dropConditioning($event, day.dayName, 'overarching')"
+					<div cdkDropList
+						[id]="conditioningListId(day.dayName, 'overarching')"
+						[cdkDropListData]="day.conditioning"
+						[cdkDropListConnectedTo]="allConditioningListIds"
+						[cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropConditioning($event)"
 						class="space-y-1.5">
 						@for (session of day.conditioning; track session._id) {
 						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 rounded-xl"
@@ -546,8 +554,12 @@
 					}
 				</div>
 				<div class="space-y-1.5">
-					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
-						(cdkDropListDropped)="dropWorkout($event, day.dayName, 'morning')"
+					<div cdkDropList
+						[id]="workoutListId(day.dayName, 'morning')"
+						[cdkDropListData]="day.morning.workouts"
+						[cdkDropListConnectedTo]="allWorkoutListIds"
+						[cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropWorkout($event)"
 						class="space-y-1.5">
 						@for (workout of day.morning.workouts; track workout._id) {
 						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
@@ -568,8 +580,12 @@
 						</div>
 						}
 					</div>
-					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
-						(cdkDropListDropped)="dropConditioning($event, day.dayName, 'morning')"
+					<div cdkDropList
+						[id]="conditioningListId(day.dayName, 'morning')"
+						[cdkDropListData]="day.morning.conditioning"
+						[cdkDropListConnectedTo]="allConditioningListIds"
+						[cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropConditioning($event)"
 						class="space-y-1.5">
 						@for (session of day.morning.conditioning; track session._id) {
 						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 rounded-xl"
@@ -621,8 +637,12 @@
 					}
 				</div>
 				<div class="space-y-1.5">
-					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
-						(cdkDropListDropped)="dropWorkout($event, day.dayName, 'afternoon')"
+					<div cdkDropList
+						[id]="workoutListId(day.dayName, 'afternoon')"
+						[cdkDropListData]="day.afternoon.workouts"
+						[cdkDropListConnectedTo]="allWorkoutListIds"
+						[cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropWorkout($event)"
 						class="space-y-1.5">
 						@for (workout of day.afternoon.workouts; track workout._id) {
 						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
@@ -643,8 +663,12 @@
 						</div>
 						}
 					</div>
-					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
-						(cdkDropListDropped)="dropConditioning($event, day.dayName, 'afternoon')"
+					<div cdkDropList
+						[id]="conditioningListId(day.dayName, 'afternoon')"
+						[cdkDropListData]="day.afternoon.conditioning"
+						[cdkDropListConnectedTo]="allConditioningListIds"
+						[cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropConditioning($event)"
 						class="space-y-1.5">
 						@for (session of day.afternoon.conditioning; track session._id) {
 						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 rounded-xl"
@@ -696,8 +720,12 @@
 					}
 				</div>
 				<div class="space-y-1.5">
-					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
-						(cdkDropListDropped)="dropWorkout($event, day.dayName, 'evening')"
+					<div cdkDropList
+						[id]="workoutListId(day.dayName, 'evening')"
+						[cdkDropListData]="day.evening.workouts"
+						[cdkDropListConnectedTo]="allWorkoutListIds"
+						[cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropWorkout($event)"
 						class="space-y-1.5">
 						@for (workout of day.evening.workouts; track workout._id) {
 						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
@@ -718,8 +746,12 @@
 						</div>
 						}
 					</div>
-					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
-						(cdkDropListDropped)="dropConditioning($event, day.dayName, 'evening')"
+					<div cdkDropList
+						[id]="conditioningListId(day.dayName, 'evening')"
+						[cdkDropListData]="day.evening.conditioning"
+						[cdkDropListConnectedTo]="allConditioningListIds"
+						[cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropConditioning($event)"
 						class="space-y-1.5">
 						@for (session of day.evening.conditioning; track session._id) {
 						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 rounded-xl"
