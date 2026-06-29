@@ -9,7 +9,9 @@ type RowActionsVariant = 'table' | 'card';
 })
 export class RowActionsComponent {
 	@Input() variant: RowActionsVariant = 'table';
+	@Input() showView = false;
 
+	@Output() view = new EventEmitter<void>();
 	@Output() edit = new EventEmitter<void>();
 	@Output() remove = new EventEmitter<void>();
 

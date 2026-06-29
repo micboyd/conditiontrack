@@ -1,0 +1,14 @@
+{
+  "name": "conditiontrack",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --names \"api,client\" --prefix-colors \"cyan,magenta\" \"npm run dev --prefix api\" \"npm start --prefix client\"",
+    "start:api": "npm run dev --prefix api",
+    "start:client": "npm start --prefix client",
+    "install:all": "npm install && npm install --prefix api && npm install --prefix client"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

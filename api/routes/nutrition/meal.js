@@ -6,7 +6,14 @@ const Meal = require('../../models/nutrition/Meal');
 const router = express.Router();
 
 const memUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024 } });
-const mindeeClient = new mindee.Client({ apiKey: process.env.MINDEE_API_KEY });
+
+let mindeeClient;
+function getMindeeClient() {
+    if (!mindeeClient) {
+        mindeeClient = new mindee.Client({ apiKey: process.env.MINDEE_API_KEY });
+    }
+    return mindeeClient;
+}
 
 // Scan a nutrition label image and return extracted macros
 router.post('/scan-label', (req, res) => {
@@ -22,7 +29,7 @@ router.post('/scan-label', (req, res) => {
                 filename: `label.${ext}`,
             });
 
-            const response = await mindeeClient.enqueueAndGetResult(
+            const response = await getMindeeClient().enqueueAndGetResult(
                 mindee.product.Extraction,
                 inputSource,
                 { modelId: process.env.MINDEE_MODEL_ID },

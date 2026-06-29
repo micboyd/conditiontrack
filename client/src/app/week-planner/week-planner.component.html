@@ -469,9 +469,13 @@
 					}
 				</div>
 				<div class="space-y-1.5">
-					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
-						(cdkDropListDropped)="dropWorkout($event, day.dayName, 'overarching')"
-						class="space-y-1.5">
+					<div cdkDropList
+						[id]="workoutListId(day.dayName, 'overarching')"
+						[cdkDropListData]="day.workouts"
+						[cdkDropListConnectedTo]="allWorkoutListIds"
+						[cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropWorkout($event)"
+						class="space-y-1.5 min-h-[2rem]">
 						@for (workout of day.workouts; track workout._id) {
 						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
 							@if (isEditMode) {
@@ -494,9 +498,13 @@
 						</div>
 						}
 					</div>
-					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
-						(cdkDropListDropped)="dropConditioning($event, day.dayName, 'overarching')"
-						class="space-y-1.5">
+					<div cdkDropList
+						[id]="conditioningListId(day.dayName, 'overarching')"
+						[cdkDropListData]="day.conditioning"
+						[cdkDropListConnectedTo]="allConditioningListIds"
+						[cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropConditioning($event)"
+						class="space-y-1.5 min-h-[2rem]">
 						@for (session of day.conditioning; track session._id) {
 						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 rounded-xl"
 							[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'bg-purple-50' : 'bg-green-50'">
@@ -546,9 +554,13 @@
 					}
 				</div>
 				<div class="space-y-1.5">
-					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
-						(cdkDropListDropped)="dropWorkout($event, day.dayName, 'morning')"
-						class="space-y-1.5">
+					<div cdkDropList
+						[id]="workoutListId(day.dayName, 'morning')"
+						[cdkDropListData]="day.morning.workouts"
+						[cdkDropListConnectedTo]="allWorkoutListIds"
+						[cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropWorkout($event)"
+						class="space-y-1.5 min-h-[2rem]">
 						@for (workout of day.morning.workouts; track workout._id) {
 						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
 							@if (isEditMode) {
@@ -568,9 +580,13 @@
 						</div>
 						}
 					</div>
-					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
-						(cdkDropListDropped)="dropConditioning($event, day.dayName, 'morning')"
-						class="space-y-1.5">
+					<div cdkDropList
+						[id]="conditioningListId(day.dayName, 'morning')"
+						[cdkDropListData]="day.morning.conditioning"
+						[cdkDropListConnectedTo]="allConditioningListIds"
+						[cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropConditioning($event)"
+						class="space-y-1.5 min-h-[2rem]">
 						@for (session of day.morning.conditioning; track session._id) {
 						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 rounded-xl"
 							[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'bg-purple-50' : 'bg-green-50'">
@@ -621,9 +637,13 @@
 					}
 				</div>
 				<div class="space-y-1.5">
-					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
-						(cdkDropListDropped)="dropWorkout($event, day.dayName, 'afternoon')"
-						class="space-y-1.5">
+					<div cdkDropList
+						[id]="workoutListId(day.dayName, 'afternoon')"
+						[cdkDropListData]="day.afternoon.workouts"
+						[cdkDropListConnectedTo]="allWorkoutListIds"
+						[cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropWorkout($event)"
+						class="space-y-1.5 min-h-[2rem]">
 						@for (workout of day.afternoon.workouts; track workout._id) {
 						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
 							@if (isEditMode) {
@@ -643,9 +663,13 @@
 						</div>
 						}
 					</div>
-					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
-						(cdkDropListDropped)="dropConditioning($event, day.dayName, 'afternoon')"
-						class="space-y-1.5">
+					<div cdkDropList
+						[id]="conditioningListId(day.dayName, 'afternoon')"
+						[cdkDropListData]="day.afternoon.conditioning"
+						[cdkDropListConnectedTo]="allConditioningListIds"
+						[cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropConditioning($event)"
+						class="space-y-1.5 min-h-[2rem]">
 						@for (session of day.afternoon.conditioning; track session._id) {
 						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 rounded-xl"
 							[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'bg-purple-50' : 'bg-green-50'">
@@ -696,9 +720,13 @@
 					}
 				</div>
 				<div class="space-y-1.5">
-					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
-						(cdkDropListDropped)="dropWorkout($event, day.dayName, 'evening')"
-						class="space-y-1.5">
+					<div cdkDropList
+						[id]="workoutListId(day.dayName, 'evening')"
+						[cdkDropListData]="day.evening.workouts"
+						[cdkDropListConnectedTo]="allWorkoutListIds"
+						[cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropWorkout($event)"
+						class="space-y-1.5 min-h-[2rem]">
 						@for (workout of day.evening.workouts; track workout._id) {
 						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 bg-blue-50 rounded-xl">
 							@if (isEditMode) {
@@ -718,9 +746,13 @@
 						</div>
 						}
 					</div>
-					<div cdkDropList [cdkDropListDisabled]="!isEditMode"
-						(cdkDropListDropped)="dropConditioning($event, day.dayName, 'evening')"
-						class="space-y-1.5">
+					<div cdkDropList
+						[id]="conditioningListId(day.dayName, 'evening')"
+						[cdkDropListData]="day.evening.conditioning"
+						[cdkDropListConnectedTo]="allConditioningListIds"
+						[cdkDropListDisabled]="!isEditMode"
+						(cdkDropListDropped)="dropConditioning($event)"
+						class="space-y-1.5 min-h-[2rem]">
 						@for (session of day.evening.conditioning; track session._id) {
 						<div cdkDrag class="flex items-center justify-between gap-2 py-2 px-3 rounded-xl"
 							[ngClass]="session.category?.toLowerCase() === 'recovery' ? 'bg-purple-50' : 'bg-green-50'">

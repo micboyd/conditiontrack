@@ -15,6 +15,7 @@ export class WorkoutLibraryComponent implements OnInit {
 	workoutsLoading = false;
 	selectedWorkout: Workout | null = null;
 	drawerOpen = false;
+	quickViewWorkout: Workout | null = null;
 	private _allWorkouts: Workout[] = [];
 
 	constructor(public workoutService: WorkoutService) {}
@@ -55,5 +56,13 @@ export class WorkoutLibraryComponent implements OnInit {
 	onDrawerClosed(): void {
 		this.drawerOpen = false;
 		this.getAllWorkouts();
+	}
+
+	openQuickView(workout: Workout): void {
+		this.quickViewWorkout = workout;
+	}
+
+	closeQuickView(): void {
+		this.quickViewWorkout = null;
 	}
 }

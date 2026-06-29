@@ -26,7 +26,7 @@ export class AppComponent implements OnInit, OnDestroy {
 			let route = this.activatedRoute;
 			while (route.firstChild) route = route.firstChild;
 			const pageTitle = route.snapshot.data?.['title'] as string | undefined;
-			this.titleService.setTitle(pageTitle ? `ConditionTrack — ${pageTitle}` : 'ConditionTrack');
+			this.titleService.setTitle(pageTitle ? `ConditionTrack - ${pageTitle}` : 'ConditionTrack');
 		});
 	}
 
