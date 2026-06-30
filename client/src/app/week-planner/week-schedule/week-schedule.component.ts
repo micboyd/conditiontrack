@@ -18,6 +18,8 @@ interface WeekRow {
 	applying: boolean;
 	removing: boolean;
 	applyError: boolean;
+	clearConfirming: boolean;
+	clearing: boolean;
 }
 
 interface MonthBlock {
@@ -160,6 +162,8 @@ export class WeekScheduleComponent implements OnInit {
 						applying: false,
 						removing: false,
 						applyError: false,
+						clearConfirming: false,
+						clearing: false,
 					})),
 				}));
 				this.monthsLoading = false;
@@ -203,6 +207,31 @@ export class WeekScheduleComponent implements OnInit {
 			},
 			error: () => {
 				week.removing = false;
+			},
+		});
+	}
+
+	clearWeek(week: WeekRow) {
+		week.clearConfirming = true;
+	}
+
+	cancelClearWeek(week: WeekRow) {
+		week.clearConfirming = false;
+	}
+
+	confirmClearWeek(week: WeekRow) {
+		week.clearConfirming = false;
+		const id = week.plan?._id;
+		if (!id) return;
+
+		week.clearing = true;
+		this.weekPlannerService.deleteWeekPlan(id).subscribe({
+			next: () => {
+				week.plan = null;
+				week.clearing = false;
+			},
+			error: () => {
+				week.clearing = false;
 			},
 		});
 	}

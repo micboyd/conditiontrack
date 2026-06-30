@@ -178,6 +178,30 @@
 							}
 						</button>
 					}
+					@if (hasContent(week)) {
+						@if (week.clearing) {
+							<span class="flex items-center gap-1.5 text-xs text-zinc-400 px-3 py-1.5">
+								<i class="fa-sharp fa-solid fa-spinner fa-spin text-[10px]"></i>
+								Clearing...
+							</span>
+						} @else if (week.clearConfirming) {
+							<span class="text-xs text-zinc-500 font-medium">Clear week?</span>
+							<button (click)="confirmClearWeek(week)"
+								class="px-3 py-1.5 text-xs font-medium bg-rose-500 text-white hover:bg-rose-600 rounded-full transition cursor-pointer">
+								Yes, clear
+							</button>
+							<button (click)="cancelClearWeek(week)"
+								class="px-3 py-1.5 text-xs font-medium bg-zinc-100 text-zinc-500 hover:bg-zinc-200 rounded-full transition cursor-pointer">
+								Cancel
+							</button>
+						} @else {
+							<button (click)="clearWeek(week)"
+								class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-full transition cursor-pointer">
+								<i class="fa-sharp fa-solid fa-trash-can text-[10px]"></i>
+								Clear
+							</button>
+						}
+					}
 					<a [routerLink]="['/week-planner']" [queryParams]="{ week: week.weekStart }"
 						class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-zinc-100 text-zinc-600 hover:bg-zinc-200 rounded-full transition">
 						<i class="fa-sharp fa-solid fa-arrow-right text-[10px]"></i>
